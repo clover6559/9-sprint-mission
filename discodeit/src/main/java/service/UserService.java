@@ -3,21 +3,22 @@ package service;
 import entity.User;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface UserService {
     //생성
-    User addUser(User user);
+    User create(String displayName, String phoneNumber, String email);
+
 
     //조회
-    User getUser(String displayName);
+    User find(UUID id);
 
     //  전체조회
-    List<User> getAllUser();
-
-//    ??수정
-    User updateUser(String displayNmae, String email, String phoneNumber);
+    List<User> findAll();
+    //수정
+    void update(User user);
 
     //삭제
-    boolean delectUser(String displayName);
+    boolean delete(UUID id);
 
 }

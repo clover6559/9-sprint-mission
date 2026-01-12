@@ -3,30 +3,29 @@ package entity;
 import java.util.UUID;
 
 public class User {
-    private final UUID id;
-    private String displayName;
+    private UUID userId;
+    private String username;
     private String phoneNumber;
     private String email;
     private Long createdAt;
     private Long updatedAt;
 
     public User(String displayName, String phoneNumber, String email) {
-        this.id = UUID.randomUUID();
-        this.displayName = displayName;
+        this.userId = UUID.randomUUID();
+        this.userName = userName;
         this.phoneNumber = phoneNumber;
         long now = System.currentTimeMillis();
         this.updatedAt = now;
         this.email = email;
         this.createdAt = now;
-
     }
 
     public UUID getId() {
-        return id;
+        return userId;
     }
 
-    public String getDisplayName() {
-        return displayName;
+    public String getUsername() {
+        return username;
     }
 
     public String getPhoneNumber() {
@@ -44,8 +43,25 @@ public class User {
     public Long getUpdatedAt() {
         return updatedAt;
     }
-    public User update(UUID id, String phoneNumber, String email) {
+
+    @Override
+    public String toString() {
+        return "유저 정보" + '\n' +
+                "유저 Id = " + userId + '\n' +
+                "닉네임 = '" + displayName + '\'' + '\n' +
+                "전화번호 = '" + phoneNumber + '\'' + '\n' +
+                "이메일 = '" + email + '\'' + '\n' +
+                "createdAt = " + createdAt + '\n' +
+                "updatedAt = " + updatedAt + '\n';
 
     }
-//TODO
+
+
+    public User updateUser(String displayName, String email, String phoneNumber) {
+        this.displayName = displayName;
+        this.email = email;
+        this.updatedAt = System.currentTimeMillis();
+        this.phoneNumber = phoneNumber;
+        return this;
+    }
 }
