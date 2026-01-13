@@ -3,49 +3,66 @@ package entity;
 import java.util.UUID;
 
 public class Channel {
-    private final UUID userId;
+    public enum ChannelType {
+        PUBLIC, PRIVATE
+    }
+    private UUID userId;
     private Long createdAt;
     private Long updatedAt;
-    private String topic;
-    private String content;
+    private String channelName;
+    private String description;
     private UUID channelId;
+    private ChannelType channelType;
+    private String userName;
 
-    public Channel(String topic, String content, User user) {
+    public Channel(String channelName, String description, User user) {
         this.userId = user.getUserId();
         Long now = System.currentTimeMillis();
         this.createdAt = now;
         this.updatedAt = now;
         this.channelId = UUID.randomUUID();
-        this.topic = topic;
-        this.content = content;
+        this.channelName = channelName;
+        this.description = description;
+        this.channelType = channelType;
+        this.userName = user.getUserName();
     }
 
-    public UUID getId() {
+    public String getUserName() {
+        return userName;
+    }
+
+    public UUID getUserId() {
         return userId;
     }
 
     public Long getCreatedAt() {
         return createdAt;
     }
+
     public Long getUpdatedAt() {
         return updatedAt;
     }
-    public String getTopic() {
-        return topic;
+
+    public String getChannelName() {
+        return channelName;
     }
-    public String getContent() {
-        return content;
+
+    public String getDescription() {
+        return description;
     }
 
     public UUID getChannelId() {
         return channelId;
     }
 
-    public Channel updateChannel(String topic, String content) {
-        this.topic = topic;
-        this.content = content;
-        this.updatedAt = System.currentTimeMillis();
-        return this;
+    public ChannelType getChannelType() {
+        return channelType;
+    }
 
+    public void update(String channelName, String description) {
+        this.channelName = channelName;
+        this.description = description;
+        this.updatedAt = System.currentTimeMillis();
     }
 }
+

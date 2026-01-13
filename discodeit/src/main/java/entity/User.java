@@ -3,33 +3,28 @@ package entity;
 import java.util.UUID;
 
 public class User {
-    private UUID userId;
-    private String username;
-    private String phoneNumber;
+    private final UUID userId;
+    private String userName;
     private String email;
     private Long createdAt;
     private Long updatedAt;
+    private String password;
 
-    public User(String displayName, String phoneNumber, String email) {
+    public User(String userName, String email, String password) {
         this.userId = UUID.randomUUID();
         this.userName = userName;
-        this.phoneNumber = phoneNumber;
         long now = System.currentTimeMillis();
         this.updatedAt = now;
         this.email = email;
         this.createdAt = now;
+        this.password = password;
     }
-
-    public UUID getId() {
+    public UUID getUserId() {
         return userId;
     }
 
-    public String getUsername() {
-        return username;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
+    public String getUserName() {
+        return userName;
     }
 
     public String getEmail() {
@@ -44,24 +39,25 @@ public class User {
         return updatedAt;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
     @Override
     public String toString() {
         return "유저 정보" + '\n' +
-                "유저 Id = " + userId + '\n' +
-                "닉네임 = '" + displayName + '\'' + '\n' +
-                "전화번호 = '" + phoneNumber + '\'' + '\n' +
-                "이메일 = '" + email + '\'' + '\n' +
+                "유저 ID = " + userId + '\n' +
+                "유저 이름 = '" + userName + '\'' + '\n' +
+                "유저 PW = " + password + '\n' +
+                 "이메일 = '" + email + '\'' + '\n' +
                 "createdAt = " + createdAt + '\n' +
                 "updatedAt = " + updatedAt + '\n';
 
     }
-
-
-    public User updateUser(String displayName, String email, String phoneNumber) {
-        this.displayName = displayName;
+    public void update(String userName,String email, String password) {
+        this.userName = userName;
         this.email = email;
+        this.password = password;
         this.updatedAt = System.currentTimeMillis();
-        this.phoneNumber = phoneNumber;
-        return this;
     }
 }

@@ -6,41 +6,42 @@ import service.UserService;
 import java.util.*;
 
 public class JCFUserService implements UserService {
-    private final Map<UUID, User> userData = new HashMap<>();
+    private final Map<UUID, User> Data = new HashMap<>();
 
     @Override
-    public User addUser(String displayName, String phoneNumber, String email) {
-        User user = new User(displayName, phoneNumber, email);
-        userData.put(user.getUserId(), user);
+    public User create(String userName, String email, String password) {
+        User user = new User(userName, email, password);
+        Data.put(user.getUserId(), user);
         return user;
     }
 
     @Override
-    public User findUser(UUID id) {
-        return userData.get(id);
+    public User find(UUID userId) {
+        return Data.get(userId);
     }
 
     @Override
-    public List<User> getAllUser() {
-        return userData.values().stream().toList();
+    public List<User> findAll() {
+        return Data.values().stream().toList();
     }
 
     @Override
-    public void updateUser(User user) {
-        User foundUser = userData.get(user.getUserId());
+    public void update(UUID userId, String userName, String email, String password) {
+        User foundUser = Data.get(userId);
         if (foundUser == null) {
-            return;
+            throw new IllegalArgumentException("존재하지 않는 사용자 아이디입니다: " + userId);
         }
-        foundUser.updateUser(user.getDisplayName(), user.getEmail(), user.getPhoneNumber());
-            userData.put(user.getUserId(), foundUser);
-        }
+        foundUser.update(userName,email, password);
+        Data.put(userId, foundUser);
+        System.out.println("성공: 사용자 정보가 업데이트되었습니다.");
+    }
 
     @Override
-    public boolean deleteUser(UUID id) {
-        if (userData.get(id) == null) {
+    public boolean delete(UUID userId) {
+        if (Data.get(userId) == null) {
             return false;
         }
-        userData.remove(id);
+        Data.remove(userId);
         return true;
     }
 }

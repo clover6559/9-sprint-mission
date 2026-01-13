@@ -7,18 +7,18 @@ import java.util.UUID;
 
 public interface UserService {
     //생성
-    User create(String displayName, String phoneNumber, String email);
-
+    User create(String userName, String email, String password);
 
     //조회
-    User find(UUID id);
+    User find(UUID userId);
 
     //  전체조회
     List<User> findAll();
     //수정
-    void update(User user);
+    User update(UUID userId, String userName, String email, String password);
 
     //삭제
     boolean delete(UUID id);
+
 
 }

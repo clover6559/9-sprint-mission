@@ -13,27 +13,35 @@ public class JCFMessageService implements MessageService {
 
 
     @Override
-    public void addMessage(Message message) {
-        messageData.put(message.getChannelId(), message);
+    public Message create(String content, UUID channelId, UUID userId) {
+        Message message = new Message(content, channelId, userId);
+        messageData.put(message.getMassageId(), message);
+        return message;
     }
 
     @Override
-    public Message findMessage(UUID id) {
-        return null;
+    public Message find(UUID massageId) {
+        return messageData.get(massageId);
     }
 
     @Override
-    public List<Message> getAllMessage() {
-        return List.of();
+    public List<Message> findAll() {
+        return messageData.values();
     }
 
     @Override
-    public void updateMessage(Message message) {
+    public Message update(UUID massageId, String content) {
 
     }
 
     @Override
-    public boolean deleteMessage(Message message) {
-        return false;
+    public boolean delete(UUID massageId) {
+        if (messageData.get(massageId == null) {
+            return false;}
+            {
+                messageData.remove(massageId);
+                return true;
+            }
+        }
     }
-}
+

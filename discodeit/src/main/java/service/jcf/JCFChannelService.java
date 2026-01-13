@@ -1,6 +1,7 @@
 package service.jcf;
 
 import entity.Channel;
+import entity.User;
 import service.ChannelService;
 
 import java.util.HashMap;
@@ -12,32 +13,35 @@ public class JCFChannelService implements ChannelService {
     private final Map<UUID, Channel> channelData = new HashMap<>();
 
     @Override
-    public void addChannel(Channel channel) {
-       channelData.put(channel.getId(), channel);
+    public Channel create(Channel.ChannelType channelType, String channelName, String description) {
+       Channel channel = new Channel(channelType, channelName, description)
+        channelData.put(channel.getChannelId(), channel);
+       return channel;
     }
 
     @Override
-    public Channel findChenel(UUID channelId) {
+    public Channel find(UUID channelId) {
         return channelData.get(channelId);
     }
 
     @Override
-    public List<Channel> findChannel() {
+    public List<Channel> findAll() {
         return channelData.values().stream().toList();
     }
 
     @Override
-    public void updateChannel(Channel channel) {
-        Channel foundChannel = channelData.get(channel.getChannelId());
+    public void update(UUID channelId, String channelName, String description) {
+        Channel foundChannel = channelData.get(channelId);
         if (foundChannel == null) {
-            return;
+            throw new IllegalArgumentException("존재하지 않는 채널 아이디입니다: " + channelId);
         }
-        foundChannel.updateChannel(channel.getTopic(), channel.getContent());
-        channelData.put(channel.getChannelId(), foundChannel);
+        foundChannel.update(channelName, description);
+        channelData.put(channelId, foundChannel);
+        System.out.println("성공: 채넗 정보가 업데이트되었습니다.");
     }
 
     @Override
-    public boolean deleteChannel(UUID channelId) {
+    public boolean delete(UUID channelId) {
         if (channelData.get(channelId) == null) {
             return false;
         }
