@@ -26,14 +26,15 @@ public class JCFUserService implements UserService {
     }
 
     @Override
-    public void update(UUID userId, String userName, String email, String password) {
+    public User update(UUID userId, String userName, String email, String password) {
         User foundUser = Data.get(userId);
         if (foundUser == null) {
-            throw new IllegalArgumentException("존재하지 않는 사용자 아이디입니다: " + userId);
+            throw new IllegalArgumentException("존재하지 않는 사용자 아이디입니다 : " + userId);
         }
         foundUser.update(userName,email, password);
         Data.put(userId, foundUser);
         System.out.println("성공: 사용자 정보가 업데이트되었습니다.");
+        return foundUser;
     }
 
     @Override

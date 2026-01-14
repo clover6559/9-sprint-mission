@@ -15,7 +15,7 @@ public class Channel {
     private ChannelType channelType;
     private String userName;
 
-    public Channel(String channelName, String description, User user) {
+    public Channel(ChannelType channelType, String channelName, String description, User user) {
         this.userId = user.getUserId();
         Long now = System.currentTimeMillis();
         this.createdAt = now;
@@ -63,6 +63,18 @@ public class Channel {
         this.channelName = channelName;
         this.description = description;
         this.updatedAt = System.currentTimeMillis();
+    }
+
+    @Override
+    public String toString() {
+        return  "유저 Id : " + userId + '\n' +
+                "유저 이름 : " + userName  + '\n' +
+                "채널 타입 : " + channelType + '\n' +
+                "채널 이름 : " + channelName + '\n' +
+                "채널 ID : " + channelId + '\n' +
+                "채널 소개 : " + description + '\n' +
+                "생성시간 : " + createdAt + '\n' +
+                "수정시간 : " + updatedAt + '\n';
     }
 }
 

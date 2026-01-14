@@ -49,22 +49,21 @@ public class Message {
     public String getContent() {
         return content;
     }
-    public void update(String content){
+
+    public void update(UUID massageId, String content){
             this.content = content;
             this.updatedAt = System.currentTimeMillis();
         }
 
     @Override
     public String toString() {
-        return "Message{" +
-                "userId=" + userId +
-                ", content='" + content + '\'' +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
-                ", channelName='" + channelName + '\'' +
-                ", channelId=" + channelId +
-                ", massageId=" + massageId +
-                '}';
+        return  "유저 Id : " + userId + '\n' +
+                "채널 이름 : " + channelName + '\n' +
+                "채널 ID : " + channelId + '\n' +
+                "내용 : " + content + '\n' +
+                "메세지 ID : " + massageId + '\n' +
+                "생성시간 : " + createdAt + '\n' +
+                "수정시간 : " + updatedAt + '\n';
     }
 }
 

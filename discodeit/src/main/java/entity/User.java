@@ -45,16 +45,15 @@ public class User {
 
     @Override
     public String toString() {
-        return "유저 정보" + '\n' +
-                "유저 ID = " + userId + '\n' +
-                "유저 이름 = '" + userName + '\'' + '\n' +
-                "유저 PW = " + password + '\n' +
-                 "이메일 = '" + email + '\'' + '\n' +
-                "createdAt = " + createdAt + '\n' +
-                "updatedAt = " + updatedAt + '\n';
-
+        return  "유저 ID : " + userId + '\n' +
+                "유저 이름 : " + userName  + '\n' +
+                "유저 PW : " + password + '\n' +
+                "이메일 : " + email + '\n' +
+                "생성 시간 : " + createdAt + '\n' +
+                "수정 시간 : " + updatedAt + '\n';
     }
-    public void update(String userName,String email, String password) {
+
+    public void update(String userName, String email, String password) {
         this.userName = userName;
         this.email = email;
         this.password = password;
