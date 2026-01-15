@@ -69,7 +69,7 @@ public class Message {
 
     @Override
     public String toString() {
-        return  "유저 Id : " + userId + '\n' +
+        return  "유저 이름 : " + userName + '\n' +
                 "채널 이름 : " + channelName + '\n' +
                 "채널 ID : " + channelId + '\n' +
                 "내용 : " + content + '\n' +

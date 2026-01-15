@@ -13,7 +13,7 @@ public interface ChannelService {
 
     Channel find(UUID channelId);
 
-    List<Channel> ChannelSerch(ChannelSearch channelSearch);
+    List<Channel> ChannelSearch(ChannelSearch channelSearch);
 
     List<Channel> findAll();
 

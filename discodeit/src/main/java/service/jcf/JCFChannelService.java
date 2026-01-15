@@ -33,11 +33,23 @@ public class JCFChannelService implements ChannelService {
     }
 
     @Override
-    public List<Channel> ChannelSerch(ChannelSearch channelSearch) {
+    public List<Channel> ChannelSearch(ChannelSearch channelSearch) {
         return channelData.values().stream()
-                .filter(c-> channelSearch.getUserName() == null || c.getUserName().equals(channelSearch.getUserName()))
-                .filter(c -> channelSearch.getChannelName() == null || c.getChannelName().equals(channelSearch.getChannelName()))
+                .filter(c-> {
+                    String searchName = channelSearch.getUserName();
+                    if (searchName == null) return true;
+                    return searchName.equals(c.getUserName());
+                    })
+                .filter(c -> {
+                    String searchChannel = channelSearch.getChannelName();
+                    if (searchChannel == null) return true;
+                    return searchChannel.equals(c.getChannelName());
+                })
                 .collect(Collectors.toList());
+
+//                .filter(c -> channelSearch.getUserName() == null || c.getUserName().equals(channelSearch.getUserName()))
+//                .filter(c -> channelSearch.getChannelName() == null || c.getChannelName().equals(channelSearch.getChannelName()))
+//                .collect(Collectors.toList());
     }
 
     @Override

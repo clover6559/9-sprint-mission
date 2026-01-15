@@ -30,8 +30,16 @@ public class JCFUserService implements UserService {
     @Override
     public List<User> UserSerch(UserSearch userSearch) {
         return Data.values().stream()
-                .filter(u -> userSearch.getUserName() == null || u.getUserName().equals(userSearch.getUserName()))
-                .filter(u -> userSearch.getEmail() == null || u.getEmail().equals(userSearch.getEmail()))
+                .filter(u-> {
+                    String searchName = userSearch.getUserName();
+                    if (searchName == null) return true;
+                    return searchName.equals(u.getUserName());
+                })
+                .filter(u -> {
+                    String searchEmail = userSearch.getEmail();
+                    if (searchEmail == null) return true;
+                    return searchEmail.equals(u.getEmail());
+                })
                 .collect(Collectors.toList());
     }
 
