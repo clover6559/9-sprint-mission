@@ -2,8 +2,10 @@ package service.jcf;
 
 import entity.User;
 import service.UserService;
+import service.serch.UserSearch;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class JCFUserService implements UserService {
     private final Map<UUID, User> Data = new HashMap<>();
@@ -23,6 +25,14 @@ public class JCFUserService implements UserService {
     @Override
     public List<User> findAll() {
         return Data.values().stream().toList();
+    }
+
+    @Override
+    public List<User> UserSerch(UserSearch userSearch) {
+        return Data.values().stream()
+                .filter(u -> userSearch.getUserName() == null || u.getUserName().equals(userSearch.getUserName()))
+                .filter(u -> userSearch.getEmail() == null || u.getEmail().equals(userSearch.getEmail()))
+                .collect(Collectors.toList());
     }
 
     @Override

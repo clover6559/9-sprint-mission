@@ -4,10 +4,12 @@ import entity.Channel;
 import entity.Message;
 import entity.User;
 import service.ChannelService;
+import service.serch.MessageSearch;
 import service.MessageService;
 import service.UserService;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class JCFMessageService implements MessageService {
     private final Map<UUID, Message> messageData = new HashMap<>();
@@ -33,8 +35,12 @@ public class JCFMessageService implements MessageService {
     }
 
     @Override
-    public List<Message> findAll() {
-        return new ArrayList<>(messageData.values());
+    public List<Message> MessageSearch(MessageSearch messageSearch) {
+        return messageData.values().stream()
+               .filter(msg -> messageSearch.getUserName() == null || msg.getUserName().equals(messageSearch.getUserName()))
+               .filter(msg -> messageSearch.getChannelName() == null || msg.getChannelId().equals(messageSearch.getChannelName()))
+               .filter(msg -> messageSearch.getEmail() == null || msg.getEmail() == null || msg.getEmail().equals(messageSearch.getEmail()))
+               .collect(Collectors.toList());
     }
 
     @Override

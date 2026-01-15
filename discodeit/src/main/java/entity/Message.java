@@ -8,6 +8,8 @@ public class Message {
     private Long createdAt;
     private Long updatedAt;
     private String channelName;
+    private String userName;
+    private String email;
     private UUID channelId;
     private UUID massageId;
 
@@ -19,6 +21,8 @@ public class Message {
         this.content = content;
         this.channelId = channel.getChannelId();
         this.channelName = channel.getChannelName();
+        this.userName = user.getUserName();
+        this.email = user.getEmail();
         this.massageId = UUID.randomUUID();
     }
 
@@ -48,6 +52,14 @@ public class Message {
 
     public String getContent() {
         return content;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public String getEmail() {
+        return email;
     }
 
     public void update(UUID massageId, String content){
