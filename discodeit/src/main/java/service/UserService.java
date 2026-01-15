@@ -12,6 +12,7 @@ public interface UserService {
     //조회
     User find(UUID userId);
 
+
     //  전체조회
     List<User> findAll();
     //수정

@@ -9,7 +9,6 @@ import service.jcf.JCFMessageService;
 import service.jcf.JCFUserService;
 
 import java.util.List;
-import java.util.UUID;
 
 public class JavaApplication {
 
@@ -18,19 +17,20 @@ public class JavaApplication {
         User user = userService.create("woody", "woody@codeit.com", "woody1234");
         User user2 = userService.create("김사연","sayeon@gmail.com", "125rtf");
         System.out.println("=== 유저 생성 ===: " + '\n' +  user.toString());
-        // 조회
+        // 조회(단건)
         User foundUser = userService.find(user.getUserId());
         System.out.println("=== 유저 조회(단건) === " +  '\n' +  foundUser.toString());
 
+
         List<User> foundUsers = userService.findAll();
-        System.out.println("=== 유저 조회(전체) === " + String.join("/", '\n' + foundUsers.toString() + '\n'));
+        System.out.println("=== 유저 조회(전체) === " + '\n' + foundUsers.toString());
         // 수정
         User updatedUser = userService.update(user2.getUserId(), null, null, "woody5678");
         System.out.println("===유저 수정 === " + '\n' + updatedUser.toString());
 
         userService.delete(user.getUserId());
         List<User> foundUsersAfterDelete = userService.findAll();
-        System.out.println("=== 유저 삭제 === " +  '\n' + "남은 유저 : " +  foundUsersAfterDelete.size() + '\n' );
+        System.out.println("=== 유저 삭제 === " +  '\n' + "남은 유저 : " +  foundUsersAfterDelete.size());
     }
 
     static void channelCRUDTest(ChannelService channelService) {
@@ -42,6 +42,7 @@ public class JavaApplication {
         // 조회
         Channel foundChannel = channelService.find(channel.getChannelId());
         System.out.println("=== 채널 조회(단건) === " + '\n' + foundChannel.toString());
+
         List<Channel> foundChannels = channelService.findAll();
         System.out.println("=== 채널 현황 조회 ===  " +  '\n' + "남은 채널 : " + foundChannels.size());
         // 수정
@@ -60,8 +61,8 @@ public class JavaApplication {
         Channel channel2 = new Channel(Channel.ChannelType.PRIVATE, "사담", "사담합시다", user5);
 
         // 생성
-        Message message = messageService.create("안녕하세요.",channel2, user4);
-        Message message1 =  messageService.create("안녕하세요",channel1, user4);
+        Message message = messageService.create("안녕하세요.",user4,channel2);
+        Message message1 =  messageService.create("안녕하세요",user4, channel1);
         System.out.println("=== 메시지 생성===  " + '\n' + message.toString());
         // 조회
         Message foundMessage = messageService.find(message1.getMassageId());
@@ -74,7 +75,7 @@ public class JavaApplication {
         // 삭제
         messageService.delete(message.getMassageId());
         List<Message> foundMessagesAfterDelete = messageService.findAll();
-        System.out.println("남은 메세지 : " + foundMessagesAfterDelete.size());
+        System.out.println("남은 메세지 : " + foundMessagesAfterDelete);
     }
 
     public static void main(String[] args) {

@@ -21,7 +21,7 @@ public class JCFMessageService implements MessageService {
     }
 
     @Override
-    public Message create(String content, Channel channel, User user) {
+    public Message create(String content, User user, Channel channel) {
         Message message = new Message(content, user, channel);
         messageData.put(message.getMassageId(), message);
         return message;
@@ -44,7 +44,6 @@ public class JCFMessageService implements MessageService {
             throw new IllegalArgumentException("존재하지 않는 메세지입니다.");
         } foundMessage.update(massageId, content);
         messageData.put(massageId,foundMessage);
-        System.out.println("성공: 메세지가 수정되었습니다.");
         return foundMessage;
     }
 
@@ -59,5 +58,6 @@ public class JCFMessageService implements MessageService {
                 return true;
             }
         }
+
     }
 

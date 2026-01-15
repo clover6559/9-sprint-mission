@@ -33,7 +33,6 @@ public class JCFUserService implements UserService {
         }
         foundUser.update(userName,email, password);
         Data.put(userId, foundUser);
-        System.out.println("성공: 사용자 정보가 업데이트되었습니다.");
         return foundUser;
     }
 

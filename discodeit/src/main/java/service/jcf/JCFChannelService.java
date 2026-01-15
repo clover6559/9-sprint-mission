@@ -44,7 +44,6 @@ public class JCFChannelService implements ChannelService {
         }
         foundChannel.update(channelName, description);
         channelData.put(channelId, foundChannel);
-        System.out.println("성공: 채널 정보가 업데이트되었습니다.");
         return foundChannel;
     }
 

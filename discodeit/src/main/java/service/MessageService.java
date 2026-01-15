@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface MessageService {
-    Message create(String content, Channel channel, User user);
+    Message create(String content, User user, Channel channel);
 
     Message find(UUID massageId);
 
@@ -17,6 +17,4 @@ public interface MessageService {
     Message update(UUID massageId, String content);
 
     boolean delete(UUID massageId);
-
-
 }
