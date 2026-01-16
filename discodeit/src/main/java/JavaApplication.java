@@ -17,29 +17,30 @@ public class JavaApplication {
 
     static void userCRUDTest(UserService userService) {
         // 생성
-        User user = userService.create("woody", "woody@codeit.com", "woody1234");
-        User user2 = userService.create("김사연","sayeon@gmail.com", "125rtf");
-        System.out.println("=== 유저 생성 ===: " + '\n' +  user.toString());
+        User user = userService.createUser("woody", "woody@codeit.com", "woody1234");
+        User user2 = userService.createUser("김사연","sayeon@gmail.com", "125rtf");
+        System.out.println("=== 유저 생성 ===: " + '\n' +  user2.toString());
 
         // 조회(ID)
-        User foundUser = userService.find(user.getUserId());
+        User foundUser = userService.findUserById(user.getUserId());
         System.out.println("=== 유저 조회(ID) === " +  '\n' +  foundUser.toString());
         //조건 1개(이름)
         UserSearch userSearch = new UserSearch();
         userSearch.setUserName("김사연");
-        List<User> foundUser0 = userService.UserSerch(userSearch);
+        List<User> foundUser0 = userService.UserSearch(userSearch);
         System.out.println("=== 유저 조회(김사연) === " +  '\n' +  foundUser0.toString());
-        //전체 조회
+        //전체 유저 조회
         UserSearch userAllSearch = new UserSearch();
-        List<User> foundAllUser = userService.UserSerch(userAllSearch);
-        System.out.println("=== 유저 조회(전체) === " +  '\n' +  foundAllUser.toString());
+        List<User> foundAllUser = userService.UserSearch(userAllSearch);
+        System.out.println("=== 전체 유저 조회 === " +  '\n' +  foundAllUser.toString());
 
         // 수정
-        User updatedUser = userService.update(user2.getUserId(), null, null, "woody5678");
+        User updatedUser = userService.updateUser(user2.getUserId(), null, null, "woody5678");
         System.out.println("===유저 수정 === " + '\n' + updatedUser.toString());
+
         //삭제
-        userService.delete(user.getUserId());
-        List<User> foundUsersAfterDelete = userService.findAll();
+        userService.deleteUser(user.getUserId());
+        List<User> foundUsersAfterDelete = userService.findAllUser();
         System.out.println("=== 유저 삭제 === " +  '\n' + "남은 유저 : " +  foundUsersAfterDelete.size());
     }
 
@@ -47,13 +48,14 @@ public class JavaApplication {
         User user6 = new User("김경환","gyemghwan@gmail.com", "126d25e");
         User user3 = new User("강지원","jiwon@gmail.com", "fgd123");
         // 생성
-        Channel channel = channelService.create(Channel.ChannelType.PUBLIC, "공지", "공지 채널입니다.", user6);
-        Channel channel3 = channelService.create(Channel.ChannelType.PUBLIC, "질문", "질문있어요", user3);
-        Channel channel4 = channelService.create(Channel.ChannelType.PUBLIC, "5조", "5조방입니다", user3);
+        Channel channel = channelService.createChannel(Channel.ChannelType.PUBLIC, "공지", "공지 채널입니다.", user6);
+        Channel channel3 = channelService.createChannel(Channel.ChannelType.PUBLIC, "질문", "질문있어요", user3);
+        Channel channel4 = channelService.createChannel(Channel.ChannelType.PUBLIC, "5조", "5조방입니다", user3);
         System.out.println("=== 채널 생성 === " +   '\n' + channel.toString());
+
         // 조회(ID)
-        Channel foundChannel = channelService.find(channel.getChannelId());
-        System.out.println("=== 채널 조회(단건) === " + '\n' + foundChannel.toString());
+        Channel foundChannel = channelService.findChannelById(channel.getChannelId());
+        System.out.println("=== 채널 조회(ID) === " + '\n' + foundChannel.toString());
         //조건 1개 조회(이름)
         ChannelSearch channelSearch = new ChannelSearch();
         channelSearch.setUserName("강지원");
@@ -65,15 +67,21 @@ public class JavaApplication {
         channelSearch1.setChannelName("질문");
         List<Channel> foundChannel3 = channelService.ChannelSearch(channelSearch1);
         System.out.println("=== 채널 조회(강지원, 질문) === " + '\n' + foundChannel3.toString());
-        //전체 조회
-        List<Channel> foundChannels = channelService.findAll();
+
+        //전체 채널 조회
+        List<Channel> foundAllChannels = channelService.findAllChannel();
+        System.out.println("=== 전체 채널 조회 ===  " +  '\n' + "전체 채널 : " + foundAllChannels.toString());
+        //전체 채널수 조회
+        List<Channel> foundChannels = channelService.findAllChannel();
         System.out.println("=== 채널 현황 조회 ===  " +  '\n' + "남은 채널 : " + foundChannels.size());
+
         // 수정
-        Channel updatedChannel = channelService.update(channel.getChannelId(), "공지사항", null);
+        Channel updatedChannel = channelService.updateChannel(channel.getChannelId(), "공지사항", null);
         System.out.println("=== 채널 수정 === " + '\n' + updatedChannel.toString());
+
         // 삭제
-        channelService.delete(channel.getChannelId());
-        List<Channel> foundChannelsAfterDelete = channelService.findAll();
+        channelService.deleteChannel(channel.getChannelId());
+        List<Channel> foundChannelsAfterDelete = channelService.findAllChannel();
         System.out.println("=== 채널 삭제 ===" + '\n' + "남은 채널 : " + foundChannelsAfterDelete.size());
     }
 
@@ -91,7 +99,7 @@ public class JavaApplication {
         System.out.println("=== 메시지 생성===  " + '\n' + message.toString());
 
         // 조회(ID)
-        Message foundMessage = messageService.find(message1.getMassageId());
+        Message foundMessage = messageService.findMessageById(message1.getMassageId());
         System.out.println("=== 메시지 조회(단건) === " + '\n' + foundMessage.toString());
         //조건 1개 조회(이름)
         MessageSearch messageSearch = new MessageSearch();
@@ -106,10 +114,11 @@ public class JavaApplication {
         System.out.println("=== 메시지 조회(이름, 채널명) === " + '\n' + foundMessage2.toString());
 
         // 수정
-        Message updatedMessage = messageService.update(message.getMassageId(), "반갑습니다.");
-        System.out.println("=== 메시지 수정 === " +  '\n' + updatedMessage.getContent() + '\n');
+        Message updatedMessage = messageService.updateMessage(message.getMassageId(), "반갑습니다.");
+        System.out.println("=== 메시지 수정 === " +  '\n' + "수정 후 : " + updatedMessage.getContent() + '\n');
+
         // 삭제
-        messageService.delete(message.getMassageId());
+        messageService.deleteMessage(message.getMassageId());
         List<Message> foundMessagesAfterDelete = messageService.MessageSearch(messageSearch);
         System.out.println("남은 메세지 : " + foundMessagesAfterDelete);
     }

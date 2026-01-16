@@ -3,6 +3,7 @@ package service.serch;
 public class ChannelSearch {
     private String userName;
     private String channelName;
+    
 
     public ChannelSearch() {
     }
@@ -22,6 +23,7 @@ public class ChannelSearch {
     public void setChannelName(String channelName) {
         this.channelName = channelName;
     }
+
 }
 
 

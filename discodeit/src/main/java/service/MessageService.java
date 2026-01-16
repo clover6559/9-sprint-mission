@@ -9,13 +9,18 @@ import java.util.List;
 import java.util.UUID;
 
 public interface MessageService {
+    //생성
     Message create(String content, User user, Channel channel);
 
-    Message find(UUID massageId);
+    //조회(Id)
+    Message findMessageById(UUID massageId);
 
+    //다건 조회 & 전체조회
     List<Message> MessageSearch(MessageSearch condition);
 
-    Message update(UUID massageId, String content);
+    //수정
+    Message updateMessage(UUID massageId, String content);
 
-    boolean delete(UUID massageId);
+    //삭제
+    boolean deleteMessage(UUID massageId);
 }

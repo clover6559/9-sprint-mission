@@ -21,14 +21,14 @@ public class JCFChannelService implements ChannelService {
     }
 
     @Override
-    public Channel create(Channel.ChannelType channelType, String channelName, String description, User user) {
+    public Channel createChannel(Channel.ChannelType channelType, String channelName, String description, User user) {
         Channel channel = new Channel(channelType, channelName, description, user);
         channelData.put(channel.getChannelId(), channel);
        return channel;
     }
 
     @Override
-    public Channel find(UUID channelId) {
+    public Channel findChannelById(UUID channelId) {
         return channelData.get(channelId);
     }
 
@@ -46,19 +46,15 @@ public class JCFChannelService implements ChannelService {
                     return searchChannel.equals(c.getChannelName());
                 })
                 .collect(Collectors.toList());
-
-//                .filter(c -> channelSearch.getUserName() == null || c.getUserName().equals(channelSearch.getUserName()))
-//                .filter(c -> channelSearch.getChannelName() == null || c.getChannelName().equals(channelSearch.getChannelName()))
-//                .collect(Collectors.toList());
     }
 
     @Override
-    public List<Channel> findAll() {
+    public List<Channel> findAllChannel() {
         return channelData.values().stream().toList();
     }
 
     @Override
-    public Channel update(UUID channelId, String channelName, String description) {
+    public Channel updateChannel(UUID channelId, String channelName, String description) {
         Channel foundChannel = channelData.get(channelId);
         if (foundChannel == null) {
             throw new IllegalArgumentException("존재하지 않는 채널입니다: ");
@@ -69,11 +65,13 @@ public class JCFChannelService implements ChannelService {
     }
 
     @Override
-    public boolean delete(UUID channelId) {
+    public boolean deleteChannel(UUID channelId) {
         if (channelData.get(channelId) == null) {
+            System.out.println("실패 : 존재하지 않는 채널 Id 입니다");
             return false;
         }
         channelData.remove(channelId);
+        System.out.println("성공: 채널이 삭제되었습니다.");
         return true;
     }
 }

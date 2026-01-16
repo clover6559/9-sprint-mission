@@ -6,7 +6,7 @@ public class User {
     private final UUID userId;
     private String userName;
     private String email;
-    private Long createdAt;
+    private final Long createdAt;
     private Long updatedAt;
     private String password;
 

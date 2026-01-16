@@ -15,7 +15,7 @@ public class Message {
 
     public Message(String content, User user, Channel channel) {
         this.userId = user.getUserId();
-        Long now = System.currentTimeMillis();
+        long now = System.currentTimeMillis();
         this.createdAt = now;
         this.updatedAt = now;
         this.content = content;

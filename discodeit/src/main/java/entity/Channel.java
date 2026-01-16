@@ -17,7 +17,7 @@ public class Channel {
 
     public Channel(ChannelType channelType, String channelName, String description, User user) {
         this.userId = user.getUserId();
-        Long now = System.currentTimeMillis();
+        long now = System.currentTimeMillis();
         this.createdAt = now;
         this.updatedAt = now;
         this.channelId = UUID.randomUUID();

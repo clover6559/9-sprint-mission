@@ -4,7 +4,9 @@ public class UserSearch {
     private String userName;
     private String email;
 
-    public UserSearch() {    }
+    public UserSearch() {
+
+    }
 
     public String getUserName() {
         return userName;

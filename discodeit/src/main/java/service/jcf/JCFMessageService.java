@@ -30,21 +30,28 @@ public class JCFMessageService implements MessageService {
     }
 
     @Override
-    public Message find(UUID massageId) {
+    public Message findMessageById(UUID massageId) {
         return messageData.get(massageId);
     }
 
     @Override
     public List<Message> MessageSearch(MessageSearch messageSearch) {
         return messageData.values().stream()
-               .filter(msg -> messageSearch.getUserName() == null || msg.getUserName().equals(messageSearch.getUserName()))
-               .filter(msg -> messageSearch.getChannelName() == null || msg.getChannelId().equals(messageSearch.getChannelName()))
-               .filter(msg -> messageSearch.getEmail() == null || msg.getEmail() == null || msg.getEmail().equals(messageSearch.getEmail()))
-               .collect(Collectors.toList());
+                .filter(m-> {
+                    String searchName = messageSearch.getUserName();
+                    if (searchName == null) return true;
+                    return searchName.equals(m.getUserName());
+                     })
+                .filter(m -> {
+                    String searchChannel = messageSearch.getChannelName();
+                    if (searchChannel == null) return true;
+                    return searchChannel.equals(m.getChannelName());
+                })
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Message update(UUID massageId, String content) {
+    public Message updateMessage(UUID massageId, String content) {
         Message foundMessage = messageData.get(massageId);
         if (foundMessage == null) {
             throw new IllegalArgumentException("존재하지 않는 메세지입니다.");
@@ -54,13 +61,13 @@ public class JCFMessageService implements MessageService {
     }
 
     @Override
-    public boolean delete(UUID massageId) {
+    public boolean deleteMessage(UUID massageId) {
         if (messageData.get(massageId) == null) {
-            System.out.println("존재하지 않는 메세지입니다");
+            System.out.println("실패 : 존재하지 않는 메세지 Id 입니다");
             return false;
         }
             {messageData.remove(massageId);
-                System.out.println("성공: 메세지가 삭제되었습니다.");
+                System.out.println("성공 : 메세지가 삭제되었습니다.");
                 return true;
             }
         }
