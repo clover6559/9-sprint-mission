@@ -74,8 +74,8 @@ public class Message {
                 "채널 ID : " + channelId + '\n' +
                 "내용 : " + content + '\n' +
                 "메세지 ID : " + massageId + '\n' +
-                "생성시간 : " + createdAt + '\n' +
-                "수정시간 : " + updatedAt + '\n';
+                "생성시간 : " + User.formatTime(createdAt) + '\n' +
+                "수정시간 : " + User.formatTime(updatedAt) + '\n';
     }
 }
 

@@ -1,5 +1,8 @@
 package entity;
 
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 public class User {
@@ -19,6 +22,10 @@ public class User {
         this.createdAt = now;
         this.password = password;
     }
+
+    //    public String timeUtile {
+//
+//    }
     public UUID getUserId() {
         return userId;
     }
@@ -45,12 +52,12 @@ public class User {
 
     @Override
     public String toString() {
-        return  "유저 ID : " + userId + '\n' +
-                "유저 이름 : " + userName  + '\n' +
+        return "유저 ID : " + userId + '\n' +
+                "유저 이름 : " + userName + '\n' +
                 "유저 PW : " + password + '\n' +
                 "이메일 : " + email + '\n' +
-                "생성 시간 : " + createdAt + '\n' +
-                "수정 시간 : " + updatedAt + '\n';
+                "생성 시간 : " + formatTime(createdAt) + '\n' +
+                "수정 시간 : " + formatTime(updatedAt) + '\n';
     }
 
     public void update(String userName, String email, String password) {
@@ -58,5 +65,11 @@ public class User {
         this.email = email;
         this.password = password;
         this.updatedAt = System.currentTimeMillis();
+    }
+    public static DateTimeFormatter formatter =  DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    public static String formatTime(long timeStamp) {
+        Instant instant = Instant.ofEpochMilli(timeStamp);
+        String zonedDateTime = instant.atZone(ZoneId.systemDefault()).format(formatter);
+        return zonedDateTime;
     }
 }

@@ -10,6 +10,14 @@ import java.util.stream.Collectors;
 public class JCFUserService implements UserService {
     private final Map<UUID, User> userData = new HashMap<>();
 
+    public JCFUserService() {
+    }
+
+//    List<User> userTestData = List.of(""김사연","sayeon@gmail.com", "125rtf")
+//    User user1 = new JCFUserService().createUser("김사연","sayeon@gmail.com", "125rtf");
+
+//    User user2 = createUser("김사연","sayeon@gmail.com", "125rtf");
+
     @Override
     public User createUser(String userName, String email, String password) {
         User user = new User(userName, email, password);
@@ -24,7 +32,8 @@ public class JCFUserService implements UserService {
 
     @Override
     public List<User> findAllUser() {
-        return userData.values().stream().toList();
+        return userData.values().stream()
+                .toList();
         }
 
     @Override

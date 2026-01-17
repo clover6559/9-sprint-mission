@@ -73,8 +73,8 @@ public class Channel {
                 "채널 이름 : " + channelName + '\n' +
                 "채널 ID : " + channelId + '\n' +
                 "채널 소개 : " + description + '\n' +
-                "생성시간 : " + createdAt + '\n' +
-                "수정시간 : " + updatedAt + '\n';
+                "생성시간 : " + User.formatTime(createdAt) + '\n' +
+                "수정시간 : " + User.formatTime(updatedAt) + '\n';
     }
 }
 

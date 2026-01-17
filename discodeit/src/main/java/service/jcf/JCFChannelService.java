@@ -67,11 +67,9 @@ public class JCFChannelService implements ChannelService {
     @Override
     public boolean deleteChannel(UUID channelId) {
         if (channelData.get(channelId) == null) {
-            System.out.println("실패 : 존재하지 않는 채널 Id 입니다");
-            return false;
+            throw new IllegalArgumentException("실패 : 존재하지 않는 채널 Id 입니다");
         }
         channelData.remove(channelId);
-        System.out.println("성공: 채널이 삭제되었습니다.");
         return true;
     }
 }
