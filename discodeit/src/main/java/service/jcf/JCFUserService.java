@@ -11,12 +11,10 @@ public class JCFUserService implements UserService {
     private final Map<UUID, User> userData = new HashMap<>();
 
     public JCFUserService() {
+        createUser("김사연","sayeon@gmail.com", "125rtf");
+        createUser("강지원","jiwon@gmail.com", "fgd123");
+        createUser("이진용","jinyoong@gmail.com", "566wrsd");
     }
-
-//    List<User> userTestData = List.of(""김사연","sayeon@gmail.com", "125rtf")
-//    User user1 = new JCFUserService().createUser("김사연","sayeon@gmail.com", "125rtf");
-
-//    User user2 = createUser("김사연","sayeon@gmail.com", "125rtf");
 
     @Override
     public User createUser(String userName, String email, String password) {
@@ -70,7 +68,15 @@ public class JCFUserService implements UserService {
             return false;
         }
         userData.remove(userId);
-        System.out.println("성공: 유저가 삭제되었습니다.");
         return true;
+    }
+
+    public static List<User> testUser() {
+        List<User> testUsers = new ArrayList<>();
+        User user1 = new User("김사연","sayeon@gmail.com", "125rtf");
+        User user2  = new User("강지원","jiwon@gmail.com", "fgd123");
+        testUsers.add(user1);
+        testUsers.add(user2);
+        return testUsers;
     }
 }

@@ -17,10 +17,9 @@ public class JavaApplication {
 
     static void userCRUDTest(UserService userService) {
         // 생성
-        User user = userService.createUser("woody", "woody@codeit.com", "woody1234");
-        User user2 = userService.createUser("김사연","sayeon@gmail.com", "125rtf");
+        User user = userService.createUser("육선우","senwoo@gmail.com", "1456d25e");
         System.out.println("========= [User] =========");
-        System.out.println("=== 유저 생성 ===: " + '\n' +  user2.toString());
+        System.out.println("=== 유저 생성 === " + '\n' +  user.toString());
 
         // 조회(ID)
         User foundUser = userService.findUserById(user.getUserId());
@@ -28,15 +27,16 @@ public class JavaApplication {
         //조건 1개(이름)
         UserSearch userSearch = new UserSearch();
         userSearch.setUserName("김사연");
-        List<User> foundUser0 = userService.UserSearch(userSearch);
-        System.out.println("=== 유저 조회(김사연) === " +  '\n' +  foundUser0.toString());
-        //전체 채널 조회
+        List<User> foundUserByName = userService.UserSearch(userSearch);
+        System.out.println("=== 유저 조회(김사연) === " );
+        foundUserByName.forEach(System.out::println);
+        //전체 유저 조회
         List<User> foundAllUsers = userService.findAllUser();
-        System.out.println("=== 전체 채널 조회 ===  ");
+        System.out.println("=== 전체 유저 조회 ===  ");
         foundAllUsers.forEach(System.out::println);
 
         // 수정
-        User updatedUser = userService.updateUser(user2.getUserId(), null, null, "woody5678");
+        User updatedUser = userService.updateUser(user.getUserId(), null, null, "woody5678");
         System.out.println("===유저 수정 === " + '\n' + updatedUser.toString());
 
         //삭제
