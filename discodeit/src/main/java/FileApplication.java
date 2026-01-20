@@ -50,17 +50,17 @@ public class FileApplication {
         static void messageCRUDTest(MessageService messageService, User user, Channel channel) {
             // 생성
             Message message = messageService.create("안녕하세요.", user, channel);
-            System.out.println("메시지 생성: " + message.getMassageId());
+            System.out.println("메시지 생성: " + message.getMessageId());
             // 조회
-            Message foundMessage = messageService.findMessageById(message.getMassageId());
-            System.out.println("메시지 조회(단건): " + foundMessage.getMassageId());
+            Message foundMessage = messageService.findMessageById(message.getMessageId());
+            System.out.println("메시지 조회(단건): " + foundMessage.getMessageId());
             List<Message> foundMessages = messageService.findAllMessage();
             System.out.println("메시지 조회(다건): " + foundMessages.size());
             // 수정
-            Message updatedMessage = messageService.updateMessage(message.getMassageId(), "반갑습니다.");
+            Message updatedMessage = messageService.updateMessage(message.getMessageId(), "반갑습니다.");
             System.out.println("메시지 수정: " + updatedMessage.getContent());
             // 삭재
-//            messageService.deleteMessage(message.getMassageId());
+//            messageService.deleteMessage(message.getMessageId());
 //            List<Message> foundMessagesAfterDelete = messageService.findAllMessage();
 //            System.out.println("메시지 삭제: " + foundMessagesAfterDelete.size());
         }
@@ -77,7 +77,7 @@ public class FileApplication {
 
         static void messageCreateTest(MessageService messageService, User user, Channel channel) {
             Message message = messageService.create("안녕하세요.", user, channel);
-            System.out.println("메시지 생성: " + message.getMassageId());
+            System.out.println("메시지 생성: " + message.getMessageId());
         }
 
         public static void main(String[] args) {

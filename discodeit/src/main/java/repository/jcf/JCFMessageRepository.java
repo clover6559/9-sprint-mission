@@ -1,8 +1,6 @@
 package repository.jcf;
 
-import entity.Channel;
 import entity.Message;
-import entity.User;
 import repository.MessageRepository;
 import service.serch.MessageSearch;
 
@@ -17,13 +15,14 @@ public class JCFMessageRepository implements MessageRepository {
     }
 
     @Override
-    public Message save(String content, User user, Channel channel) {
-        return null;
+    public Message save(Message message) {
+        messageRepo.put(message.getMessageId(), message);
+        return message;
     }
 
     @Override
     public Message findById(UUID massageId) {
-        return null;
+        return messageRepo.get(massageId);
     }
 
     @Override
@@ -33,16 +32,19 @@ public class JCFMessageRepository implements MessageRepository {
 
     @Override
     public List<Message> findAll() {
-        return List.of();
+        return messageRepo.values().stream().toList();
     }
 
     @Override
     public Message updateMessage(UUID massageId, String content) {
-        return null;
+        return messageRepo.get(massageId);
     }
 
     @Override
-    public boolean deleteById(UUID massageId) {
+    public boolean deleteById(UUID massageId) { if (messageRepo.get(massageId) == null) {
+        System.out.println("실패 : 존재하지 않는 채널 Id 입니다");
         return false;
     }
+        messageRepo.remove(massageId);
+        return true;}
 }

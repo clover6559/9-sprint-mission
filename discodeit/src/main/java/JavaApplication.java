@@ -105,7 +105,7 @@ public class JavaApplication {
         System.out.println("=== 메시지 생성===  " + '\n' + message.toString());
 
         // 조회(ID)
-        Message foundMessage = messageService.findMessageById(message1.getMassageId());
+        Message foundMessage = messageService.findMessageById(message1.getMessageId());
         System.out.println("=== 메시지 조회(단건) === " + '\n' + foundMessage.toString());
         //조건 1개 조회(이름)
         MessageSearch messageSearch = new MessageSearch();
@@ -123,12 +123,12 @@ public class JavaApplication {
         foundMessage2.forEach(System.out::println);
 
         // 수정
-        Message updatedMessage = messageService.updateMessage(message.getMassageId(), "반갑습니다.");
+        Message updatedMessage = messageService.updateMessage(message.getMessageId(), "반갑습니다.");
         System.out.println("=== 메시지 수정 === " +  '\n' + "수정 후 : " + updatedMessage.getContent());
         System.out.println();
 
         // 삭제
-        messageService.deleteMessage(message.getMassageId());
+        messageService.deleteMessage(message.getMessageId());
         List<Message> foundMessagesAfterDelete = messageService.MessageSearch(messageSearch);
         System.out.println("=== 메세지 삭제 === ");
         System.out.println("남은 메세지 : " + foundMessagesAfterDelete.size() + "개");

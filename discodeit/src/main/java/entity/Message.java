@@ -12,7 +12,7 @@ public class Message implements Serializable {
     private String userName;
     private String email;
     private UUID channelId;
-    private UUID massageId;
+    private UUID messageId;
 
     public Message(String content, User user, Channel channel) {
         this.userId = user.getUserId();
@@ -24,7 +24,7 @@ public class Message implements Serializable {
         this.channelName = channel.getChannelName();
         this.userName = user.getUserName();
         this.email = user.getEmail();
-        this.massageId = UUID.randomUUID();
+        this.messageId = UUID.randomUUID();
     }
 
     public UUID getUserId() {
@@ -47,8 +47,8 @@ public class Message implements Serializable {
         return channelName;
     }
 
-    public UUID getMassageId() {
-        return massageId;
+    public UUID getMessageId() {
+        return messageId;
     }
 
     public String getContent() {
@@ -74,7 +74,7 @@ public class Message implements Serializable {
                 "채널 이름 : " + channelName + '\n' +
                 "채널 ID : " + channelId + '\n' +
                 "내용 : " + content + '\n' +
-                "메세지 ID : " + massageId + '\n' +
+                "메세지 ID : " + messageId + '\n' +
                 "생성시간 : " + User.formatTime(createdAt) + '\n' +
                 "수정시간 : " + User.formatTime(updatedAt) + '\n';
     }

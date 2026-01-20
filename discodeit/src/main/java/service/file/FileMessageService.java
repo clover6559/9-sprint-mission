@@ -22,7 +22,7 @@ public class FileMessageService implements MessageService {
     private final String EXTENSION = ".ser";
 
     public FileMessageService(UserService userService, ChannelService channelService) {
-        this.DIRECTORY = Paths.get("data/messages");
+        this.DIRECTORY = Paths.get(System.getProperty("user.dir"), "file-data-map", Message.class.getSimpleName());
         if (Files.notExists(DIRECTORY)) {
             try {
                 Files.createDirectories(DIRECTORY);
@@ -39,7 +39,7 @@ public class FileMessageService implements MessageService {
     @Override
     public Message create(String content, User user, Channel channel) {
         Message message = new Message(content, user, channel);
-        Path path = resolvePath(message.getChannelId());
+        Path path = resolvePath(message.getMessageId());
         try (
                 FileOutputStream fos = new FileOutputStream(path.toFile());
                 ObjectOutputStream oos = new ObjectOutputStream(fos)
@@ -52,9 +52,9 @@ public class FileMessageService implements MessageService {
     }
 
     @Override
-    public Message findMessageById(UUID massageId) {
+    public Message findMessageById(UUID messageId) {
         Message messageNullable = null;
-        Path path = resolvePath(massageId);
+        Path path = resolvePath(messageId);
         if (Files.exists(path)) {
             try (
                     FileInputStream fis = new FileInputStream(path.toFile());
@@ -67,7 +67,7 @@ public class FileMessageService implements MessageService {
         }
 
         return Optional.ofNullable(messageNullable)
-                .orElseThrow(() -> new NoSuchElementException("Message with id " + massageId + " not found"));
+                .orElseThrow(() -> new NoSuchElementException("Message with id " + messageId + " not found"));
     }
 
 
@@ -99,9 +99,9 @@ public class FileMessageService implements MessageService {
 
 
     @Override
-    public Message updateMessage(UUID massageId, String content) {
+    public Message updateMessage(UUID messageId, String content) {
         Message messageNullable = null;
-        Path path = resolvePath(massageId);
+        Path path = resolvePath(messageId);
         if (Files.exists(path)) {
             try (
                     FileInputStream fis = new FileInputStream(path.toFile());
@@ -114,8 +114,8 @@ public class FileMessageService implements MessageService {
         }
 
         Message message = Optional.ofNullable(messageNullable)
-                .orElseThrow(() -> new NoSuchElementException("Message with id " + massageId + " not found"));
-        message.update(massageId, content);
+                .orElseThrow(() -> new NoSuchElementException("Message with id " + messageId + " not found"));
+        message.update(messageId, content);
 
         try(
                 FileOutputStream fos = new FileOutputStream(path.toFile());
@@ -131,10 +131,10 @@ public class FileMessageService implements MessageService {
 
 
     @Override
-    public boolean deleteMessage(UUID massageId) {
-        Path path = resolvePath(massageId);
+    public boolean deleteMessage(UUID messageId) {
+        Path path = resolvePath(messageId);
         if (Files.notExists(path)) {
-            throw new NoSuchElementException("MassageId with id " + massageId + " not found");
+            throw new NoSuchElementException("MassageId with id " + messageId + " not found");
         }
         try {
             Files.delete(path);

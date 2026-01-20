@@ -1,15 +1,14 @@
 package repository;
 
-import entity.Channel;
+
 import entity.Message;
-import entity.User;
 import service.serch.MessageSearch;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface MessageRepository {
-    Message save(String content, User user, Channel channel);
+    Message save(Message message);
 
     //조회(Id)
     Message findById(UUID massageId);

@@ -18,7 +18,7 @@ public class FileUserService implements UserService {
     private final String EXTENSION = ".ser";
 
     public FileUserService() {
-        this.DIRECTORY = Paths.get("data/users");
+        this.DIRECTORY = Paths.get(System.getProperty("user.dir"), "file-data-map", User.class.getSimpleName());
         if (Files.notExists(DIRECTORY)) {
             try {
                 Files.createDirectories(DIRECTORY);
@@ -135,6 +135,6 @@ public class FileUserService implements UserService {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return false;
+        return true;
     }
 }

@@ -25,13 +25,13 @@ public class JCFMessageService implements MessageService {
     @Override
     public Message create(String content, User user, Channel channel) {
         Message message = new Message(content, user, channel);
-        messageData.put(message.getMassageId(), message);
+        messageData.put(message.getMessageId(), message);
         return message;
     }
 
     @Override
-    public Message findMessageById(UUID massageId) {
-        return messageData.get(massageId);
+    public Message findMessageById(UUID messageId) {
+        return messageData.get(messageId);
     }
 
     @Override
@@ -58,22 +58,22 @@ public class JCFMessageService implements MessageService {
 
 
     @Override
-    public Message updateMessage(UUID massageId, String content) {
-        Message foundMessage = messageData.get(massageId);
+    public Message updateMessage(UUID messageId, String content) {
+        Message foundMessage = messageData.get(messageId);
         if (foundMessage == null) {
             throw new IllegalArgumentException("존재하지 않는 메세지입니다.");
-        } foundMessage.update(massageId, content);
-        messageData.put(massageId,foundMessage);
+        } foundMessage.update(messageId, content);
+        messageData.put(messageId,foundMessage);
         return foundMessage;
     }
 
     @Override
-    public boolean deleteMessage(UUID massageId) {
-        if (messageData.get(massageId) == null) {
+    public boolean deleteMessage(UUID messageId) {
+        if (messageData.get(messageId) == null) {
             System.out.println("실패 : 존재하지 않는 메세지 Id 입니다");
             return false;
         }
-            {messageData.remove(massageId);
+            {messageData.remove(messageId);
                 return true;
             }
         }

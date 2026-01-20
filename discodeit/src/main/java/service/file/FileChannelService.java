@@ -20,7 +20,7 @@ public class FileChannelService implements ChannelService {
     private final String EXTENSION = ".ser";
 
     public FileChannelService(UserService userService) {
-        this.DIRECTORY = Paths.get("data/channels");
+        this.DIRECTORY = Paths.get(System.getProperty("user.dir"), "file-data-map", Channel.class.getSimpleName());
         if (Files.notExists(DIRECTORY)) {
             try {
                 Files.createDirectories(DIRECTORY);
