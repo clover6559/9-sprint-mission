@@ -18,6 +18,9 @@ public class JCFChannelService implements ChannelService {
 
     public JCFChannelService(UserService userService) {
         this.userService = userService;
+        User testUser = userService.findAllUser().get(0);
+        createChannel(Channel.ChannelType.PUBLIC, "질문", "질문있어요", testUser);
+        createChannel(Channel.ChannelType.PRIVATE, "5조", "5조방입니다", testUser);
     }
 
     @Override

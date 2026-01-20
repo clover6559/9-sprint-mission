@@ -1,11 +1,12 @@
 package entity;
 
+import java.io.Serializable;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
-public class User {
+public class User  implements Serializable {
     private final UUID userId;
     private String userName;
     private String email;

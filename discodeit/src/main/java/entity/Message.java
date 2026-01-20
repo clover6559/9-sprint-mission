@@ -1,8 +1,9 @@
 package entity;
 
+import java.io.Serializable;
 import java.util.UUID;
 
-public class Message {
+public class Message implements Serializable {
     private UUID userId;
     private String content;
     private Long createdAt;

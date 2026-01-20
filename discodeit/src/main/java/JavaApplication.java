@@ -46,13 +46,10 @@ public class JavaApplication {
         System.out.println();
     }
 
-    static void channelCRUDTest(ChannelService channelService) {
-        User user6 = new User("김경환","gyemghwan@gmail.com", "126d25e");
-        User user3 = new User("강지원","jiwon@gmail.com", "fgd123");
+    static void channelCRUDTest(ChannelService channelService, UserService userService) {
         // 생성
-        Channel channel = channelService.createChannel(Channel.ChannelType.PUBLIC, "공지", "공지 채널입니다.", user6);
-        Channel channel3 = channelService.createChannel(Channel.ChannelType.PUBLIC, "질문", "질문있어요", user3);
-        Channel channel4 = channelService.createChannel(Channel.ChannelType.PUBLIC, "5조", "5조방입니다", user3);
+        User testUser = userService.findAllUser().get(0);
+        Channel channel = channelService.createChannel(Channel.ChannelType.PUBLIC, "공지", "공지 채널입니다.", testUser);
         System.out.println("========= [Channel] =========");
         System.out.println("=== 채널 생성 === " +   '\n' + channel.toString());
 
@@ -145,7 +142,7 @@ public class JavaApplication {
 
         // 테스트
         userCRUDTest(userService);
-        channelCRUDTest(channelService);
+        channelCRUDTest(channelService, userService);
         messageCRUDTest(messageService);
     }
 }

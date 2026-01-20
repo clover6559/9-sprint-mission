@@ -51,6 +51,13 @@ public class JCFMessageService implements MessageService {
     }
 
     @Override
+    public List<Message> findAllMessage() {
+        return List.of();
+    }
+
+
+
+    @Override
     public Message updateMessage(UUID massageId, String content) {
         Message foundMessage = messageData.get(massageId);
         if (foundMessage == null) {

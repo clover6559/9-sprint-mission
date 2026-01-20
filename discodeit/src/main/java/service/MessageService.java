@@ -17,7 +17,8 @@ public interface MessageService {
 
     //다건 조회 & 전체조회
     List<Message> MessageSearch(MessageSearch condition);
-
+    // 전체조회
+    List<Message> findAllMessage();
     //수정
     Message updateMessage(UUID massageId, String content);
 

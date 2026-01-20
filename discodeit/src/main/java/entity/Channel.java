@@ -1,8 +1,9 @@
 package entity;
 
+import java.io.Serializable;
 import java.util.UUID;
 
-public class Channel {
+public class Channel implements Serializable {
     public enum ChannelType {
         PUBLIC, PRIVATE
     }
