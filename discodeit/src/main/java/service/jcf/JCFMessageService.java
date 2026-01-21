@@ -62,7 +62,7 @@ public class JCFMessageService implements MessageService {
         Message foundMessage = messageData.get(messageId);
         if (foundMessage == null) {
             throw new IllegalArgumentException("존재하지 않는 메세지입니다.");
-        } foundMessage.update(messageId, content);
+        } foundMessage.update(content);
         messageData.put(messageId,foundMessage);
         return foundMessage;
     }

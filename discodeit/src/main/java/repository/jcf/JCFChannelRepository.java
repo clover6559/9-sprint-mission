@@ -4,10 +4,7 @@ import entity.Channel;
 import repository.ChannelRepository;
 import service.serch.ChannelSearch;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class JCFChannelRepository implements ChannelRepository {
     private final Map<UUID, Channel> channelRepo = new HashMap<>();
@@ -22,7 +19,7 @@ public class JCFChannelRepository implements ChannelRepository {
     }
 
     @Override
-    public Channel findById(UUID channelId) {
+    public Optional<Channel> findById(UUID channelId) {
         return channelRepo.get(channelId);
     }
 
@@ -37,9 +34,14 @@ public class JCFChannelRepository implements ChannelRepository {
     }
 
     @Override
-    public Channel updateChannel(UUID channelId, String channelName, String description) {
-        return channelRepo.get(channelId);
+    public boolean existsById(UUID id) {
+        return false;
     }
+
+//    @Override
+//    public Channel updateChannel(UUID channelId, String channelName, String description) {
+//        return channelRepo.get(channelId);
+//    }
 
     @Override
     public boolean deleteById(UUID channelId) { if (channelRepo.get(channelId) == null) {

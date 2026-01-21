@@ -63,7 +63,7 @@ public class Message implements Serializable {
         return email;
     }
 
-    public void update(UUID massageId, String content){
+    public void update(String content){
             this.content = content;
             this.updatedAt = System.currentTimeMillis();
         }

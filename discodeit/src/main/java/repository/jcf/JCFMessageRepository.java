@@ -4,10 +4,7 @@ import entity.Message;
 import repository.MessageRepository;
 import service.serch.MessageSearch;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class JCFMessageRepository implements MessageRepository {
     private final Map<UUID, Message> messageRepo = new HashMap<>();
@@ -21,8 +18,8 @@ public class JCFMessageRepository implements MessageRepository {
     }
 
     @Override
-    public Message findById(UUID massageId) {
-        return messageRepo.get(massageId);
+    public Optional<Message> findById(UUID messageId) {
+        return messageRepo.get(messageId);
     }
 
     @Override
@@ -36,15 +33,20 @@ public class JCFMessageRepository implements MessageRepository {
     }
 
     @Override
-    public Message updateMessage(UUID massageId, String content) {
-        return messageRepo.get(massageId);
+    public boolean existsById(UUID id) {
+        return false;
     }
 
+//    @Override
+//    public Message updateMessage(UUID messageId, String content) {
+//        return messageRepo.get(messageId);
+//    }
+
     @Override
-    public boolean deleteById(UUID massageId) { if (messageRepo.get(massageId) == null) {
+    public boolean deleteById(UUID messageId) { if (messageRepo.get(messageId) == null) {
         System.out.println("실패 : 존재하지 않는 채널 Id 입니다");
         return false;
     }
-        messageRepo.remove(massageId);
+        messageRepo.remove(messageId);
         return true;}
 }

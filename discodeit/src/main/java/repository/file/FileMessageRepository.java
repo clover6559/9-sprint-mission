@@ -1,10 +1,8 @@
-package service.file;
+package repository.file;
 
-import entity.Channel;
 import entity.Message;
-import entity.User;
+import repository.MessageRepository;
 import service.ChannelService;
-import service.MessageService;
 import service.UserService;
 import service.serch.MessageSearch;
 
@@ -17,11 +15,11 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
 
-public class FileMessageService implements MessageService {
+public class FileMessageRepository implements MessageRepository {
     private final Path DIRECTORY;
     private final String EXTENSION = ".ser";
 
-    public FileMessageService(UserService userService, ChannelService channelService) {
+    public FileMessageRepository(UserService userService, ChannelService channelService) {
         this.DIRECTORY = Paths.get(System.getProperty("user.dir"), "file-data-map", Message.class.getSimpleName());
         if (Files.notExists(DIRECTORY)) {
             try {
@@ -37,8 +35,7 @@ public class FileMessageService implements MessageService {
     }
 
     @Override
-    public Message create(String content, User user, Channel channel) {
-        Message message = new Message(content, user, channel);
+    public Message save(Message message) {
         Path path = resolvePath(message.getMessageId());
         try (
                 FileOutputStream fos = new FileOutputStream(path.toFile());
@@ -52,7 +49,7 @@ public class FileMessageService implements MessageService {
     }
 
     @Override
-    public Message findMessageById(UUID messageId) {
+    public Optional<Message> findById(UUID messageId) {
         Message messageNullable = null;
         Path path = resolvePath(messageId);
         if (Files.exists(path)) {
@@ -70,14 +67,13 @@ public class FileMessageService implements MessageService {
                 .orElseThrow(() -> new NoSuchElementException("Message with id " + messageId + " not found"));
     }
 
-
     @Override
     public List<Message> MessageSearch(MessageSearch condition) {
         return List.of();
     }
 
     @Override
-    public List<Message> findAllMessage() {
+    public List<Message> findAll() {
         try {
             return Files.list(DIRECTORY)
                     .filter(path -> path.toString().endsWith(EXTENSION))
@@ -97,41 +93,15 @@ public class FileMessageService implements MessageService {
         }
     }
 
-
     @Override
     public Message updateMessage(UUID messageId, String content) {
-        Message messageNullable = null;
-        Path path = resolvePath(messageId);
-        if (Files.exists(path)) {
-            try (
-                    FileInputStream fis = new FileInputStream(path.toFile());
-                    ObjectInputStream ois = new ObjectInputStream(fis)
-            ) {
-                messageNullable = (Message) ois.readObject();
-            } catch (IOException | ClassNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        Message message = Optional.ofNullable(messageNullable)
-                .orElseThrow(() -> new NoSuchElementException("Message with id " + messageId + " not found"));
-        message.update(content);
-
-        try(
-                FileOutputStream fos = new FileOutputStream(path.toFile());
-                ObjectOutputStream oos = new ObjectOutputStream(fos)
-        ) {
-            oos.writeObject(message);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        return message;
+       Message message = findById(messageId);
+       message.update(content);
+       return save(message);
     }
 
-
     @Override
-    public boolean deleteMessage(UUID messageId) {
+    public boolean deleteById(UUID messageId) {
         Path path = resolvePath(messageId);
         if (Files.notExists(path)) {
             throw new NoSuchElementException("MassageId with id " + messageId + " not found");
@@ -143,4 +113,4 @@ public class FileMessageService implements MessageService {
         }
         return false;
     }
-    }
+}

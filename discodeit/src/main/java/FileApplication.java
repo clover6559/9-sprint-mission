@@ -85,7 +85,9 @@ public class FileApplication {
             UserService userService = new FileUserService();
             ChannelService channelService = new FileChannelService(userService);
             MessageService messageService = new FileMessageService(userService, channelService);
-
+//            UserService userService = new BasicUserService(userRepository);
+//            ChannelService channelService = new BasicChannelService(channelRepository);
+//            MessageService messageService = new BasicMessageService(messageRepository, channelRepository, userRepository);
             // 셋업
             User user = setupUser(userService);
             Channel channel = setupChannel(channelService, user);
