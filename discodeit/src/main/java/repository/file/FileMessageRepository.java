@@ -63,8 +63,7 @@ public class FileMessageRepository implements MessageRepository {
             }
         }
 
-        return Optional.ofNullable(messageNullable)
-                .orElseThrow(() -> new NoSuchElementException("Message with id " + messageId + " not found"));
+        return Optional.ofNullable(messageNullable);
     }
 
     @Override
@@ -94,14 +93,19 @@ public class FileMessageRepository implements MessageRepository {
     }
 
     @Override
-    public Message updateMessage(UUID messageId, String content) {
-       Message message = findById(messageId);
-       message.update(content);
+    public boolean existsById(UUID messageId) {
+        return Files.exists(resolvePath(messageId));
+    }
+
+    public Message update(UUID messageId, String content) {
+       Message message = findById(messageId)
+               .orElseThrow(()-> new NoSuchElementException("수정할 메세지가 없습니다."));
+        message.update(content);
        return save(message);
     }
 
     @Override
-    public boolean deleteById(UUID messageId) {
+    public void deleteById(UUID messageId) {
         Path path = resolvePath(messageId);
         if (Files.notExists(path)) {
             throw new NoSuchElementException("MassageId with id " + messageId + " not found");
@@ -111,6 +115,5 @@ public class FileMessageRepository implements MessageRepository {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return false;
     }
 }

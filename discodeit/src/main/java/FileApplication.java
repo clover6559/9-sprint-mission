@@ -31,19 +31,19 @@ public class FileApplication {
 
         static void channelCRUDTest(ChannelService channelService, User user) {
             // 생성
-            Channel channel = channelService.createChannel(Channel.ChannelType.PUBLIC, "공지", "공지 채널입니다.", user);
+            Channel channel = channelService.create(Channel.ChannelType.PUBLIC, "공지", "공지 채널입니다.", user);
             System.out.println("채널 생성: " + channel.getChannelId());
             // 조회
-            Channel foundChannel = channelService.findChannelById(channel.getChannelId());
+            Channel foundChannel = channelService.findCById(channel.getChannelId());
             System.out.println("채널 조회(단건): " + foundChannel.getChannelId());
-            List<Channel> foundChannels = channelService.findAllChannel();
+            List<Channel> foundChannels = channelService.findAll();
             System.out.println("채널 조회(다건): " + foundChannels.size());
             // 수정
-            Channel updatedChannel = channelService.updateChannel(channel.getChannelId(), "공지사항", null);
+            Channel updatedChannel = channelService.update(channel.getChannelId(), "공지사항", null);
             System.out.println("채널 수정: " + String.join("/", updatedChannel.getChannelName(), updatedChannel.getDescription()));
             // 삭제
-//            channelService.deleteChannel(channel.getChannelId());
-//            List<Channel> foundChannelsAfterDelete = channelService.findAllChannel();
+//            channelService.delete(channel.getChannelId());
+//            List<Channel> foundChannelsAfterDelete = channelService.findAll();
 //            System.out.println("채널 삭제: " + foundChannelsAfterDelete.size());
         }
 
@@ -52,16 +52,16 @@ public class FileApplication {
             Message message = messageService.create("안녕하세요.", user, channel);
             System.out.println("메시지 생성: " + message.getMessageId());
             // 조회
-            Message foundMessage = messageService.findMessageById(message.getMessageId());
+            Message foundMessage = messageService.findById(message.getMessageId());
             System.out.println("메시지 조회(단건): " + foundMessage.getMessageId());
-            List<Message> foundMessages = messageService.findAllMessage();
+            List<Message> foundMessages = messageService.findAll();
             System.out.println("메시지 조회(다건): " + foundMessages.size());
             // 수정
-            Message updatedMessage = messageService.updateMessage(message.getMessageId(), "반갑습니다.");
+            Message updatedMessage = messageService.update(message.getMessageId(), "반갑습니다.");
             System.out.println("메시지 수정: " + updatedMessage.getContent());
             // 삭재
-//            messageService.deleteMessage(message.getMessageId());
-//            List<Message> foundMessagesAfterDelete = messageService.findAllMessage();
+//            messageService.delete(message.getMessageId());
+//            List<Message> foundMessagesAfterDelete = messageService.findAll();
 //            System.out.println("메시지 삭제: " + foundMessagesAfterDelete.size());
         }
 
@@ -71,7 +71,7 @@ public class FileApplication {
         }
 
         static Channel setupChannel(ChannelService channelService, User user) {
-            Channel channel = channelService.createChannel(Channel.ChannelType.PUBLIC, "공지", "공지 채널입니다.", user);
+            Channel channel = channelService.create(Channel.ChannelType.PUBLIC, "공지", "공지 채널입니다.", user);
             return channel;
         }
 

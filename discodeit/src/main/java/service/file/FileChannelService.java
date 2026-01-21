@@ -34,7 +34,7 @@ public class FileChannelService implements ChannelService {
     }
 
     @Override
-    public Channel createChannel(Channel.ChannelType channelType, String channelName, String description, User user) {
+    public Channel create(Channel.ChannelType channelType, String channelName, String description, User user) {
         Channel channel = new Channel(channelType, channelName, description, user);
         Path path = resolvePath(channel.getChannelId());
         try (
@@ -49,7 +49,7 @@ public class FileChannelService implements ChannelService {
     }
 
     @Override
-    public Channel findChannelById(UUID channelId) {
+    public Channel findCById(UUID channelId) {
         Channel channelNullable = null;
         Path path = resolvePath(channelId);
         if (Files.exists(path)) {
@@ -69,12 +69,12 @@ public class FileChannelService implements ChannelService {
 
 //TOdo seach부분 구현
     @Override
-    public List<Channel> ChannelSearch(ChannelSearch channelSearch) {
+    public List<Channel> Search(ChannelSearch channelSearch) {
         return List.of();
     }
 
     @Override
-    public List<Channel> findAllChannel() {
+    public List<Channel> findAll() {
         try {
             return Files.list(DIRECTORY)
                     .filter(path -> path.toString().endsWith(EXTENSION))
@@ -95,7 +95,7 @@ public class FileChannelService implements ChannelService {
     }
 
     @Override
-    public Channel updateChannel(UUID channelId, String channelName, String description) {
+    public Channel update(UUID channelId, String channelName, String description) {
         Channel channelNullable = null;
         Path path = resolvePath(channelId);
         if (Files.exists(path)) {
@@ -127,7 +127,7 @@ public class FileChannelService implements ChannelService {
 
 
     @Override
-    public boolean deleteChannel(UUID channelId) {
+    public boolean delete(UUID channelId) {
         Path path = resolvePath(channelId);
         if (Files.notExists(path)) {
             throw new NoSuchElementException("Channel with id " + channelId + " not found");

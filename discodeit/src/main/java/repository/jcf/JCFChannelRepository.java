@@ -20,7 +20,7 @@ public class JCFChannelRepository implements ChannelRepository {
 
     @Override
     public Optional<Channel> findById(UUID channelId) {
-        return channelRepo.get(channelId);
+        return Optional.ofNullable(channelRepo.get(channelId));
     }
 
     @Override
@@ -34,22 +34,24 @@ public class JCFChannelRepository implements ChannelRepository {
     }
 
     @Override
-    public boolean existsById(UUID id) {
-        return false;
+    public boolean existsById(UUID channelId) {
+        return channelRepo.containsKey(channelId);
     }
 
-//    @Override
-//    public Channel updateChannel(UUID channelId, String channelName, String description) {
-//        return channelRepo.get(channelId);
-//    }
+    public Channel update(UUID channelId, String channelName, String description) {
+        Channel channel = findById(channelId)
+                .orElseThrow(()-> new NoSuchElementException("수정할 채널이 없습니다."));
+        channel.update(channelName, description);
+        return channel;
+    }
 
     @Override
-    public boolean deleteById(UUID channelId) { if (channelRepo.get(channelId) == null) {
+    public void deleteById(UUID channelId) { if (channelRepo.get(channelId) == null) {
         System.out.println("실패 : 존재하지 않는 채널 Id 입니다");
-        return false;
+
     }
         channelRepo.remove(channelId);
-        return true;}
+        }
 
     }
 

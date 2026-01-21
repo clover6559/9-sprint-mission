@@ -30,12 +30,12 @@ public class JCFMessageService implements MessageService {
     }
 
     @Override
-    public Message findMessageById(UUID messageId) {
+    public Message findById(UUID messageId) {
         return messageData.get(messageId);
     }
 
     @Override
-    public List<Message> MessageSearch(MessageSearch messageSearch) {
+    public List<Message> Search(MessageSearch messageSearch) {
         return messageData.values().stream()
                 .filter(m-> {
                     String searchName = messageSearch.getUserName();
@@ -51,14 +51,14 @@ public class JCFMessageService implements MessageService {
     }
 
     @Override
-    public List<Message> findAllMessage() {
+    public List<Message> findAll() {
         return List.of();
     }
 
 
 
     @Override
-    public Message updateMessage(UUID messageId, String content) {
+    public Message update(UUID messageId, String content) {
         Message foundMessage = messageData.get(messageId);
         if (foundMessage == null) {
             throw new IllegalArgumentException("존재하지 않는 메세지입니다.");
@@ -68,7 +68,7 @@ public class JCFMessageService implements MessageService {
     }
 
     @Override
-    public boolean deleteMessage(UUID messageId) {
+    public boolean delete(UUID messageId) {
         if (messageData.get(messageId) == null) {
             System.out.println("실패 : 존재하지 않는 메세지 Id 입니다");
             return false;

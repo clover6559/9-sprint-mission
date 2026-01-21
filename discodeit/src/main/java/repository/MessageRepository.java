@@ -2,7 +2,6 @@ package repository;
 
 
 import entity.Message;
-import entity.User;
 import service.serch.MessageSearch;
 
 import java.util.List;
@@ -20,5 +19,5 @@ public interface MessageRepository {
 
     boolean existsById(UUID id);
 
-    boolean deleteById(UUID messageId);
+    void deleteById(UUID messageId);
 }

@@ -13,15 +13,15 @@ public interface MessageService {
     Message create(String content, User user, Channel channel);
 
     //조회(Id)
-    Message findMessageById(UUID messageId);
+    Message findById(UUID messageId);
 
     //다건 조회 & 전체조회
-    List<Message> MessageSearch(MessageSearch condition);
+    List<Message> Search(MessageSearch condition);
     // 전체조회
-    List<Message> findAllMessage();
+    List<Message> findAll();
     //수정
-    Message updateMessage(UUID messageId, String content);
+    Message update(UUID messageId, String content);
 
     //삭제
-    boolean deleteMessage(UUID messageId);
+    boolean delete(UUID messageId);
 }

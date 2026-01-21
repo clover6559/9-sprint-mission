@@ -61,8 +61,7 @@ public class FileChannelRepository implements ChannelRepository {
             }
         }
 
-        return Optional.ofNullable(channelNullable)
-                .orElseThrow(() -> new NoSuchElementException("Channel with id " + channelId + " not found"));
+        return Optional.ofNullable(channelNullable);
     }
 
     @Override
@@ -92,14 +91,19 @@ public class FileChannelRepository implements ChannelRepository {
     }
 
     @Override
-    public Channel updateChannel(UUID channelId, String channelName, String description) {
-        Channel channel = findById(channelId);
+    public boolean existsById(UUID channelId) {
+        return Files.exists(resolvePath(channelId));
+    }
+
+    public Channel update(UUID channelId, String channelName, String description) {
+        Channel channel = findById(channelId)
+                .orElseThrow(() -> new NoSuchElementException("Channel with id " + channelId + " not found"));
         channel.update(channelName, description);
         return save(channel);
     }
 
     @Override
-    public boolean deleteById(UUID channelId) {
+    public void deleteById(UUID channelId) {
         Path path = resolvePath(channelId);
         if (Files.notExists(path)) {
             throw new NoSuchElementException("Channel with id " + channelId + " not found");
@@ -109,6 +113,5 @@ public class FileChannelRepository implements ChannelRepository {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return false;
     }
 }

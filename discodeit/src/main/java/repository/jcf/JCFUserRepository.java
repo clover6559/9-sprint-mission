@@ -30,11 +30,11 @@ public class JCFUserRepository implements UserRepository {
         }
 
         @Override
-        public boolean existsById(UUID id) {
-            return userRepo.containsKey(id);
+        public boolean existsById(UUID userId) {
+            return userRepo.containsKey(userId);
         }
 
-        public User updateUser(UUID userId, String newUsername, String newEmail, String newPassword) {
+        public User update(UUID userId, String newUsername, String newEmail, String newPassword) {
         User user = findById(userId)
                 .orElseThrow(() -> new NoSuchElementException("수정할 유저가 없습니다."));
         user.update(newUsername, newEmail, newPassword);

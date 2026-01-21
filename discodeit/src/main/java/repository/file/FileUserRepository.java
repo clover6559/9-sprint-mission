@@ -85,8 +85,8 @@ public class FileUserRepository implements UserRepository {
     }
 
     @Override
-    public boolean existsById(UUID id) {
-        return Files.exists(resolvePath(id));
+    public boolean existsById(UUID userId) {
+        return Files.exists(resolvePath(userId));
     }
 
     public User update(UUID userId, String newUsername, String newEmail, String newPassword) {

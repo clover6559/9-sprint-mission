@@ -52,7 +52,7 @@ public class FileMessageService implements MessageService {
     }
 
     @Override
-    public Message findMessageById(UUID messageId) {
+    public Message findById(UUID messageId) {
         Message messageNullable = null;
         Path path = resolvePath(messageId);
         if (Files.exists(path)) {
@@ -72,12 +72,12 @@ public class FileMessageService implements MessageService {
 
 
     @Override
-    public List<Message> MessageSearch(MessageSearch condition) {
+    public List<Message> Search(MessageSearch condition) {
         return List.of();
     }
 
     @Override
-    public List<Message> findAllMessage() {
+    public List<Message> findAll() {
         try {
             return Files.list(DIRECTORY)
                     .filter(path -> path.toString().endsWith(EXTENSION))
@@ -99,7 +99,7 @@ public class FileMessageService implements MessageService {
 
 
     @Override
-    public Message updateMessage(UUID messageId, String content) {
+    public Message update(UUID messageId, String content) {
         Message messageNullable = null;
         Path path = resolvePath(messageId);
         if (Files.exists(path)) {
@@ -131,7 +131,7 @@ public class FileMessageService implements MessageService {
 
 
     @Override
-    public boolean deleteMessage(UUID messageId) {
+    public boolean delete(UUID messageId) {
         Path path = resolvePath(messageId);
         if (Files.notExists(path)) {
             throw new NoSuchElementException("MassageId with id " + messageId + " not found");

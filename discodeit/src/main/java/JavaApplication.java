@@ -49,43 +49,43 @@ public class JavaApplication {
     static void channelCRUDTest(ChannelService channelService, UserService userService) {
         // 생성
         User testUser = userService.findAllUser().get(0);
-        Channel channel = channelService.createChannel(Channel.ChannelType.PUBLIC, "공지", "공지 채널입니다.", testUser);
+        Channel channel = channelService.create(Channel.ChannelType.PUBLIC, "공지", "공지 채널입니다.", testUser);
         System.out.println("========= [Channel] =========");
         System.out.println("=== 채널 생성 === " +   '\n' + channel.toString());
 
         // 조회(ID)
-        Channel foundChannel = channelService.findChannelById(channel.getChannelId());
+        Channel foundChannel = channelService.findCById(channel.getChannelId());
         System.out.println("=== 채널 조회(ID) === "+ '\n' + foundChannel.toString());
         //조건 1개 조회(이름)
         ChannelSearch channelSearch = new ChannelSearch();
         channelSearch.setUserName("강지원");
-        List<Channel> foundChannel2 = channelService.ChannelSearch(channelSearch);
+        List<Channel> foundChannel2 = channelService.Search(channelSearch);
         System.out.println("=== 채널 조회(강지원) === ");
         foundChannel2.forEach(System.out::println);
         //조건 2개 조회(이름, 채널이름)
         ChannelSearch channelSearch1 = new ChannelSearch();
         channelSearch1.setUserName("강지원");
         channelSearch1.setChannelName("질문");
-        List<Channel> foundChannel3 = channelService.ChannelSearch(channelSearch1);
+        List<Channel> foundChannel3 = channelService.Search(channelSearch1);
         System.out.println("=== 채널 조회(강지원, 질문) === " );
         foundChannel3.forEach(System.out::println);
 
         //전체 채널 조회
-        List<Channel> foundAllChannels = channelService.findAllChannel();
+        List<Channel> foundAllChannels = channelService.findAll();
         System.out.println("=== 전체 채널 조회 ===  ");
         foundAllChannels.forEach(System.out::println);
         //전체 채널수 조회
-        List<Channel> foundChannels = channelService.findAllChannel();
+        List<Channel> foundChannels = channelService.findAll();
         System.out.println("=== 채널 현황 조회 ===  " +  '\n' + "남은 채널 : " + foundChannels.size() + "개");
         System.out.println();
 
         // 수정
-        Channel updatedChannel = channelService.updateChannel(channel.getChannelId(), "공지사항", null);
+        Channel updatedChannel = channelService.update(channel.getChannelId(), "공지사항", null);
         System.out.println("=== 채널 수정 === " + '\n' + updatedChannel.toString());
 
         // 삭제
-        channelService.deleteChannel(channel.getChannelId());
-        List<Channel> foundChannelsAfterDelete = channelService.findAllChannel();
+        channelService.delete(channel.getChannelId());
+        List<Channel> foundChannelsAfterDelete = channelService.findAll();
         System.out.println("=== 채널 삭제 ===" + '\n' + "남은 채널 : " + foundChannelsAfterDelete.size() + "개");
         System.out.println();
     }
@@ -105,12 +105,12 @@ public class JavaApplication {
         System.out.println("=== 메시지 생성===  " + '\n' + message.toString());
 
         // 조회(ID)
-        Message foundMessage = messageService.findMessageById(message1.getMessageId());
+        Message foundMessage = messageService.findById(message1.getMessageId());
         System.out.println("=== 메시지 조회(단건) === " + '\n' + foundMessage.toString());
         //조건 1개 조회(이름)
         MessageSearch messageSearch = new MessageSearch();
         messageSearch.setUserName("이진용");
-        List<Message> foundMessages = messageService.MessageSearch(messageSearch);
+        List<Message> foundMessages = messageService.Search(messageSearch);
         System.out.println("=== 메시지 조회(이진용) === ");
         foundMessages.forEach(System.out::println);
 
@@ -118,18 +118,18 @@ public class JavaApplication {
         MessageSearch messageSearch2 = new MessageSearch();
         messageSearch2.setChannelName("공지");
         messageSearch2.setUserName("이진용");
-        List<Message> foundMessage2 = messageService.MessageSearch(messageSearch2);
+        List<Message> foundMessage2 = messageService.Search(messageSearch2);
         System.out.println("=== 메시지 조회(이름, 채널명) === ");
         foundMessage2.forEach(System.out::println);
 
         // 수정
-        Message updatedMessage = messageService.updateMessage(message.getMessageId(), "반갑습니다.");
+        Message updatedMessage = messageService.update(message.getMessageId(), "반갑습니다.");
         System.out.println("=== 메시지 수정 === " +  '\n' + "수정 후 : " + updatedMessage.getContent());
         System.out.println();
 
         // 삭제
-        messageService.deleteMessage(message.getMessageId());
-        List<Message> foundMessagesAfterDelete = messageService.MessageSearch(messageSearch);
+        messageService.delete(message.getMessageId());
+        List<Message> foundMessagesAfterDelete = messageService.Search(messageSearch);
         System.out.println("=== 메세지 삭제 === ");
         System.out.println("남은 메세지 : " + foundMessagesAfterDelete.size() + "개");
     }
