@@ -38,17 +38,9 @@ public class JCFChannelService implements ChannelService {
     @Override
     public List<Channel> Search(ChannelSearch channelSearch) {
         return channelData.values().stream()
-                .filter(c-> {
-                    String searchName = channelSearch.getUserName();
-                    if (searchName == null) return true;
-                    return searchName.equals(c.getUserName());
-                    })
-                .filter(c -> {
-                    String searchChannel = channelSearch.getChannelName();
-                    if (searchChannel == null) return true;
-                    return searchChannel.equals(c.getChannelName());
-                })
-                .collect(Collectors.toList());
+                .filter(c -> channelSearch.getUserName() == null || channelSearch.getUserName().equals(c.getUserName()))
+                .filter(c -> channelSearch.getChannelName() == null || channelSearch.getChannelName().equals(c.getChannelName()))
+                .toList();
     }
 
     @Override
@@ -73,6 +65,7 @@ public class JCFChannelService implements ChannelService {
             throw new IllegalArgumentException("실패 : 존재하지 않는 채널 Id 입니다");
         }
         channelData.remove(channelId);
+        return true;
     }
 }
 

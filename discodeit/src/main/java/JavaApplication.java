@@ -25,8 +25,7 @@ public class JavaApplication {
         User foundUser = userService.findUserById(user.getUserId());
         System.out.println("=== 유저 조회(ID) === " +  '\n' +  foundUser.toString());
         //조건 1개(이름)
-        UserSearch userSearch = new UserSearch();
-        userSearch.setUserName("김사연");
+        UserSearch userSearch = new UserSearch("김사연");
         List<User> foundUserByName = userService.UserSearch(userSearch);
         System.out.println("=== 유저 조회(김사연) === " );
         foundUserByName.forEach(System.out::println);
@@ -57,18 +56,15 @@ public class JavaApplication {
         Channel foundChannel = channelService.findCById(channel.getChannelId());
         System.out.println("=== 채널 조회(ID) === "+ '\n' + foundChannel.toString());
         //조건 1개 조회(이름)
-        ChannelSearch channelSearch = new ChannelSearch();
-        channelSearch.setUserName("강지원");
-        List<Channel> foundChannel2 = channelService.Search(channelSearch);
+        ChannelSearch channelSearch = ChannelSearch.byUserName("강지원");
+        List<Channel> result = channelService.Search(channelSearch);
         System.out.println("=== 채널 조회(강지원) === ");
-        foundChannel2.forEach(System.out::println);
+        result.forEach(System.out::println);
         //조건 2개 조회(이름, 채널이름)
-        ChannelSearch channelSearch1 = new ChannelSearch();
-        channelSearch1.setUserName("강지원");
-        channelSearch1.setChannelName("질문");
-        List<Channel> foundChannel3 = channelService.Search(channelSearch1);
+        ChannelSearch channelSearch1 = new ChannelSearch("강지원", "질문");
+        List<Channel> result2 = channelService.Search(channelSearch);
         System.out.println("=== 채널 조회(강지원, 질문) === " );
-        foundChannel3.forEach(System.out::println);
+        result2.forEach(System.out::println);
 
         //전체 채널 조회
         List<Channel> foundAllChannels = channelService.findAll();
@@ -108,16 +104,13 @@ public class JavaApplication {
         Message foundMessage = messageService.findById(message1.getMessageId());
         System.out.println("=== 메시지 조회(단건) === " + '\n' + foundMessage.toString());
         //조건 1개 조회(이름)
-        MessageSearch messageSearch = new MessageSearch();
-        messageSearch.setUserName("이진용");
-        List<Message> foundMessages = messageService.Search(messageSearch);
+        MessageSearch Search1 = MessageSearch.byUserName("강지원");
+        List<Message> foundMessages = messageService.Search(Search1);
         System.out.println("=== 메시지 조회(이진용) === ");
         foundMessages.forEach(System.out::println);
 
         //조건 2개(이름, 채널명)
-        MessageSearch messageSearch2 = new MessageSearch();
-        messageSearch2.setChannelName("공지");
-        messageSearch2.setUserName("이진용");
+        MessageSearch messageSearch2 = MessageSearch.byAll("이진용","공지");
         List<Message> foundMessage2 = messageService.Search(messageSearch2);
         System.out.println("=== 메시지 조회(이름, 채널명) === ");
         foundMessage2.forEach(System.out::println);
@@ -129,7 +122,7 @@ public class JavaApplication {
 
         // 삭제
         messageService.delete(message.getMessageId());
-        List<Message> foundMessagesAfterDelete = messageService.Search(messageSearch);
+        List<Message> foundMessagesAfterDelete = messageService.Search(Search1);
         System.out.println("=== 메세지 삭제 === ");
         System.out.println("남은 메세지 : " + foundMessagesAfterDelete.size() + "개");
     }
