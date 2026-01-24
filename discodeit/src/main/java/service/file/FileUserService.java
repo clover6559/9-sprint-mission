@@ -94,7 +94,7 @@ public class FileUserService implements UserService {
     }
 
     @Override
-    public User update(UUID userId, String newUsername, String newEmail, String newPassword) {
+    public String update(UUID userId, String newUsername, String newEmail, String newPassword) {
         User userNullable = null;
         Path path = resolvePath(userId);
         if (Files.exists(path)) {
@@ -121,7 +121,7 @@ public class FileUserService implements UserService {
             throw new RuntimeException(e);
         }
 
-        return user;
+        return user.update(newUsername,newEmail,newPassword);
     }
 
     @Override

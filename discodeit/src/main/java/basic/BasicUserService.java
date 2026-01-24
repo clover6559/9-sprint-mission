@@ -39,11 +39,11 @@ public BasicUserService(UserRepository userRepository) {
     }
 
     @Override
-    public User update(UUID userId, String userName, String email, String password) {
+    public String update(UUID userId, String userName, String email, String password) {
        User user =  userRepository.findById(userId)
                .orElseThrow(() -> new NoSuchElementException("User with id " + userId + "not found"));
         user.update(userName,email, password);
-        return userRepository.save(user);
+        return userRepository.save(user).update(userName,email,password);
     }
 
     @Override

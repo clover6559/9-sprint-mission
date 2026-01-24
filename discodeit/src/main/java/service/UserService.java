@@ -20,7 +20,7 @@ public interface UserService {
     List<User> findAll();
 
     //수정
-    User update(UUID userId, String userName, String email, String password);
+    String update(UUID userId, String userName, String email, String password);
 
     //삭제
     boolean delete(UUID id);

@@ -35,8 +35,8 @@ public class JavaApplication {
         foundAllUsers.forEach(System.out::println);
 
         // 수정
-        User updatedUser = userService.update(user.getUserId(), null, null, "woody5678");
-        System.out.println("=========유저 수정 ========= " + '\n' + updatedUser.toString());
+        String updatedUser = userService.update(user.getUserId(), null, null, "woody5678");
+        System.out.println("=========유저 수정 ========= " + '\n' + "[변경 사항]" + '\n' +  updatedUser);
 
         //삭제
         userService.delete(user.getUserId());

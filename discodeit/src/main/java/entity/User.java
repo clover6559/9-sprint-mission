@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class User  implements Serializable {
@@ -24,9 +26,6 @@ public class User  implements Serializable {
         this.password = password;
     }
 
-    //    public String timeUtile {
-//
-//    }
     public UUID getUserId() {
         return userId;
     }
@@ -61,11 +60,22 @@ public class User  implements Serializable {
                 "수정 시간 : " + formatTime(updatedAt) + '\n';
     }
 
-    public void update(String userName, String email, String password) {
-        this.userName = userName;
-        this.email = email;
-        this.password = password;
+    public String update(String userName, String email, String password) {
+        List<String> changes = new ArrayList<>();
+        if (userName != null && !userName.isBlank()) {
+            this.userName = userName;
+            changes.add("이름: " + userName);
+        }
+        if (email != null && !email.isBlank()) {
+            this.email = email;
+            changes.add("이메일: " + email);
+        }
+        if (password != null && !password.isBlank()) {
+            this.password = password;
+            changes.add("비밀번호: " + password);
+        }
         this.updatedAt = System.currentTimeMillis();
+        return changes.isEmpty() ? "변경 사항 없음: " : String.join(", ", changes) + "로 수정됨";
     }
     public static DateTimeFormatter formatter =  DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     public static String formatTime(long timeStamp) {

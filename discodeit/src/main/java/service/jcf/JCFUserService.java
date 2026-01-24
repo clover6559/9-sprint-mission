@@ -8,12 +8,15 @@ import java.util.*;
 
 public class JCFUserService implements UserService {
     private final Map<UUID, User> userData = new HashMap<>();
-    private List<User> users = new ArrayList<>();
 
     public JCFUserService() {
-        users.add(new User("김사연","sayeon@gmail.com", "125rtf"));
-        users.add(new User("강지원", "jiwon@gmail.com", "fgd123"));
-        users.add(new User("이진용","jinyoong@gmail.com", "566wrsd"));
+        saveDummyUser("김사연","sayeon@gmail.com", "125rtf");
+        saveDummyUser("강지원", "jiwon@gmail.com", "fgd123");
+        saveDummyUser("이진용","jinyoong@gmail.com", "566wrsd");
+    }
+    private void saveDummyUser(String name, String email, String password) {
+        User user = new User(name, email, password);
+        userData.put(user.getUserId(), user);
     }
 
     @Override
@@ -42,14 +45,13 @@ public class JCFUserService implements UserService {
     }
 
     @Override
-    public User update(UUID userId, String userName, String email, String password) {
+    public String update(UUID userId, String userName, String email, String password) {
         User foundUser = userData.get(userId);
         if (foundUser == null) {
             throw new IllegalArgumentException("존재하지 않는 사용자 아이디입니다 : " + userId);
         }
-        foundUser.update(userName,email, password);
-        userData.put(userId, foundUser);
-        return foundUser;
+//        foundUser.update(userName,email, password);
+        return foundUser.update(userName, email, password);
     }
 
     @Override

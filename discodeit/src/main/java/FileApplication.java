@@ -21,8 +21,8 @@ public class FileApplication {
             List<User> foundUsers = userService.findAll();
             System.out.println("유저 조회(다건): " + foundUsers.size());
             // 수정
-            User updatedUser = userService.update(user.getUserId(), null, null, "woody5678");
-            System.out.println("유저 수정: " + String.join("/", updatedUser.getUserName(), updatedUser.getEmail(), updatedUser.getPassword()));
+//            tring updatedUser = userService.update(user.getUserId(), null, null, "woody5678");
+//            System.out.println("유저 수정: " + String.join("/", updatedUser.getUserName(), updatedUser.getEmail(), updatedUser.getPassword()));
             // 삭제
 //            userService.deleteById(user.getUserId());
 //            List<User> foundUsersAfterDelete = userService.findAll();

@@ -11,13 +11,13 @@ import java.util.*;
 public class JCFChannelService implements ChannelService {
     private final Map<UUID, Channel> channelData = new HashMap<>();
     private final UserService userService;
-    private final List<Channel> channels = new ArrayList<>();
 
     public JCFChannelService(UserService userService) {
         this.userService = userService;
-        List<User> users = userService.findAll();
-        create(Channel.ChannelType.PUBLIC, "질문", "질문있어요", testUser);
-        create(Channel.ChannelType.PRIVATE, "5조", "5조방입니다", testUser);
+//        List<User> users = userService.findAll();
+//        channels.add(new Channel(Channel.ChannelType.PUBLIC, "질문", "질문있어요", users));
+//        channels.add(new Channel(Channel.ChannelType.PRIVATE, "5조", "5조방입니다", users));
+
     }
 
     @Override
