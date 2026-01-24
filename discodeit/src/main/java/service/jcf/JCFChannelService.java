@@ -6,19 +6,16 @@ import service.ChannelService;
 import service.UserService;
 import service.serch.ChannelSearch;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.stream.Collectors;
+import java.util.*;
 
 public class JCFChannelService implements ChannelService {
     private final Map<UUID, Channel> channelData = new HashMap<>();
     private final UserService userService;
+    private final List<Channel> channels = new ArrayList<>();
 
     public JCFChannelService(UserService userService) {
         this.userService = userService;
-        User testUser = userService.findAllUser().get(0);
+        List<User> users = userService.findAll();
         create(Channel.ChannelType.PUBLIC, "질문", "질문있어요", testUser);
         create(Channel.ChannelType.PRIVATE, "5조", "5조방입니다", testUser);
     }

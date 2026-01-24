@@ -8,16 +8,6 @@ public class ChannelSearch {
         this.userName = userName;
         this.channelName = channelName;
     }
-    public ChannelSearch byUserName(String userName) {
-        return new ChannelSearch(userName, null);
-    }
-    public ChannelSearch byChannelName(String channelName) {
-        return new ChannelSearch(null, this.channelName);    }
-
-    public static ChannelSearch byAll(String userName, String channelName) {
-        return new ChannelSearch(userName, channelName);
-    }
-
     public String getUserName() {
         return userName;
     }

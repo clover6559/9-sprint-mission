@@ -8,23 +8,22 @@ import java.util.UUID;
 
 public interface UserService {
     //생성
-    User createUser(String userName, String email, String password);
+    User create(String userName, String email, String password);
 
     //조회(Id)
-    User findUserById(UUID userId);
+    User findById(UUID userId);
 
     //다건 조회
-    List<User> UserSearch(UserSearch userSearch);
+    List<User> Search(UserSearch userSearch);
 
     // 전체조회
-    List<User> findAllUser();
+    List<User> findAll();
 
     //수정
-    User updateUser(UUID userId, String userName, String email, String password);
+    User update(UUID userId, String userName, String email, String password);
 
     //삭제
-    boolean deleteUser(UUID id);
-
+    boolean delete(UUID id);
     }
 
 

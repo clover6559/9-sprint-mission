@@ -13,19 +13,19 @@ import java.util.List;
 public class FileApplication {
         static void userCRUDTest(UserService userService) {
             // 생성
-            User user = userService.createUser("woody", "woody@codeit.com", "woody1234");
+            User user = userService.create("woody", "woody@codeit.com", "woody1234");
             System.out.println("유저 생성: " + user.getUserId());
             // 조회
-            User foundUser = userService.findUserById(user.getUserId());
+            User foundUser = userService.findById(user.getUserId());
             System.out.println("유저 조회(단건): " + foundUser.getUserId());
-            List<User> foundUsers = userService.findAllUser();
+            List<User> foundUsers = userService.findAll();
             System.out.println("유저 조회(다건): " + foundUsers.size());
             // 수정
-            User updatedUser = userService.updateUser(user.getUserId(), null, null, "woody5678");
+            User updatedUser = userService.update(user.getUserId(), null, null, "woody5678");
             System.out.println("유저 수정: " + String.join("/", updatedUser.getUserName(), updatedUser.getEmail(), updatedUser.getPassword()));
             // 삭제
 //            userService.deleteById(user.getUserId());
-//            List<User> foundUsersAfterDelete = userService.findAllUser();
+//            List<User> foundUsersAfterDelete = userService.findAll();
 //            System.out.println("유저 삭제: " + foundUsersAfterDelete.size());
         }
 
@@ -66,7 +66,7 @@ public class FileApplication {
         }
 
         static User setupUser(UserService userService) {
-            User setUser = userService.createUser("woody", "woody@codeit.com", "woody1234");
+            User setUser = userService.create("woody", "woody@codeit.com", "woody1234");
             return setUser;
         }
 

@@ -17,8 +17,10 @@ public interface MessageService {
 
     //다건 조회 & 전체조회
     List<Message> Search(MessageSearch condition);
+
     // 전체조회
     List<Message> findAll();
+
     //수정
     Message update(UUID messageId, String content);
 

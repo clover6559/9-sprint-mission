@@ -37,24 +37,15 @@ public class JCFMessageService implements MessageService {
     @Override
     public List<Message> Search(MessageSearch messageSearch) {
         return messageData.values().stream()
-                .filter(m-> {
-                    String searchName = messageSearch.getUserName();
-                    if (searchName == null) return true;
-                    return searchName.equals(m.getUserName());
-                     })
-                .filter(m -> {
-                    String searchChannel = messageSearch.getChannelName();
-                    if (searchChannel == null) return true;
-                    return searchChannel.equals(m.getChannelName());
-                })
-                .collect(Collectors.toList());
+                .filter(m-> messageSearch.getUserName() == null || messageSearch.getUserName().equals(m.getUserName()))
+                .filter(m -> messageSearch.getChannelName() == null || messageSearch.getChannelName().equals(m.getChannelName()))
+                .toList();
     }
 
     @Override
     public List<Message> findAll() {
         return List.of();
     }
-
 
 
     @Override

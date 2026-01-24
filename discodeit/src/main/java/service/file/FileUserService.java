@@ -33,7 +33,7 @@ public class FileUserService implements UserService {
     }
 
     @Override
-    public User createUser(String username, String email, String password) {
+    public User create(String username, String email, String password) {
         User user = new User(username, email, password);
         Path path = resolvePath(user.getUserId());
         try (
@@ -49,7 +49,7 @@ public class FileUserService implements UserService {
     }
 
     @Override
-    public User findUserById(UUID userId) {
+    public User findById(UUID userId) {
         User userNullable = null;
         Path path = resolvePath(userId);
         if (Files.exists(path)) {
@@ -68,12 +68,12 @@ public class FileUserService implements UserService {
     }
 
     @Override
-    public List<User> UserSearch(UserSearch userSearch) {
+    public List<User> Search(UserSearch userSearch) {
         return List.of();
     }
 
     @Override
-    public List<User> findAllUser() {
+    public List<User> findAll() {
         try {
             return Files.list(DIRECTORY)
                     .filter(path -> path.toString().endsWith(EXTENSION))
@@ -94,7 +94,7 @@ public class FileUserService implements UserService {
     }
 
     @Override
-    public User updateUser(UUID userId, String newUsername, String newEmail, String newPassword) {
+    public User update(UUID userId, String newUsername, String newEmail, String newPassword) {
         User userNullable = null;
         Path path = resolvePath(userId);
         if (Files.exists(path)) {
@@ -125,7 +125,7 @@ public class FileUserService implements UserService {
     }
 
     @Override
-    public boolean deleteUser(UUID userId) {
+    public boolean delete(UUID userId) {
         Path path = resolvePath(userId);
         if (Files.notExists(path)) {
             throw new NoSuchElementException("User with id " + userId + " not found");

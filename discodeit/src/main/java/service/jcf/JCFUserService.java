@@ -5,53 +5,44 @@ import service.UserService;
 import service.serch.UserSearch;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class JCFUserService implements UserService {
     private final Map<UUID, User> userData = new HashMap<>();
+    private List<User> users = new ArrayList<>();
 
     public JCFUserService() {
-        createUser("김사연","sayeon@gmail.com", "125rtf");
-        createUser("강지원","jiwon@gmail.com", "fgd123");
-        createUser("이진용","jinyoong@gmail.com", "566wrsd");
+        users.add(new User("김사연","sayeon@gmail.com", "125rtf"));
+        users.add(new User("강지원", "jiwon@gmail.com", "fgd123"));
+        users.add(new User("이진용","jinyoong@gmail.com", "566wrsd"));
     }
 
     @Override
-    public User createUser(String userName, String email, String password) {
+    public User create(String userName, String email, String password) {
         User user = new User(userName, email, password);
         userData.put(user.getUserId(), user);
         return user;
     }
 
     @Override
-    public User findUserById(UUID userId) {
+    public User findById(UUID userId) {
         return userData.get(userId);
     }
 
     @Override
-    public List<User> findAllUser() {
+    public List<User> findAll() {
         return userData.values().stream()
                 .toList();
         }
 
     @Override
-    public List<User> UserSearch(UserSearch userSearch) {
+    public List<User> Search(UserSearch userSearch) {
         return userData.values().stream()
-                .filter(u-> {
-                    String searchName = userSearch.getUserName();
-                    if (searchName == null) return true;
-                    return searchName.equals(u.getUserName());
-                })
-                .filter(u -> {
-                    String searchEmail = userSearch.getEmail();
-                    if (searchEmail == null) return true;
-                    return searchEmail.equals(u.getEmail());
-                })
-                .collect(Collectors.toList());
+                .filter(u-> userSearch.getUserName() == null || userSearch.getUserName().equals(u.getUserName()))
+                .toList();
     }
 
     @Override
-    public User updateUser(UUID userId, String userName, String email, String password) {
+    public User update(UUID userId, String userName, String email, String password) {
         User foundUser = userData.get(userId);
         if (foundUser == null) {
             throw new IllegalArgumentException("존재하지 않는 사용자 아이디입니다 : " + userId);
@@ -62,21 +53,12 @@ public class JCFUserService implements UserService {
     }
 
     @Override
-    public boolean deleteUser(UUID userId) {
+    public boolean delete(UUID userId) {
         if (userData.get(userId) == null) {
             System.out.println("실패 : 존재하지 않는 유저 Id 입니다");
             return false;
         }
         userData.remove(userId);
         return true;
-    }
-
-    public static List<User> testUser() {
-        List<User> testUsers = new ArrayList<>();
-        User user1 = new User("김사연","sayeon@gmail.com", "125rtf");
-        User user2  = new User("강지원","jiwon@gmail.com", "fgd123");
-        testUsers.add(user1);
-        testUsers.add(user2);
-        return testUsers;
     }
 }
