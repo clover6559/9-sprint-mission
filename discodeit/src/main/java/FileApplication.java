@@ -20,13 +20,16 @@ public class FileApplication {
             System.out.println("유저 조회(단건): " + foundUser.getUserId());
             List<User> foundUsers = userService.findAll();
             System.out.println("유저 조회(다건): " + foundUsers.size());
-            // 수정
-//            tring updatedUser = userService.update(user.getUserId(), null, null, "woody5678");
-//            System.out.println("유저 수정: " + String.join("/", updatedUser.getUserName(), updatedUser.getEmail(), updatedUser.getPassword()));
+            //수정
+            String updatedUser = userService.update(user.getUserId(), null, null, "woody5678");
+            System.out.println("유저 수정: " +  '\n' + "[변경 사항]" + '\n' +  updatedUser);
+            System.out.println("[현재 유저 정보] " + '\n' + user);
+
             // 삭제
-//            userService.deleteById(user.getUserId());
-//            List<User> foundUsersAfterDelete = userService.findAll();
-//            System.out.println("유저 삭제: " + foundUsersAfterDelete.size());
+            userService.delete(user.getUserId());
+            System.out.println("========= 유저 삭제 =========");
+            userService.printRemainUsers();
+            System.out.println();
         }
 
         static void channelCRUDTest(ChannelService channelService, User user) {
@@ -40,11 +43,13 @@ public class FileApplication {
             System.out.println("채널 조회(다건): " + foundChannels.size());
             // 수정
             Channel updatedChannel = channelService.update(channel.getChannelId(), "공지사항", null);
-            System.out.println("채널 수정: " + String.join("/", updatedChannel.getChannelName(), updatedChannel.getDescription()));
+            System.out.println("========= 채널 수정 =========" + '\n' + "[변경 사항]" + '\n' +  updatedChannel);
+            System.out.println("[현재 유저 정보] " + '\n' + channel);
             // 삭제
-//            channelService.delete(channel.getChannelId());
-//            List<Channel> foundChannelsAfterDelete = channelService.findAll();
-//            System.out.println("채널 삭제: " + foundChannelsAfterDelete.size());
+            channelService.delete(channel.getChannelId());
+            System.out.println("========= 채널 삭제 =========");
+            channelService.printRemainChannel();
+            System.out.println();
         }
 
         static void messageCRUDTest(MessageService messageService, User user, Channel channel) {
@@ -58,11 +63,14 @@ public class FileApplication {
             System.out.println("메시지 조회(다건): " + foundMessages.size());
             // 수정
             Message updatedMessage = messageService.update(message.getMessageId(), "반갑습니다.");
-            System.out.println("메시지 수정: " + updatedMessage.getContent());
+            System.out.println("========= 메시지 수정 =========" +  '\n' +"[변경 사항]" + '\n' +  updatedMessage);
+            System.out.println("[현재 메시지] " + '\n' + message);
+            System.out.println();
             // 삭재
-//            messageService.delete(message.getMessageId());
-//            List<Message> foundMessagesAfterDelete = messageService.findAll();
-//            System.out.println("메시지 삭제: " + foundMessagesAfterDelete.size());
+            messageService.delete(message.getMessageId());
+            System.out.println("========= 메세지 삭제 =========");
+            messageService.printRemainMessages();
+            System.out.println();
         }
 
         static User setupUser(UserService userService) {

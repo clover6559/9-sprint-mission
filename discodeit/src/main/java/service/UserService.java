@@ -24,6 +24,8 @@ public interface UserService {
 
     //삭제
     boolean delete(UUID id);
+
+    void printRemainUsers();
     }
 
 

@@ -1,6 +1,8 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class Channel implements Serializable {
@@ -60,11 +62,20 @@ public class Channel implements Serializable {
         return channelType;
     }
 
-    public void update(String channelName, String description) {
-        this.channelName = channelName;
-        this.description = description;
+    public String update(String channelName, String description) {
+        List<String> changes = new ArrayList<>();
+        if (channelName != null && !channelName.isBlank()) {
+            this.channelName = channelName;
+            changes.add("채널 이름 : " + channelName);
+        }
+        if (description != null && !description.isBlank()) {
+            this.description = description;
+            changes.add("소개 : " + description);
+        }
         this.updatedAt = System.currentTimeMillis();
+        return changes.isEmpty() ? "변경 사항 없음: " : String.join(", ", changes) + "로 수정됨";
     }
+
 
     @Override
     public String toString() {

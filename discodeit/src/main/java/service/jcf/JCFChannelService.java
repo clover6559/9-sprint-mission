@@ -14,11 +14,7 @@ public class JCFChannelService implements ChannelService {
 
     public JCFChannelService(UserService userService) {
         this.userService = userService;
-//        List<User> users = userService.findAll();
-//        channels.add(new Channel(Channel.ChannelType.PUBLIC, "질문", "질문있어요", users));
-//        channels.add(new Channel(Channel.ChannelType.PRIVATE, "5조", "5조방입니다", users));
-
-    }
+}
 
     @Override
     public Channel create(Channel.ChannelType channelType, String channelName, String description, User user) {
@@ -64,5 +60,13 @@ public class JCFChannelService implements ChannelService {
         channelData.remove(channelId);
         return true;
     }
+
+    @Override
+    public void printRemainChannel() {
+        List<Channel> channels = findAll();
+        System.out.println("현재 남은 채널 수: " + channels.size());
+        channels.forEach(c -> System.out.println("- " + c.getChannelName()));
+    }
+
 }
 

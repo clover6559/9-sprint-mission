@@ -25,4 +25,7 @@ public interface ChannelService {
 
     //삭제
     boolean delete(UUID channelId);
+
+    void printRemainChannel();
+
 }

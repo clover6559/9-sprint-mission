@@ -54,4 +54,9 @@ public BasicUserService(UserRepository userRepository) {
         userRepository.deleteById(userId);
         return true;
     }
+
+    @Override
+    public void printRemainUsers() {
+
+    }
 }

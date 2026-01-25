@@ -7,13 +7,11 @@ import service.UserService;
 import service.serch.ChannelSearch;
 
 import java.io.*;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 public class FileChannelService implements ChannelService {
     private final Path DIRECTORY;
@@ -67,11 +65,48 @@ public class FileChannelService implements ChannelService {
                 .orElseThrow(() -> new NoSuchElementException("Channel with id " + channelId + " not found"));
     }
 
-//TOdo seach부분 구현
     @Override
     public List<Channel> Search(ChannelSearch channelSearch) {
-        return List.of();
+        List<Channel> channels = new ArrayList<>();
+
+        try {
+            DirectoryStream<Path> paths = Files.newDirectoryStream(DIRECTORY, "*" + EXTENSION);
+
+            for (Path path : paths) {
+                Channel channelNullable = null;
+                if (Files.exists(path)) {
+                    try (
+                            FileInputStream fis = new FileInputStream(path.toFile());
+                            ObjectInputStream ois = new ObjectInputStream(fis)
+                    ) {
+                        channelNullable = (Channel) ois.readObject();
+                    }
+                }
+
+                if (channelNullable != null) {
+                    boolean match = true;
+                    if (channelSearch.getChannelName() != null) {
+                        match = channelNullable.getChannelName()
+                                .contains(channelSearch.getChannelName());
+                    }
+                    if (match && channelSearch.getUserName() != null) {
+                        match = channelNullable.getUserName()
+                                .contains(channelSearch.getUserName());
+                    }
+                    if (match) {
+                        channels.add(channelNullable);
+                    }
+                }
+            }
+
+        } catch (IOException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+
+        return channels;
     }
+
+
 
     @Override
     public List<Channel> findAll() {
@@ -139,4 +174,24 @@ public class FileChannelService implements ChannelService {
         }
         return false;
     }
+
+    @Override
+    public void printRemainChannel() {
+        List<Channel> channels = findAll();
+        if (channels.isEmpty()) {
+            System.out.println("남아있는 채널이 없습니다.");
+            return;
+        }
+        System.out.println("=== 남아있는 채널 목록 ===");
+
+        for (Channel channel : channels) {
+            System.out.println(
+                    "ID: " + channel.getChannelId() +
+                            ", 채널명: " + channel.getChannelName() +
+                            ", 설명: " + channel.getDescription() +
+                            ", 생성자: " + channel.getUserName()
+            );
+        }
+    }
+
 }

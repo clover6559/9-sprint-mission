@@ -56,4 +56,9 @@ public BasicMessageService(MessageRepository messageRepository) {
         messageRepository.deleteById(messageId);
         return true;
     }
+
+    @Override
+    public void printRemainMessages() {
+
+    }
 }

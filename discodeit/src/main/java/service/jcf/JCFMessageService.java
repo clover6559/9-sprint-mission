@@ -44,7 +44,7 @@ public class JCFMessageService implements MessageService {
 
     @Override
     public List<Message> findAll() {
-        return List.of();
+        return messageData.values().stream().toList();
     }
 
 
@@ -69,5 +69,12 @@ public class JCFMessageService implements MessageService {
             }
         }
 
+    @Override
+    public void printRemainMessages() {
+        List<Message> messages = findAll();
+        System.out.println("현재 남은 메세지 수: " + messages.size());
+        messages.forEach(m -> System.out.println("- " + m.getContent()));
     }
+
+}
 

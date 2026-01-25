@@ -12,8 +12,8 @@ public class User  implements Serializable {
     private final UUID userId;
     private String userName;
     private String email;
-    private final Long createdAt;
-    private Long updatedAt;
+    private final long createdAt;
+    private long updatedAt;
     private String password;
 
     public User(String userName, String email, String password) {
@@ -64,15 +64,15 @@ public class User  implements Serializable {
         List<String> changes = new ArrayList<>();
         if (userName != null && !userName.isBlank()) {
             this.userName = userName;
-            changes.add("이름: " + userName);
+            changes.add("이름 : " + userName);
         }
         if (email != null && !email.isBlank()) {
             this.email = email;
-            changes.add("이메일: " + email);
+            changes.add("이메일 : " + email);
         }
         if (password != null && !password.isBlank()) {
             this.password = password;
-            changes.add("비밀번호: " + password);
+            changes.add("비밀번호 : " + password);
         }
         this.updatedAt = System.currentTimeMillis();
         return changes.isEmpty() ? "변경 사항 없음: " : String.join(", ", changes) + "로 수정됨";

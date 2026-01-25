@@ -12,7 +12,6 @@ public class JCFUserService implements UserService {
     public JCFUserService() {
         saveDummyUser("김사연","sayeon@gmail.com", "125rtf");
         saveDummyUser("강지원", "jiwon@gmail.com", "fgd123");
-        saveDummyUser("이진용","jinyoong@gmail.com", "566wrsd");
     }
     private void saveDummyUser(String name, String email, String password) {
         User user = new User(name, email, password);
@@ -33,8 +32,7 @@ public class JCFUserService implements UserService {
 
     @Override
     public List<User> findAll() {
-        return userData.values().stream()
-                .toList();
+        return userData.values().stream().toList();
         }
 
     @Override
@@ -62,5 +60,11 @@ public class JCFUserService implements UserService {
         }
         userData.remove(userId);
         return true;
+    }
+
+    public void printRemainUsers() {
+        List<User> users = findAll();
+        System.out.println("현재 남은 유저 수: " + users.size());
+        users.forEach(u -> System.out.println("- " + u.getUserName()));
     }
 }

@@ -55,4 +55,9 @@ public BasicChannelService(ChannelRepository channelRepository) {
         channelRepository.deleteById(channelId);
         return true;
     }
+
+    @Override
+    public void printRemainChannel() {
+
+    }
 }

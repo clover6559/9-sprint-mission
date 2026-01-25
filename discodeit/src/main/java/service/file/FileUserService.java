@@ -5,13 +5,11 @@ import service.UserService;
 import service.serch.UserSearch;
 
 import java.io.*;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 public class FileUserService implements UserService {
     private final Path DIRECTORY;
@@ -69,8 +67,36 @@ public class FileUserService implements UserService {
 
     @Override
     public List<User> Search(UserSearch userSearch) {
-        return List.of();
+        List<User> users = new ArrayList<>();
+
+        try {
+            DirectoryStream<Path> paths = Files.newDirectoryStream(DIRECTORY, "*" + EXTENSION);
+
+            for (Path path : paths) {
+
+                User userNullable = null;
+
+                if (Files.exists(path)) {
+                    try (
+                            FileInputStream fis = new FileInputStream(path.toFile());
+                            ObjectInputStream ois = new ObjectInputStream(fis)
+                    ) {
+                        userNullable = (User) ois.readObject();
+                    }
+                }
+
+                if (userNullable != null && userSearch.matches(userNullable)) {
+                    users.add(userNullable);
+                }
+            }
+
+        } catch (IOException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+
+        return users;
     }
+
 
     @Override
     public List<User> findAll() {
@@ -112,7 +138,7 @@ public class FileUserService implements UserService {
                 .orElseThrow(() -> new NoSuchElementException("User with id " + userId + " not found"));
         user.update(newUsername, newEmail, newPassword);
 
-        try(
+        try (
                 FileOutputStream fos = new FileOutputStream(path.toFile());
                 ObjectOutputStream oos = new ObjectOutputStream(fos)
         ) {
@@ -121,7 +147,7 @@ public class FileUserService implements UserService {
             throw new RuntimeException(e);
         }
 
-        return user.update(newUsername,newEmail,newPassword);
+        return user.update(newUsername, newEmail, newPassword);
     }
 
     @Override
@@ -137,4 +163,24 @@ public class FileUserService implements UserService {
         }
         return true;
     }
+
+    @Override
+    public void printRemainUsers() {
+        List<User> users = findAll();
+
+        if (users.isEmpty()) {
+            System.out.println("남아있는 유저가 없습니다.");
+            return;
+        }
+
+        System.out.println("=== 남아있는 유저 목록 ===");
+        for (User user : users) {
+            System.out.println(
+                    "ID: " + user.getUserId() +
+                            ", 이름: " + user.getUserName() +
+                            ", 이메일: " + user.getEmail()
+            );
+        }
+    }
+
 }

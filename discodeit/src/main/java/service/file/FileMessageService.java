@@ -9,13 +9,11 @@ import service.UserService;
 import service.serch.MessageSearch;
 
 import java.io.*;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 public class FileMessageService implements MessageService {
     private final Path DIRECTORY;
@@ -72,9 +70,45 @@ public class FileMessageService implements MessageService {
 
 
     @Override
-    public List<Message> Search(MessageSearch condition) {
-        return List.of();
+    public List<Message> Search(MessageSearch messageSearch) {
+        List<Message> messages = new ArrayList<>();
+        try {
+            DirectoryStream<Path> paths = Files.newDirectoryStream(DIRECTORY, "*" + EXTENSION);
+            for (Path path : paths) {
+                Message messageNullable = null;
+                if (Files.exists(path)) {
+                    try (
+                            FileInputStream fis = new FileInputStream(path.toFile());
+                            ObjectInputStream ois = new ObjectInputStream(fis)
+                    ) {
+                        messageNullable = (Message) ois.readObject();
+                    }
+                }
+
+                if (messageNullable != null) {
+                    boolean match = true;
+                    if (messageSearch.getChannelName() != null) {
+                        match = messageNullable
+                                .getChannelName()
+                                .contains(messageSearch.getChannelName());
+                    }
+
+                    if (match && messageSearch.getUserName() != null) {
+                        match = messageNullable
+                                .getUserName()
+                                .contains(messageSearch.getUserName());
+                    }
+                    if (match) {
+                        messages.add(messageNullable);
+                    }
+                }
+            }
+        } catch (IOException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        return messages;
     }
+
 
     @Override
     public List<Message> findAll() {
@@ -125,7 +159,6 @@ public class FileMessageService implements MessageService {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
         return message;
     }
 
@@ -143,4 +176,22 @@ public class FileMessageService implements MessageService {
         }
         return false;
     }
+
+    @Override
+    public void printRemainMessages() {
+        List<Message> messages = findAll();
+        if (messages.isEmpty()) {
+            System.out.println("남아있는 메시지가 없습니다.");
+            return;
+        }
+        System.out.println("=== 남아있는 메시지 목록 ===");
+        for (Message message : messages) {
+            System.out.println(
+                    "ID: " + message.getMessageId() +
+                            ", 내용: " + message.getContent() +
+                            ", 채널: " + message.getChannelName() +
+                            ", 작성자: " + message.getUserName()
+            );
+        }
     }
+}

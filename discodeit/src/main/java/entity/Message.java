@@ -63,10 +63,13 @@ public class Message implements Serializable {
         return email;
     }
 
-    public void update(String content){
+    public void update(String content) {
+        if (content != null && !content.isBlank()) {
             this.content = content;
             this.updatedAt = System.currentTimeMillis();
         }
+        
+    }
 
     @Override
     public String toString() {

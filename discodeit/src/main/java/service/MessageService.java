@@ -26,4 +26,7 @@ public interface MessageService {
 
     //삭제
     boolean delete(UUID messageId);
+
+    void printRemainMessages();
+
 }
