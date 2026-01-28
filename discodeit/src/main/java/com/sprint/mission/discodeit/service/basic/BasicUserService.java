@@ -4,10 +4,12 @@ import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.service.UserService;
 import com.sprint.mission.discodeit.service.serch.UserSearch;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
+@Service
 
 public class BasicUserService implements UserService {
     private final UserRepository userRepository;

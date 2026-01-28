@@ -1,6 +1,7 @@
 package com.sprint.mission.discodeit.entity;
 
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -10,8 +11,8 @@ public class Channel implements Serializable {
         PUBLIC, PRIVATE
     }
     private UUID userId;
-    private Long createdAt;
-    private Long updatedAt;
+    private Instant createdAt;
+    private Instant updatedAt;
     private String channelName;
     private String description;
     private UUID channelId;
@@ -20,7 +21,7 @@ public class Channel implements Serializable {
 
     public Channel(ChannelType channelType, String channelName, String description, User user) {
         this.userId = user.getUserId();
-        long now = System.currentTimeMillis();
+        Instant now = Instant.now();
         this.createdAt = now;
         this.updatedAt = now;
         this.channelId = UUID.randomUUID();
@@ -38,11 +39,11 @@ public class Channel implements Serializable {
         return userId;
     }
 
-    public Long getCreatedAt() {
+    public Instant getCreatedAt() {
         return createdAt;
     }
 
-    public Long getUpdatedAt() {
+    public Instant getUpdatedAt() {
         return updatedAt;
     }
 
@@ -72,8 +73,8 @@ public class Channel implements Serializable {
             this.description = description;
             changes.add("소개 : " + description);
         }
-        this.updatedAt = System.currentTimeMillis();
-        return changes.isEmpty() ? "변경 사항 없음: " : String.join(", ", changes) + "로 수정됨";
+        this.updatedAt = Instant.now();
+    return changes.isEmpty() ? "변경 사항 없음: " : String.join(", ", changes) + "로 수정됨";
     }
 
 

@@ -12,18 +12,21 @@ public class User  implements Serializable {
     private final UUID userId;
     private String userName;
     private String email;
-    private final long createdAt;
-    private long updatedAt;
+    private final Instant createdAt;
+    private Instant updatedAt;
     private String password;
+    private UUID profileId;
 
-    public User(String userName, String email, String password) {
+
+    public User(String userName, String email, String password, BinaryContent binaryContent) {
         this.userId = UUID.randomUUID();
         this.userName = userName;
-        long now = System.currentTimeMillis();
+        Instant now = Instant.now();
         this.updatedAt = now;
         this.email = email;
         this.createdAt = now;
         this.password = password;
+        this.profileId = binaryContent.getId();
     }
 
     public UUID getUserId() {
@@ -38,16 +41,20 @@ public class User  implements Serializable {
         return email;
     }
 
-    public Long getCreatedAt() {
+    public Instant getCreatedAt() {
         return createdAt;
     }
 
-    public Long getUpdatedAt() {
+    public Instant getUpdatedAt() {
         return updatedAt;
     }
 
     public String getPassword() {
         return password;
+    }
+
+    public UUID getProfileId() {
+        return profileId;
     }
 
     @Override
@@ -74,13 +81,12 @@ public class User  implements Serializable {
             this.password = password;
             changes.add("비밀번호 : " + password);
         }
-        this.updatedAt = System.currentTimeMillis();
+        this.updatedAt = Instant.now();
         return changes.isEmpty() ? "변경 사항 없음: " : String.join(", ", changes) + "로 수정됨";
     }
     public static DateTimeFormatter formatter =  DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-    public static String formatTime(long timeStamp) {
-        Instant instant = Instant.ofEpochMilli(timeStamp);
-        String zonedDateTime = instant.atZone(ZoneId.systemDefault()).format(formatter);
+    public static String formatTime(Instant timeStamp) {
+        String zonedDateTime = timeStamp.atZone(ZoneId.systemDefault()).format(formatter);
         return zonedDateTime;
     }
 }

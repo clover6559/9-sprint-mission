@@ -28,4 +28,9 @@ public interface ChannelService {
 
     void printRemainChannel();
 
+    interface BinaryContentService {
+    }
+
+    interface UserStatusService {
+    }
 }

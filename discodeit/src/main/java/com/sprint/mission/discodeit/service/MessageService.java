@@ -29,4 +29,6 @@ public interface MessageService {
 
     void printRemainMessages();
 
+    interface ReadStatusService {
+    }
 }

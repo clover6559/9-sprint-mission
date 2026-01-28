@@ -1,6 +1,7 @@
 package com.sprint.mission.discodeit.entity;
 
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -8,17 +9,18 @@ import java.util.UUID;
 public class Message implements Serializable {
     private UUID userId;
     private String content;
-    private Long createdAt;
-    private Long updatedAt;
+    private Instant createdAt;
+    private Instant updatedAt;
     private String channelName;
     private String userName;
     private String email;
     private UUID channelId;
     private UUID messageId;
+    private List<UUID> attachmentIds;
 
-    public Message(String content, User user, Channel channel) {
+    public Message(String content, User user, Channel channel, BinaryContent binaryContent) {
         this.userId = user.getUserId();
-        long now = System.currentTimeMillis();
+        Instant now = Instant.now();
         this.createdAt = now;
         this.updatedAt = now;
         this.content = content;
@@ -27,8 +29,11 @@ public class Message implements Serializable {
         this.userName = user.getUserName();
         this.email = user.getEmail();
         this.messageId = UUID.randomUUID();
+        this.attachmentIds = new ArrayList<>();
+        if (binaryContent.getId() != null) {
+         this.attachmentIds.add(binaryContent.getId());
     }
-
+}
     public UUID getUserId() {
         return userId;
     }
@@ -37,11 +42,11 @@ public class Message implements Serializable {
         return channelId;
     }
 
-    public Long getUpdatedAt() {
+    public Instant getUpdatedAt() {
         return updatedAt;
     }
 
-    public Long getCreatedAt() {
+    public Instant getCreatedAt() {
         return createdAt;
     }
 
@@ -65,13 +70,17 @@ public class Message implements Serializable {
         return email;
     }
 
+    public List<UUID> getAttachmentIds() {
+        return attachmentIds;
+    }
+
     public String update(String content) {
         List<String> changes = new ArrayList<>();
         if (content != null && !content.isBlank()) {
             this.content = content;
             changes.add("메세지 내용 : " + content);
         }
-        this.updatedAt = System.currentTimeMillis();
+        this.updatedAt = Instant.now();
         return changes.isEmpty() ? "변경 사항 없음: " : String.join(", ", changes) + "로 수정됨";
 
     }

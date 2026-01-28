@@ -1,14 +1,21 @@
 package com.sprint.mission.discodeit.service;
 
 import com.sprint.mission.discodeit.entity.User;
+import com.sprint.mission.discodeit.entity.UserStatus;
 import com.sprint.mission.discodeit.service.serch.UserSearch;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 public interface UserService {
+    public record UserCreate(
+            String userName, String email, String password, UserStatus status) {}
+    public record content(UUID profileId) {}
+    public record UserUpdate(
+            UUID userId, String userName, String email, String password) {}
     //생성
-    User create(String userName, String email, String password);
+    content create(UserCreate create);
 
     //조회(Id)
     User findById(UUID userId);
@@ -20,13 +27,17 @@ public interface UserService {
     List<User> findAll();
 
     //수정
-    String update(UUID userId, String userName, String email, String password);
+    String update(UserUpdate update);
 
     //삭제
     boolean delete(UUID id);
 
     void printRemainUsers();
     }
-
+//public record UserCreate(
+//        String userName, String email, String password, UserStatus status) {}
+//public record content(UUID profileId) {}
+//public record UserUpdate(
+//        UUID userId, String userName, String email, String password) {}
 
 
