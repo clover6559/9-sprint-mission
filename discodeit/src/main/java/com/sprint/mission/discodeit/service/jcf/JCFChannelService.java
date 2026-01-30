@@ -4,7 +4,7 @@ import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.service.ChannelService;
 import com.sprint.mission.discodeit.service.UserService;
-import com.sprint.mission.discodeit.service.serch.ChannelSearch;
+import com.sprint.mission.discodeit.service.search.ChannelSearch;
 
 import java.util.*;
 
@@ -20,6 +20,7 @@ public class JCFChannelService implements ChannelService {
     public Channel create(Channel.ChannelType channelType, String channelName, String description, User user) {
         Channel channel = new Channel(channelType, channelName, description, user);
         channelData.put(channel.getChannelId(), channel);
+
        return channel;
     }
 

@@ -1,8 +1,9 @@
 package com.sprint.mission.discodeit.service.file;
 
+import com.sprint.mission.discodeit.dto.user.UserResponse;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.service.UserService;
-import com.sprint.mission.discodeit.service.serch.UserSearch;
+import com.sprint.mission.discodeit.service.search.UserSearch;
 
 import java.io.*;
 import java.nio.file.DirectoryStream;
@@ -47,7 +48,7 @@ public class FileUserService implements UserService {
     }
 
     @Override
-    public User findById(UUID userId) {
+    public UserResponse findById(UUID userId) {
         User userNullable = null;
         Path path = resolvePath(userId);
         if (Files.exists(path)) {
@@ -91,7 +92,7 @@ public class FileUserService implements UserService {
     }
 
     @Override
-    public List<User> findAll() {
+    public List<UserResponse> findAll() {
         try {
             return Files.list(DIRECTORY)
                     .filter(path -> path.toString().endsWith(EXTENSION))
@@ -128,7 +129,7 @@ public class FileUserService implements UserService {
 
         User user = Optional.ofNullable(userNullable)
                 .orElseThrow(() -> new NoSuchElementException("User with id " + userId + " not found"));
-        user.update(newUsername, newEmail, newPassword);
+        user.changes(newUsername, newEmail, newPassword);
         try (
                 FileOutputStream fos = new FileOutputStream(path.toFile());
                 ObjectOutputStream oos = new ObjectOutputStream(fos)
@@ -137,7 +138,7 @@ public class FileUserService implements UserService {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return user.update(newUsername, newEmail, newPassword);
+        return user.changes(newUsername, newEmail, newPassword);
     }
 
     @Override

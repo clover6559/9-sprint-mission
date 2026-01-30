@@ -1,4 +1,4 @@
-package com.sprint.mission.discodeit.service.serch;
+package com.sprint.mission.discodeit.service.search;
 
 import com.sprint.mission.discodeit.entity.User;
 

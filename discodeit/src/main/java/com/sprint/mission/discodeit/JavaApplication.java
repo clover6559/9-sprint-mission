@@ -3,15 +3,18 @@ package com.sprint.mission.discodeit;
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.entity.User;
+import com.sprint.mission.discodeit.repository.BinaryContentRepository;
+import com.sprint.mission.discodeit.repository.UserRepository;
+import com.sprint.mission.discodeit.repository.UserStatusRepository;
 import com.sprint.mission.discodeit.service.ChannelService;
-import com.sprint.mission.discodeit.service.serch.ChannelSearch;
-import com.sprint.mission.discodeit.service.serch.MessageSearch;
+import com.sprint.mission.discodeit.service.search.ChannelSearch;
+import com.sprint.mission.discodeit.service.search.MessageSearch;
 import com.sprint.mission.discodeit.service.MessageService;
 import com.sprint.mission.discodeit.service.UserService;
 import com.sprint.mission.discodeit.service.jcf.JCFChannelService;
 import com.sprint.mission.discodeit.service.jcf.JCFMessageService;
 import com.sprint.mission.discodeit.service.jcf.JCFUserService;
-import com.sprint.mission.discodeit.service.serch.UserSearch;
+import com.sprint.mission.discodeit.service.search.UserSearch;
 
 import java.util.List;
 
@@ -139,7 +142,7 @@ public class JavaApplication {
     public static void main(String[] args) {
 
         // 서비스 초기화
-        UserService userService = new JCFUserService();
+        UserService userService = new JCFUserService(userRepository,userStatusRepository, binaryContentRepository);
         ChannelService channelService = new JCFChannelService(userService);
         MessageService messageService = new JCFMessageService(userService, channelService);
 

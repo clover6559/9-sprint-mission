@@ -2,7 +2,7 @@ package com.sprint.mission.discodeit.service;
 
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.User;
-import com.sprint.mission.discodeit.service.serch.ChannelSearch;
+import com.sprint.mission.discodeit.service.search.ChannelSearch;
 
 import java.util.List;
 import java.util.UUID;

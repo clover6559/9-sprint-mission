@@ -1,9 +1,10 @@
 package com.sprint.mission.discodeit.service.basic;
 
+import com.sprint.mission.discodeit.dto.user.UserResponse;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.service.UserService;
-import com.sprint.mission.discodeit.service.serch.UserSearch;
+import com.sprint.mission.discodeit.service.search.UserSearch;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,7 +26,7 @@ public BasicUserService(UserRepository userRepository) {
     }
 
     @Override
-    public User findById(UUID userId) {
+    public UserResponse findById(UUID userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new NoSuchElementException("User with id " + userId + "not found"));
     }
@@ -44,7 +45,7 @@ public BasicUserService(UserRepository userRepository) {
     }
 
     @Override
-    public List<User> findAll() {
+    public List<UserResponse> findAll() {
         return userRepository.findAll();
     }
 
@@ -52,7 +53,7 @@ public BasicUserService(UserRepository userRepository) {
     public String update(UUID userId, String userName, String email, String password) {
        User user =  userRepository.findById(userId)
                .orElseThrow(() -> new NoSuchElementException("User with id " + userId + "not found"));
-        user.update(userName,email, password);
+        user.changes(userName,email, password);
         userRepository.save(user);
         return user.toString();
     }

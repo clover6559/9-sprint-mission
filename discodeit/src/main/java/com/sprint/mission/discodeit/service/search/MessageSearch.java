@@ -1,13 +1,15 @@
-package com.sprint.mission.discodeit.service.serch;
+package com.sprint.mission.discodeit.service.search;
 
-public class ChannelSearch {
+public class MessageSearch {
     private String userName;
     private String channelName;
 
-    public ChannelSearch(String userName, String channelName) {
+
+    public MessageSearch(String userName, String channelName) {
         this.userName = userName;
         this.channelName = channelName;
     }
+
     public String getUserName() {
         return userName;
     }
@@ -15,6 +17,5 @@ public class ChannelSearch {
     public String getChannelName() {
         return channelName;
     }
+
 }
-
-

@@ -11,27 +11,24 @@ public class UserStatus {
     private UUID userId;
     private final Instant createdAt;
     private Instant updatedAt;
-    private Instant lastTime;
-    private enum Status {
+    private Instant lastActiveTime;
+    public enum Status {
         ONLINE, OFFLINE
     }
     private Status status;
 
-    public UserStatus(Status status, User user) {
+    public UserStatus(Status status, UUID userId) {
         this.id = UUID.randomUUID();
-        this.userId = user.getUserId();
+        this.userId = userId;
         Instant now = Instant.now();
         this.updatedAt = now;
         this.createdAt = now;
-        this.lastTime = now;
+        this.lastActiveTime = now;
         this.status = status;
     }
-    public boolean Connectionstatus() {
+    public boolean isOnline() {
         Instant fiveminute =  Instant.now().minus(5, ChronoUnit.MINUTES);
-        if (this.lastTime.isAfter(fiveminute)) {
-            return true;
-        }return false;
-    }
+        return this.lastActiveTime.isAfter(fiveminute); }
 
     public UUID getId() {
         return id;
@@ -49,8 +46,8 @@ public class UserStatus {
         return updatedAt;
     }
 
-    public Instant getLastTime() {
-        return lastTime;
+    public Instant getLastActiveTime() {
+        return lastActiveTime;
     }
 
     public Status getStatus() {

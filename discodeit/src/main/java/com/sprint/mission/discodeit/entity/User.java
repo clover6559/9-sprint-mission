@@ -1,5 +1,8 @@
 package com.sprint.mission.discodeit.entity;
 
+import com.sprint.mission.discodeit.dto.user.UserCreate;
+import com.sprint.mission.discodeit.dto.user.UserUpdate;
+
 import java.io.Serializable;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -8,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class User  implements Serializable {
+public class User implements Serializable {
     private final UUID userId;
     private String userName;
     private String email;
@@ -18,15 +21,23 @@ public class User  implements Serializable {
     private UUID profileId;
 
 
-    public User(String userName, String email, String password, BinaryContent binaryContent) {
+    public User(UserCreate userCreate) {
         this.userId = UUID.randomUUID();
-        this.userName = userName;
+        this.userName = userCreate.basicUserInfo().userName();
         Instant now = Instant.now();
         this.updatedAt = now;
-        this.email = email;
+        this.email = userCreate.basicUserInfo().email();
         this.createdAt = now;
-        this.password = password;
-        this.profileId = binaryContent.getId();
+        this.password = userCreate.basicUserInfo().password();
+
+        if(userCreate.profileImageInfo() != null) {
+            this.profileId = userCreate.profileImageInfo().profileId();
+        }
+
+    }
+    public void updateProfileId(UUID newProfileId) {
+        this.profileId = newProfileId;
+        this.updatedAt = Instant.now();
     }
 
     public UUID getUserId() {
@@ -67,18 +78,18 @@ public class User  implements Serializable {
                 "수정 시간 : " + formatTime(updatedAt) + '\n';
     }
 
-    public String update(String userName, String email, String password) {
+    public String changes(UserUpdate.UserUpdateInfo updateInfo) {
         List<String> changes = new ArrayList<>();
-        if (userName != null && !userName.isBlank()) {
-            this.userName = userName;
+        if (updateInfo.userName() != null && ! updateInfo.userName().isBlank()) {
+            this.userName = updateInfo.userName();
             changes.add("이름 : " + userName);
         }
-        if (email != null && !email.isBlank()) {
-            this.email = email;
+        if (updateInfo.email() != null && !updateInfo.email().isBlank()) {
+            this.email = updateInfo.email();
             changes.add("이메일 : " + email);
         }
-        if (password != null && !password.isBlank()) {
-            this.password = password;
+        if (updateInfo.password() != null && !updateInfo.password().isBlank()) {
+            this.password = updateInfo.password();
             changes.add("비밀번호 : " + password);
         }
         this.updatedAt = Instant.now();

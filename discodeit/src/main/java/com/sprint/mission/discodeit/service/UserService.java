@@ -1,30 +1,27 @@
 package com.sprint.mission.discodeit.service;
 
+import com.sprint.mission.discodeit.dto.user.UserCreate;
+import com.sprint.mission.discodeit.dto.user.UserResponse;
+import com.sprint.mission.discodeit.dto.user.UserUpdate;
 import com.sprint.mission.discodeit.entity.User;
-import com.sprint.mission.discodeit.entity.UserStatus;
-import com.sprint.mission.discodeit.service.serch.UserSearch;
+import com.sprint.mission.discodeit.service.search.UserSearch;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 public interface UserService {
-    public record UserCreate(
-            String userName, String email, String password, UserStatus status) {}
-    public record content(UUID profileId) {}
-    public record UserUpdate(
-            UUID userId, String userName, String email, String password) {}
+
     //생성
-    content create(UserCreate create);
+    User create(UserCreate create);
 
     //조회(Id)
-    User findById(UUID userId);
+    UserResponse findById(UUID userId);
 
     //다건 조회
-    List<User> Search(UserSearch userSearch);
+    List<User> search(UserSearch userSearch);
 
     // 전체조회
-    List<User> findAll();
+    List<UserResponse> findAll();
 
     //수정
     String update(UserUpdate update);
@@ -33,11 +30,9 @@ public interface UserService {
     boolean delete(UUID id);
 
     void printRemainUsers();
+
+    User findByName(String userName);
+    User findByEmail(String email);
     }
-//public record UserCreate(
-//        String userName, String email, String password, UserStatus status) {}
-//public record content(UUID profileId) {}
-//public record UserUpdate(
-//        UUID userId, String userName, String email, String password) {}
 
 

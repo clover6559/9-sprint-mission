@@ -6,7 +6,7 @@ import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.service.ChannelService;
 import com.sprint.mission.discodeit.service.MessageService;
 import com.sprint.mission.discodeit.service.UserService;
-import com.sprint.mission.discodeit.service.serch.MessageSearch;
+import com.sprint.mission.discodeit.service.search.MessageSearch;
 
 import java.io.*;
 import java.nio.file.DirectoryStream;

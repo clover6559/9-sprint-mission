@@ -98,7 +98,7 @@ public class FileUserRepository implements UserRepository {
     public User update(UUID userId, String newUsername, String newEmail, String newPassword) {
         User user = findById(userId)
                 .orElseThrow(() -> new NoSuchElementException("User with id " + userId + " not found"));
-        user.update(newUsername, newEmail, newPassword);
+        user.changes(newUsername, newEmail, newPassword);
         return save(user);
     }
 

@@ -34,9 +34,10 @@ public class JCFUserRepository implements UserRepository {
         public User update(UUID userId, String newUsername, String newEmail, String newPassword) {
         User user = findById(userId)
                 .orElseThrow(() -> new NoSuchElementException("수정할 유저가 없습니다."));
-        user.update(newUsername, newEmail, newPassword);
+        user.changes(newUsername, newEmail, newPassword);
         return user;
         }
+
 
         @Override
         public void deleteById(UUID userId) {
@@ -45,5 +46,15 @@ public class JCFUserRepository implements UserRepository {
             }
             userRepo.remove(userId);
 }
+
+    @Override
+    public User findByName(String userName) {
+        return null;
+    }
+
+    @Override
+    public User findByEmail(String email) {
+        return null;
+    }
 
 }
