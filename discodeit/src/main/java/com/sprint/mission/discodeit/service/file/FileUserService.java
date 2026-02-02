@@ -1,6 +1,8 @@
 package com.sprint.mission.discodeit.service.file;
 
+import com.sprint.mission.discodeit.dto.user.UserCreate;
 import com.sprint.mission.discodeit.dto.user.UserResponse;
+import com.sprint.mission.discodeit.dto.user.UserUpdate;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.service.UserService;
 import com.sprint.mission.discodeit.service.search.UserSearch;
@@ -32,8 +34,8 @@ public class FileUserService implements UserService {
     }
 
     @Override
-    public User create(String username, String email, String password) {
-        User user = new User(username, email, password);
+    public User create(UserCreate userCreate) {
+        User user = new User(userCreate);
         Path path = resolvePath(user.getUserId());
         try (
                 FileOutputStream fos = new FileOutputStream(path.toFile());
@@ -113,9 +115,9 @@ public class FileUserService implements UserService {
     }
 
     @Override
-    public String update(UUID userId, String newUsername, String newEmail, String newPassword) {
+    public String update(UserUpdate update) {
         User userNullable = null;
-        Path path = resolvePath(userId);
+        Path path = resolvePath(update.targetId());
         if (Files.exists(path)) {
             try (
                     FileInputStream fis = new FileInputStream(path.toFile());
@@ -129,7 +131,7 @@ public class FileUserService implements UserService {
 
         User user = Optional.ofNullable(userNullable)
                 .orElseThrow(() -> new NoSuchElementException("User with id " + userId + " not found"));
-        user.changes(newUsername, newEmail, newPassword);
+        user.changes(update.userUpdateInfo());
         try (
                 FileOutputStream fos = new FileOutputStream(path.toFile());
                 ObjectOutputStream oos = new ObjectOutputStream(fos)
@@ -138,7 +140,7 @@ public class FileUserService implements UserService {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return user.changes(newUsername, newEmail, newPassword);
+        return user.changes(update.userUpdateInfo());
     }
 
     @Override
@@ -157,11 +159,21 @@ public class FileUserService implements UserService {
 
     @Override
     public void printRemainUsers() {
-        List<User> users = findAll();
+        List<User> users = resolvePath.
         if (users.isEmpty()) {
             throw new NoSuchElementException("남아있는 유저가 없습니다.");
         }System.out.println("현재 남은 유저 수: " + users.size());
         users.forEach(u -> System.out.println("- " + u.getUserName()));
         }
+
+    @Override
+    public User findByName(String userName) {
+        return null;
     }
+
+    @Override
+    public User findByEmail(String email) {
+        return null;
+    }
+}
 

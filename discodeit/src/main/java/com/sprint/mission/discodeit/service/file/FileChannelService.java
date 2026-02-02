@@ -1,5 +1,6 @@
 package com.sprint.mission.discodeit.service.file;
 
+import com.sprint.mission.discodeit.dto.channel.ChannelResponse;
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.service.ChannelService;
@@ -47,7 +48,7 @@ public class FileChannelService implements ChannelService {
     }
 
     @Override
-    public Channel findCById(UUID channelId) {
+    public ChannelResponse findCById(UUID channelId) {
         Channel channelNullable = null;
         Path path = resolvePath(channelId);
         if (Files.exists(path)) {
@@ -109,7 +110,7 @@ public class FileChannelService implements ChannelService {
 
 
     @Override
-    public List<Channel> findAll() {
+    public List<ChannelResponse> findAllByUserId() {
         try {
             return Files.list(DIRECTORY)
                     .filter(path -> path.toString().endsWith(EXTENSION))
@@ -177,7 +178,7 @@ public class FileChannelService implements ChannelService {
 
     @Override
     public void printRemainChannel() {
-        List<Channel> channels = findAll();
+        List<Channel> channels = findAllByUserId();
         if (channels.isEmpty()) {
             throw new NoSuchElementException("남아있는 채널이 없습니다.");
         }System.out.println("현재 남은 채널 수: " + channels.size());

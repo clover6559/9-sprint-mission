@@ -1,11 +1,16 @@
 package com.sprint.mission.discodeit.entity;
 
+import com.sprint.mission.discodeit.dto.channel.ChannelUpdate;
+import com.sprint.mission.discodeit.dto.channel.CreatePrivate;
+import com.sprint.mission.discodeit.dto.channel.CreatePublic;
+import lombok.Getter;
+
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-
+@Getter
 public class Channel implements Serializable {
     public enum ChannelType {
         PUBLIC, PRIVATE
@@ -19,58 +24,36 @@ public class Channel implements Serializable {
     private ChannelType channelType;
     private String userName;
 
-    public Channel(ChannelType channelType, String channelName, String description, User user) {
-        this.userId = user.getUserId();
+    public Channel(CreatePublic createPublic) {
+        this.userId = createPublic.user().getUserId();
         Instant now = Instant.now();
         this.createdAt = now;
         this.updatedAt = now;
         this.channelId = UUID.randomUUID();
-        this.channelName = channelName;
-        this.description = description;
-        this.channelType = channelType;
-        this.userName = user.getUserName();
+        this.channelName = createPublic.channelName();
+        this.description = createPublic.description();
+        this.channelType = ChannelType.PUBLIC;
+        this.userName = createPublic.user().getUserName();
+    }
+    public Channel(CreatePrivate createPrivate) {
+        this.userId = createPrivate.user().getUserId();
+        Instant now = Instant.now();
+        this.createdAt = now;
+        this.updatedAt = now;
+        this.channelId = UUID.randomUUID();
+//        this.channelName = privateChannel.channelName();
+        this.channelType = ChannelType.PRIVATE;
+//        this.userName = privateChannel.user().getUserName();
     }
 
-    public String getUserName() {
-        return userName;
-    }
-
-    public UUID getUserId() {
-        return userId;
-    }
-
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
-
-    public Instant getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public String getChannelName() {
-        return channelName;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public UUID getChannelId() {
-        return channelId;
-    }
-
-    public ChannelType getChannelType() {
-        return channelType;
-    }
-
-    public String update(String channelName, String description) {
+    public String changes(ChannelUpdate.ChannelUpdateInfo channelUpdateInfo) {
         List<String> changes = new ArrayList<>();
-        if (channelName != null && !channelName.isBlank()) {
-            this.channelName = channelName;
+        if (channelUpdateInfo.channelName() != null && !channelUpdateInfo.channelName().isBlank()) {
+            this.channelName = channelUpdateInfo.channelName();
             changes.add("채널 이름 : " + channelName);
         }
-        if (description != null && !description.isBlank()) {
-            this.description = description;
+        if (channelUpdateInfo.description() != null && !channelUpdateInfo.description().isBlank()) {
+            this.description = channelUpdateInfo.description();
             changes.add("소개 : " + description);
         }
         this.updatedAt = Instant.now();

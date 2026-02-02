@@ -3,9 +3,6 @@ package com.sprint.mission.discodeit;
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.entity.User;
-import com.sprint.mission.discodeit.repository.BinaryContentRepository;
-import com.sprint.mission.discodeit.repository.UserRepository;
-import com.sprint.mission.discodeit.repository.UserStatusRepository;
 import com.sprint.mission.discodeit.service.ChannelService;
 import com.sprint.mission.discodeit.service.search.ChannelSearch;
 import com.sprint.mission.discodeit.service.search.MessageSearch;
@@ -74,11 +71,11 @@ public class JavaApplication {
         result2.forEach(System.out::println);
 
         //전체 채널 조회
-        List<Channel> foundAllChannels = channelService.findAll();
+        List<Channel> foundAllChannels = channelService.findAllByUserId();
         System.out.println("========= 전체 채널 조회 =========");
         foundAllChannels.forEach(System.out::println);
         //전체 채널수 조회
-        List<Channel> foundChannels = channelService.findAll();
+        List<Channel> foundChannels = channelService.findAllByUserId();
         System.out.println("========= 채널 현황 조회 =========" +  '\n' + "남은 채널 : " + foundChannels.size() + "개");
         System.out.println();
 
@@ -142,7 +139,7 @@ public class JavaApplication {
     public static void main(String[] args) {
 
         // 서비스 초기화
-        UserService userService = new JCFUserService(userRepository,userStatusRepository, binaryContentRepository);
+        UserService userService = new JCFUserService();
         ChannelService channelService = new JCFChannelService(userService);
         MessageService messageService = new JCFMessageService(userService, channelService);
 

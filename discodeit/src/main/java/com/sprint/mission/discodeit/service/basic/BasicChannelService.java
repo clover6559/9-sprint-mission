@@ -1,16 +1,19 @@
 package com.sprint.mission.discodeit.service.basic;
 
+import com.sprint.mission.discodeit.dto.channel.ChannelResponse;
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
 import com.sprint.mission.discodeit.service.ChannelService;
 import com.sprint.mission.discodeit.service.search.ChannelSearch;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 @Service
+@RequiredArgsConstructor
 public class BasicChannelService implements ChannelService {
     private final ChannelRepository channelRepository;
 
@@ -25,7 +28,7 @@ public BasicChannelService(ChannelRepository channelRepository) {
     }
 
     @Override
-    public Channel findCById(UUID channelId) {
+    public ChannelResponse findCById(UUID channelId) {
         return channelRepository.findById(channelId)
                 .orElseThrow(()-> new NoSuchElementException("수정할 채널이 없습니다."));
     }
@@ -33,7 +36,7 @@ public BasicChannelService(ChannelRepository channelRepository) {
     @Override
     public List<Channel> Search(ChannelSearch channelSearch) {
         if (channelSearch == null) {
-            return findAll();
+            return findAllByUserId();
         }
         return channelRepository.findAll().stream()
                 .filter(u -> {
@@ -48,7 +51,7 @@ public BasicChannelService(ChannelRepository channelRepository) {
     }
 
     @Override
-    public List<Channel> findAll() {
+    public List<ChannelResponse> findAllByUserId() {
         return channelRepository.findAll();
     }
 

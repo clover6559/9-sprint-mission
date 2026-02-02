@@ -85,7 +85,7 @@ public class JCFUserService implements UserService {
     @Override
     public String update(UserUpdate userUpdate) {
         User findUser = userRepository.findById(userUpdate.targetId())
-                .orElseThrow(() -> new RuntimeException("해당 유저를 찾을 수 없습니다. "));
+                .orElseThrow(() -> new RuntimeException("해당 유저를 찾을 수 없습니다."));
         String changes = findUser.changes(userUpdate.userUpdateInfo());
         if (userUpdate.userUpdateInfo().profileImageInfo() != null) {
             BinaryContent newContent = new BinaryContent(
@@ -109,7 +109,7 @@ public class JCFUserService implements UserService {
     @Override
     public boolean delete(UUID userId) {
         User findUser = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("해당 유저를 찾을 수 없습니다. ID: "));
+                .orElseThrow(() -> new RuntimeException("해당 유저를 찾을 수 없습니다."));
         userStatusRepository.deleteByUserId(userId);
         if (findUser.getProfileId() != null) {
             binaryContentRepository.deleteById(findUser.getProfileId());
@@ -119,9 +119,9 @@ public class JCFUserService implements UserService {
     }
 
     public void printRemainUsers() {
-        List<UserResponse> users = findAll();
+        List<User> users = userRepository.findAll();
         System.out.println("현재 남은 유저 수: " + users.size());
-        users.forEach(u -> System.out.println("- " + u.userName()));
+        users.forEach(u -> System.out.println("- " + u.getUserName()));
     }
 
     @Override

@@ -50,7 +50,7 @@ public class FileApplication {
             // 조회
             Channel foundChannel = channelService.findCById(channel.getChannelId());
             System.out.println("[채널 조회(Id)]" + '\n' + foundChannel.toString());
-            List<Channel> foundChannels = channelService.findAll();
+            List<Channel> foundChannels = channelService.findAllByUserId();
             System.out.println("[채널 전체 조회]");
             foundChannels.forEach(System.out::println);
             // 수정

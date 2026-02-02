@@ -1,11 +1,13 @@
 package com.sprint.mission.discodeit.entity;
 
+import lombok.Getter;
+
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-
+@Getter
 public class Message implements Serializable {
     private UUID userId;
     private String content;
@@ -34,45 +36,6 @@ public class Message implements Serializable {
          this.attachmentIds.add(binaryContent.getId());
     }
 }
-    public UUID getUserId() {
-        return userId;
-    }
-
-    public UUID getChannelId() {
-        return channelId;
-    }
-
-    public Instant getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
-
-    public String getChannelName() {
-        return channelName;
-    }
-
-    public UUID getMessageId() {
-        return messageId;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public List<UUID> getAttachmentIds() {
-        return attachmentIds;
-    }
 
     public String update(String content) {
         List<String> changes = new ArrayList<>();
