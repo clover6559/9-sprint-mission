@@ -72,7 +72,7 @@ public class FileApplication {
             // 조회
             Message foundMessage = messageService.findById(message.getMessageId());
             System.out.println("[메시지 조회(Id)] " + '\n' + foundMessage.toString());
-            List<Message> foundMessages = messageService.findAll();
+            List<Message> foundMessages = messageService.findAllByChannelId();
             System.out.println("[메시지 전체 조회] ");
             foundMessages.forEach(System.out::println);
             // 수정

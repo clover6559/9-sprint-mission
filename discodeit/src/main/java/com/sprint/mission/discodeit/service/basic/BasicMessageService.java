@@ -38,7 +38,7 @@ public class BasicMessageService implements MessageService {
     @Override
     public List<Message> Search(MessageSearch messageSearch) {
         if (messageSearch == null) {
-            return findAll();
+            return findAllByChannelId();
         }
         return messageRepository.findAll().stream()
                 .filter(m -> {
@@ -53,7 +53,7 @@ public class BasicMessageService implements MessageService {
     }
 
     @Override
-    public List<Message> findAll() {
+    public List<Message> findAllByChannelId() {
         return messageRepository.findAll();
     }
 

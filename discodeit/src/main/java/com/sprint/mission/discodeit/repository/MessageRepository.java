@@ -21,4 +21,5 @@ public interface MessageRepository {
     List<Message> findByChannelId(UUID channelId);
 
     boolean deleteByChannelId(UUID channelId);
+
 }

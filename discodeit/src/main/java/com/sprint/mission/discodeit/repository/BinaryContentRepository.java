@@ -8,4 +8,5 @@ public interface BinaryContentRepository {
     BinaryContent save(BinaryContent binaryContent);
     BinaryContent findByRefId(UUID refId);
     void deleteById(UUID id);
+    void deleteByRefId(UUID refId);
 }

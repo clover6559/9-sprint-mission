@@ -119,7 +119,7 @@ public class JavaApplication {
         System.out.println("========= 메시지 조회(강지원, 사담) =========");
         foundMessage2.forEach(System.out::println);
         //전체 메세지 조회
-        List<Message> foundAllMessages = messageService.findAll();
+        List<Message> foundAllMessages = messageService.findAllByChannelId();
         System.out.println("========= 전체 메세지 조회 =========");
         foundAllMessages.forEach(System.out::println);
 

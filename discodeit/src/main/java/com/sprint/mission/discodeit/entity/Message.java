@@ -1,5 +1,6 @@
 package com.sprint.mission.discodeit.entity;
 
+import com.sprint.mission.discodeit.dto.message.MessageCreate;
 import lombok.Getter;
 
 import java.io.Serializable;
@@ -20,22 +21,25 @@ public class Message implements Serializable {
     private UUID messageId;
     private List<UUID> attachmentIds;
 
-    public Message(String content, User user, Channel channel, BinaryContent binaryContent) {
-        this.userId = user.getUserId();
+    public Message(MessageCreate messageCreate) {
+        this.userId = messageCreate.basicMessageInfo().senderId();
         Instant now = Instant.now();
         this.createdAt = now;
         this.updatedAt = now;
-        this.content = content;
-        this.channelId = channel.getChannelId();
-        this.channelName = channel.getChannelName();
-        this.userName = user.getUserName();
-        this.email = user.getEmail();
+        this.content = messageCreate.basicMessageInfo().content();
+        this.channelId = messageCreate.basicMessageInfo().channelId();
+//        this.channelName = messageCreate.basicMessageInfo().
+//        this.userName = user.getUserName();
+//        this.email = user.getEmail();
         this.messageId = UUID.randomUUID();
         this.attachmentIds = new ArrayList<>();
-        if (binaryContent.getId() != null) {
-         this.attachmentIds.add(binaryContent.getId());
-    }
+//        if (messageCreate.binaryCreateDto().data() != null) {
+//         this.attachmentIds.add(binaryContent.getId());
+//    }
 }
+    public void updateAttachmentIds(List<UUID> attachmentIds) {
+        this.attachmentIds = attachmentIds;
+    }
 
     public String update(String content) {
         List<String> changes = new ArrayList<>();

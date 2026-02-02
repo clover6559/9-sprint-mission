@@ -4,6 +4,6 @@ import java.util.UUID;
 
 public record UserCreate(BasicUserInfo basicUserInfo, ProfileImageInfo profileImageInfo){
     public record BasicUserInfo(String userName, String email, String password) {}
-    public record ProfileImageInfo(UUID profileId, String path, String file) {
+    public record ProfileImageInfo(String fileName, byte[] data) {
     }
 }

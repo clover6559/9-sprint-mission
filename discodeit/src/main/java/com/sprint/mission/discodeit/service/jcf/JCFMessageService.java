@@ -1,76 +1,86 @@
 package com.sprint.mission.discodeit.service.jcf;
 
-import com.sprint.mission.discodeit.entity.Channel;
+import com.sprint.mission.discodeit.dto.message.MessageCreate;
+import com.sprint.mission.discodeit.dto.message.MessageUpdate;
+import com.sprint.mission.discodeit.entity.BinaryContent;
 import com.sprint.mission.discodeit.entity.Message;
-import com.sprint.mission.discodeit.entity.User;
-import com.sprint.mission.discodeit.service.ChannelService;
+import com.sprint.mission.discodeit.repository.BinaryContentRepository;
+import com.sprint.mission.discodeit.repository.ChannelRepository;
+import com.sprint.mission.discodeit.repository.MessageRepository;
+import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.service.search.MessageSearch;
 import com.sprint.mission.discodeit.service.MessageService;
-import com.sprint.mission.discodeit.service.UserService;
 
 import java.util.*;
 
 public class JCFMessageService implements MessageService {
-    private final Map<UUID, Message> messageData = new HashMap<>();
+    private final MessageRepository messageRepository;
+    private final ChannelRepository channelRepository;
+    private final UserRepository userRepository;
+    private final BinaryContentRepository binaryContentRepository;
 
-    private final UserService userService;
-    private final ChannelService channelService;
-
-    public JCFMessageService(UserService userService, ChannelService channelService) {
-        this.userService = userService;
-        this.channelService = channelService;
+    public JCFMessageService(MessageRepository messageRepository, ChannelRepository channelRepository,UserRepository userRepository, BinaryContentRepository binaryContentRepository) {
+        this.messageRepository = messageRepository;
+        this.channelRepository = channelRepository;
+        this.userRepository = userRepository;
+        this.binaryContentRepository = binaryContentRepository;
     }
 
     @Override
-    public Message create(String content, User user, Channel channel) {
-        Message message = new Message(content, user, channel);
-        messageData.put(message.getMessageId(), message);
-        return message;
+    public Message create(MessageCreate messageCreate) {
+        Message message = new Message(messageCreate);
+        if (messageCreate.basicMessageInfo().attachments() != null && !messageCreate.basicMessageInfo().attachments().isEmpty()) {
+            List<UUID> savedIds = messageCreate.basicMessageInfo().attachments().stream()
+                    .map(dto -> new BinaryContent(message.getMessageId(), dto.fileName(), dto.data()))
+                    .map(binaryContentRepository::save)
+                    .map(BinaryContent::getId)
+                    .toList();
+            message.updateAttachmentIds(savedIds);
+        }
+        return messageRepository.save(message);
     }
 
     @Override
     public Message findById(UUID messageId) {
-        return messageData.get(messageId);
+        return messageRepository.findById(messageId)
+                .orElseThrow(() -> new RuntimeException("해당 메시지를 찾을 수 없습니다."));
     }
 
     @Override
     public List<Message> Search(MessageSearch messageSearch) {
-        return messageData.values().stream()
+        return messageRepository.findAll().stream()
                 .filter(m-> messageSearch.getUserName() == null || messageSearch.getUserName().equals(m.getUserName()))
                 .filter(m -> messageSearch.getChannelName() == null || messageSearch.getChannelName().equals(m.getChannelName()))
                 .toList();
     }
 
     @Override
-    public List<Message> findAll() {
-        return messageData.values().stream().toList();
+    public List<Message> findAllByChannelId(UUID channelId) {
+        return messageRepository.findByChannelId(channelId);
     }
 
 
     @Override
-    public String update(UUID messageId, String content) {
-        Message foundMessage = messageData.get(messageId);
-        if (foundMessage == null) {
-            throw new IllegalArgumentException("존재하지 않는 메세지입니다.");
-        } foundMessage.update(content);
-        messageData.put(messageId,foundMessage);
-        return foundMessage.update(content);
+    public String update(MessageUpdate messageUpdate) {
+        Message foundMessage = messageRepository.findById(messageUpdate.targetId())
+                .orElseThrow(() -> new RuntimeException("해당 메세지를 찾을 수 없습니다."));
+         foundMessage.update(messageUpdate.content());
+        messageRepository.save(foundMessage);
+        return foundMessage.getContent();
     }
 
     @Override
     public boolean delete(UUID messageId) {
-        if (messageData.get(messageId) == null) {
-            System.out.println("실패 : 존재하지 않는 메세지 Id 입니다");
-            return false;
-        }
-            {messageData.remove(messageId);
-                return true;
-            }
-        }
+        Message findMessage = messageRepository.findById(messageId)
+                .orElseThrow(() -> new RuntimeException("해당 메세지를 찾을 수 없습니다."));
+        binaryContentRepository.deleteByRefId(findMessage.getMessageId());
+        messageRepository.deleteById(messageId);
+        return true;
+         }
 
     @Override
     public void printRemainMessages() {
-        List<Message> messages = findAll();
+        List<Message> messages = messageRepository.findAll();
         System.out.println("현재 남은 메세지 수: " + messages.size());
         messages.forEach(m -> System.out.println("- " + m.getContent()));
     }

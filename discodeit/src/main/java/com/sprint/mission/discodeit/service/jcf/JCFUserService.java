@@ -18,9 +18,9 @@ import java.util.*;
 
 @Repository
 public class JCFUserService implements UserService {
-    private UserRepository userRepository;
-    private UserStatusRepository userStatusRepository;
-    private BinaryContentRepository binaryContentRepository;
+    private final UserRepository userRepository;
+    private final UserStatusRepository userStatusRepository;
+    private final BinaryContentRepository binaryContentRepository;
 
 
     public JCFUserService(UserRepository userRepository, UserStatusRepository userStatusRepository, BinaryContentRepository binaryContentRepository) {
@@ -41,7 +41,7 @@ public class JCFUserService implements UserService {
         userRepository.save(savedUser);
 
         if (userCreate.profileImageInfo() != null) {
-            BinaryContent profileImage = new BinaryContent(savedUser.getUserId(), userCreate.profileImageInfo().path(), userCreate.profileImageInfo().file());
+            BinaryContent profileImage = new BinaryContent(savedUser.getUserId(), userCreate.profileImageInfo().fileName(), userCreate.profileImageInfo().data());
             binaryContentRepository.save(profileImage);
         }
 
@@ -90,8 +90,8 @@ public class JCFUserService implements UserService {
         if (userUpdate.userUpdateInfo().profileImageInfo() != null) {
             BinaryContent newContent = new BinaryContent(
                     findUser.getUserId(),
-                    userUpdate.userUpdateInfo().profileImageInfo().path(),
-                    userUpdate.userUpdateInfo().profileImageInfo().file()
+                    userUpdate.userUpdateInfo().profileImageInfo().fileName(),
+                    userUpdate.userUpdateInfo().profileImageInfo().data()
             );
             binaryContentRepository.save(newContent);
             UUID oldProfileId = findUser.getProfileId();

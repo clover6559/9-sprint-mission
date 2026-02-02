@@ -27,7 +27,7 @@ public class JCFChannelService implements ChannelService {
         this.readStatusRepository = readStatusRepository;
         this.messageRepository = messageRepository;
 }
-
+    @Override
     public Channel create(CreatePublic createPublic) {
         Channel channel = new Channel(createPublic);
         channelRepository.save(channel);

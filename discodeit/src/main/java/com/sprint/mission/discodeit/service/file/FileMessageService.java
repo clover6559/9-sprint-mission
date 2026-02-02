@@ -111,7 +111,7 @@ public class FileMessageService implements MessageService {
 
 
     @Override
-    public List<Message> findAll() {
+    public List<Message> findAllByChannelId() {
         try {
             return Files.list(DIRECTORY)
                     .filter(path -> path.toString().endsWith(EXTENSION))
@@ -179,7 +179,7 @@ public class FileMessageService implements MessageService {
 
     @Override
     public void printRemainMessages() {
-        List<Message> messages = findAll();
+        List<Message> messages = findAllByChannelId();
         if (messages.isEmpty()) {
             throw new NoSuchElementException("남아있는 메시지가 없습니다.");
         }System.out.println("현재 남은 메세지 수: " + messages.size());
