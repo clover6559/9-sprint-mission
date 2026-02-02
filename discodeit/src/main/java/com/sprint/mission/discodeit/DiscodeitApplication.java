@@ -79,7 +79,7 @@ public class DiscodeitApplication {
 		System.out.println("========= 전체 채널 조회 =========");
 		foundAllChannels.forEach(System.out::println);
 		//전체 채널수 조회
-		List<Channel> foundChannels = channelService.findAllByUserId();
+		List<Channel> foundChannels = channelService.findCById(foundChannel.getChannelId());
 		System.out.println("========= 채널 현황 조회 =========" +  '\n' + "남은 채널 : " + foundChannels.size() + "개");
 		System.out.println();
 

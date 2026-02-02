@@ -18,8 +18,8 @@ public class BasicUserService implements UserService {
     private final UserRepository userRepository;
 
     @Override
-    public User create(UserCreate userCreate) {
-        User user = new User(userCreate);
+    public User create(UserCreate UserCreate) {
+        User user = new User(UserCreate);
         return userRepository.save(user);
     }
 

@@ -30,18 +30,18 @@ public class JCFUserService implements UserService {
     }
 
     @Override
-    public User create(UserCreate userCreate) {
-        if (userRepository.findByName(userCreate.basicUserInfo().userName()) != null) {
+    public User create(UserCreate UserCreate) {
+        if (userRepository.findByName(UserCreate.basicUserInfo().userName()) != null) {
             throw new RuntimeException("이미 존재하는 이름입니다.");
         }
-        if (userRepository.findByEmail(userCreate.basicUserInfo().email()) != null) {
+        if (userRepository.findByEmail(UserCreate.basicUserInfo().email()) != null) {
             throw new RuntimeException("이미 존재하는 이메일입니다.");
         }
-        User savedUser = new User(userCreate);
+        User savedUser = new User(UserCreate);
         userRepository.save(savedUser);
 
-        if (userCreate.profileImageInfo() != null) {
-            BinaryContent profileImage = new BinaryContent(savedUser.getUserId(), userCreate.profileImageInfo().fileName(), userCreate.profileImageInfo().data());
+        if (UserCreate.profileImageInfo() != null) {
+            BinaryContent profileImage = new BinaryContent(savedUser.getUserId(), UserCreate.profileImageInfo().fileName(), UserCreate.profileImageInfo().data());
             binaryContentRepository.save(profileImage);
         }
 
@@ -54,7 +54,7 @@ public class JCFUserService implements UserService {
     @Override
     public UserResponse findById(UUID userId) {
         User findUser = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("해당 유저를 찾을 수 없습니다. ID: "));
+                .orElseThrow(() -> new RuntimeException("해당 유저를 찾을 수 없습니다."));
         UserStatus userStatus = userStatusRepository.findByUserId(findUser.getUserId());
         boolean isOnline = userStatus.isOnline();
         return new UserResponse(isOnline, findUser.getUserId(), findUser.getUserName(), findUser.getEmail());
@@ -83,15 +83,15 @@ public class JCFUserService implements UserService {
     }
 
     @Override
-    public String update(UserUpdate userUpdate) {
-        User findUser = userRepository.findById(userUpdate.targetId())
+    public String update(UserUpdate UserUpdate) {
+        User findUser = userRepository.findById(UserUpdate.targetId())
                 .orElseThrow(() -> new RuntimeException("해당 유저를 찾을 수 없습니다."));
-        String changes = findUser.changes(userUpdate.userUpdateInfo());
-        if (userUpdate.userUpdateInfo().profileImageInfo() != null) {
+        String changes = findUser.changes(UserUpdate.userUpdateInfo());
+        if (UserUpdate.userUpdateInfo().profileImageInfo() != null) {
             BinaryContent newContent = new BinaryContent(
                     findUser.getUserId(),
-                    userUpdate.userUpdateInfo().profileImageInfo().fileName(),
-                    userUpdate.userUpdateInfo().profileImageInfo().data()
+                    UserUpdate.userUpdateInfo().profileImageInfo().fileName(),
+                    UserUpdate.userUpdateInfo().profileImageInfo().data()
             );
             binaryContentRepository.save(newContent);
             UUID oldProfileId = findUser.getProfileId();

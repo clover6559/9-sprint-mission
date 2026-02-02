@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+
 @Repository
 public class JCFUserStatusRepository implements UserStatusRepository {
     private final Map<UUID, UserStatus> statusMap = new HashMap<>();

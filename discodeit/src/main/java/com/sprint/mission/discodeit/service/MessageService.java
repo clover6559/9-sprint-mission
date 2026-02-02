@@ -10,7 +10,7 @@ import java.util.UUID;
 
 public interface MessageService {
     //생성
-    Message create(MessageCreate messageCreate);
+    Message create(MessageCreate MessageCreate);
 
     //조회(Id)
     Message findById(UUID messageId);
@@ -22,7 +22,7 @@ public interface MessageService {
     List<Message> findAllByChannelId(UUID channelId);
 
     //수정
-    String update(MessageUpdate messageUpdate);
+    String update(MessageUpdate MessageUpdate);
 
     //삭제
     boolean delete(UUID messageId);

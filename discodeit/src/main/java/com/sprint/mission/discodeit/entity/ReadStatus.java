@@ -10,14 +10,17 @@ public class ReadStatus {
     private UUID userId;
     private UUID channelId;
     private Instant createdAt;
-    private Instant updatedAt;
+    private Instant lastReadAt;
 
-public ReadStatus(User user, Channel channel) {
+public ReadStatus(UUID channelId, UUID userId) {
     this.id = UUID.randomUUID();
-    this.userId = user.getUserId();
-    this.channelId = channel.getChannelId();
+    this.userId = userId;
+    this.channelId = channelId;
     Instant now = Instant.now();
     this.createdAt = now;
-    this.updatedAt = now;
+    this.lastReadAt = now;
+}
+public void updateLastReadAt(Instant lastReadAt) {
+    this.lastReadAt = lastReadAt;
 }
 }

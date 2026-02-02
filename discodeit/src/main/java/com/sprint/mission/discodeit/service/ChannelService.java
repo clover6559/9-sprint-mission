@@ -23,7 +23,7 @@ public interface ChannelService {
     List<ChannelResponse> findAllByUserId(UUID userId);
 
     //수정
-    String update(ChannelUpdate update);
+    String update(ChannelUpdate ChannelUpdate);
 
     //삭제
     boolean delete(UUID channelId);

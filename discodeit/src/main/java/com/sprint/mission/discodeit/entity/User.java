@@ -22,16 +22,16 @@ public class User implements Serializable {
     private UUID profileId;
 
 
-    public User(UserCreate userCreate) {
+    public User(UserCreate UserCreate) {
         this.userId = UUID.randomUUID();
-        this.userName = userCreate.basicUserInfo().userName();
+        this.userName = UserCreate.basicUserInfo().userName();
         Instant now = Instant.now();
         this.updatedAt = now;
-        this.email = userCreate.basicUserInfo().email();
+        this.email = UserCreate.basicUserInfo().email();
         this.createdAt = now;
-        this.password = userCreate.basicUserInfo().password();
-        if(userCreate.profileImageInfo() != null) {
-            this.profileId = userCreate.profileImageInfo().profileId();
+        this.password = UserCreate.basicUserInfo().password();
+        if(UserCreate.profileImageInfo() != null) {
+            this.profileId = UserCreate.profileImageInfo().profileId();
         }
 
     }

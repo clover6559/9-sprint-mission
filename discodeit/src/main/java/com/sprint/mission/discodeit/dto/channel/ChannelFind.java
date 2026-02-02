@@ -6,5 +6,5 @@ import com.sprint.mission.discodeit.entity.User;
 import java.time.Instant;
 import java.util.List;
 
-public record FindChannel(Channel channel, Instant createdAt, List<User> userList) {
+public record ChannelFind(Channel channel, Instant createdAt, List<User> userList) {
 }

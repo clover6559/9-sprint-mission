@@ -21,13 +21,13 @@ public class Message implements Serializable {
     private UUID messageId;
     private List<UUID> attachmentIds;
 
-    public Message(MessageCreate messageCreate) {
-        this.userId = messageCreate.basicMessageInfo().senderId();
+    public Message(MessageCreate MessageCreate) {
+        this.userId = MessageCreate.basicMessageInfo().senderId();
         Instant now = Instant.now();
         this.createdAt = now;
         this.updatedAt = now;
-        this.content = messageCreate.basicMessageInfo().content();
-        this.channelId = messageCreate.basicMessageInfo().channelId();
+        this.content = MessageCreate.basicMessageInfo().content();
+        this.channelId = MessageCreate.basicMessageInfo().channelId();
 //        this.channelName = messageCreate.basicMessageInfo().
 //        this.userName = user.getUserName();
 //        this.email = user.getEmail();

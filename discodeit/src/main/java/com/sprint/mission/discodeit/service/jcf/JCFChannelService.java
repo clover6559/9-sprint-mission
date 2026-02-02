@@ -34,7 +34,7 @@ public class JCFChannelService implements ChannelService {
 
         User member = createPublic.user();
         if (member != null) {
-            ReadStatus readStatus = new ReadStatus(member,channel);
+            ReadStatus readStatus = new ReadStatus(channel.getChannelId(), member.getUserId());
             readStatusRepository.save(readStatus);
         }
        return channel;
@@ -100,13 +100,13 @@ public class JCFChannelService implements ChannelService {
                 }
 
     @Override
-    public String update(ChannelUpdate updateChannel) {
-        Channel foundChannel = channelRepository.findById(updateChannel.targetId())
+    public String update(ChannelUpdate channelUpdateChannel) {
+        Channel foundChannel = channelRepository.findById(channelUpdateChannel.targetId())
                 .orElseThrow(() -> new RuntimeException("해당 채널을 찾을 수 없습니다."));
         if (foundChannel.getChannelType() == Channel.ChannelType.PRIVATE) {
             throw new IllegalArgumentException("수정이 불가능한 채널입니다");
         }
-        String changes = foundChannel.changes(updateChannel.channelUpdateInfo());
+        String changes = foundChannel.changes(channelUpdateChannel.channelUpdateInfo());
              channelRepository.save(foundChannel);
         return changes;
     }

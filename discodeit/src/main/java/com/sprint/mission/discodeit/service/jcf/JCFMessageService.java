@@ -27,10 +27,10 @@ public class JCFMessageService implements MessageService {
     }
 
     @Override
-    public Message create(MessageCreate messageCreate) {
-        Message message = new Message(messageCreate);
-        if (messageCreate.basicMessageInfo().attachments() != null && !messageCreate.basicMessageInfo().attachments().isEmpty()) {
-            List<UUID> savedIds = messageCreate.basicMessageInfo().attachments().stream()
+    public Message create(MessageCreate MessageCreate) {
+        Message message = new Message(MessageCreate);
+        if (MessageCreate.basicMessageInfo().attachments() != null && !MessageCreate.basicMessageInfo().attachments().isEmpty()) {
+            List<UUID> savedIds = MessageCreate.basicMessageInfo().attachments().stream()
                     .map(dto -> new BinaryContent(message.getMessageId(), dto.fileName(), dto.data()))
                     .map(binaryContentRepository::save)
                     .map(BinaryContent::getId)
@@ -61,10 +61,10 @@ public class JCFMessageService implements MessageService {
 
 
     @Override
-    public String update(MessageUpdate messageUpdate) {
-        Message foundMessage = messageRepository.findById(messageUpdate.targetId())
+    public String update(MessageUpdate MessageUpdate) {
+        Message foundMessage = messageRepository.findById(MessageUpdate.targetId())
                 .orElseThrow(() -> new RuntimeException("해당 메세지를 찾을 수 없습니다."));
-         foundMessage.update(messageUpdate.content());
+         foundMessage.update(MessageUpdate.content());
         messageRepository.save(foundMessage);
         return foundMessage.getContent();
     }

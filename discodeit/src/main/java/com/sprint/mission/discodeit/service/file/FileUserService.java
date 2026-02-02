@@ -34,8 +34,8 @@ public class FileUserService implements UserService {
     }
 
     @Override
-    public User create(UserCreate userCreate) {
-        User user = new User(userCreate);
+    public User create(UserCreate UserCreate) {
+        User user = new User(UserCreate);
         Path path = resolvePath(user.getUserId());
         try (
                 FileOutputStream fos = new FileOutputStream(path.toFile());
@@ -115,9 +115,9 @@ public class FileUserService implements UserService {
     }
 
     @Override
-    public String update(UserUpdate update) {
+    public String update(UserUpdate UserUpdate) {
         User userNullable = null;
-        Path path = resolvePath(update.targetId());
+        Path path = resolvePath(UserUpdate.targetId());
         if (Files.exists(path)) {
             try (
                     FileInputStream fis = new FileInputStream(path.toFile());
@@ -131,7 +131,7 @@ public class FileUserService implements UserService {
 
         User user = Optional.ofNullable(userNullable)
                 .orElseThrow(() -> new NoSuchElementException("User with id " + userId + " not found"));
-        user.changes(update.userUpdateInfo());
+        user.changes(UserUpdate.userUpdateInfo());
         try (
                 FileOutputStream fos = new FileOutputStream(path.toFile());
                 ObjectOutputStream oos = new ObjectOutputStream(fos)
@@ -140,7 +140,7 @@ public class FileUserService implements UserService {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return user.changes(update.userUpdateInfo());
+        return user.changes(UserUpdate.userUpdateInfo());
     }
 
     @Override
