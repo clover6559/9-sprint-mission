@@ -1,13 +1,11 @@
 package com.sprint.mission.discodeit.entity;
 
-import com.sprint.mission.discodeit.dto.UserStatus.StatusType;
 import lombok.Getter;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
-import static java.time.LocalTime.now;
 @Getter
 public class UserStatus {
     private UUID id;
@@ -38,5 +36,6 @@ public class UserStatus {
     public void updateUserStatus(String statusMessage, UserStatus.Status statusType) {
         this.statusMessage = statusMessage;
         this.status = statusType;
+        this.lastActiveTime = lastActiveTime;
     }
 }

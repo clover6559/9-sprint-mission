@@ -16,7 +16,7 @@ public interface MessageService {
     Message findById(UUID messageId);
 
     //다건 조회 & 전체조회
-    List<Message> Search(MessageSearch condition);
+    List<Message> search(MessageSearch condition);
 
     // 전체조회
     List<Message> findAllByChannelId(UUID channelId);
