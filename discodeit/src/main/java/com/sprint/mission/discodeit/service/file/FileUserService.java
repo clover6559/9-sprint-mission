@@ -144,13 +144,13 @@
 //    }
 //
 //    @Override
-//    public boolean delete(UUID userId) {
+//    public boolean deleteById(UUID userId) {
 //        Path path = resolvePath(userId);
 //        if (Files.notExists(path)) {
 //            throw new NoSuchElementException("User with id " + userId + " not found");
 //        }
 //        try {
-//            Files.delete(path);
+//            Files.deleteById(path);
 //        } catch (IOException e) {
 //            throw new RuntimeException(e);
 //        }

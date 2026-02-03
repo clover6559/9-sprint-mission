@@ -25,7 +25,7 @@
 //    }
 //
 //    @Override
-//    public BinaryContent find(UUID id) {
+//    public BinaryContent findById(UUID id) {
 //        return binaryContentRepository.findById(id)
 //                .orElseThrow(() -> new RuntimeException("해당 바이너리 데이터를 찾을 수 없습니다."));
 //    }
@@ -38,7 +38,7 @@
 //    }
 //
 //    @Override
-//    public boolean delete(UUID id) {
+//    public boolean deleteById(UUID id) {
 //        binaryContentRepository.findById(id)
 //                .orElseThrow(() -> new RuntimeException("해당 바이너리 데이터를 찾을 수 없습니다."));
 //        binaryContentRepository.deleteById(id);

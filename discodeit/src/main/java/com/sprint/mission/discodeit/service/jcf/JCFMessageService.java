@@ -70,7 +70,7 @@
 //    }
 //
 //    @Override
-//    public boolean delete(UUID messageId) {
+//    public boolean deleteById(UUID messageId) {
 //        Message findMessage = messageRepository.findById(messageId)
 //                .orElseThrow(() -> new RuntimeException("해당 메세지를 찾을 수 없습니다."));
 //        binaryContentRepository.deleteByRefId(findMessage.getMessageId());

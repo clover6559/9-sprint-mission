@@ -163,13 +163,13 @@
 //
 //
 //    @Override
-//    public boolean delete(UUID channelId) {
+//    public boolean deleteById(UUID channelId) {
 //        Path path = resolvePath(channelId);
 //        if (Files.notExists(path)) {
 //            throw new NoSuchElementException("Channel with id " + channelId + " not found");
 //        }
 //        try {
-//            Files.delete(path);
+//            Files.deleteById(path);
 //        } catch (IOException e) {
 //            throw new RuntimeException(e);
 //        }

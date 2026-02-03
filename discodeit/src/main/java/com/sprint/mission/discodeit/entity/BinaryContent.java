@@ -1,8 +1,10 @@
 package com.sprint.mission.discodeit.entity;
 
+import lombok.Getter;
+
 import java.time.Instant;
 import java.util.UUID;
-
+@Getter
 public class BinaryContent {
     private final UUID id;
     private final Instant createdAt;
@@ -18,23 +20,4 @@ public BinaryContent(UUID refId, String fileName, byte[] data) {
     this.createdAt = Instant.now();
 }
 
-    public UUID getId() {
-        return id;
-    }
-
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
-
-    public UUID getRefId() {
-        return refId;
-    }
-
-    public String getFileName() {
-        return fileName;
-    }
-
-    public byte[] getData() {
-        return data;
-    }
 }

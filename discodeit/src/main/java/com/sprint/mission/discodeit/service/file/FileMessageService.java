@@ -164,13 +164,13 @@
 //
 //
 //    @Override
-//    public boolean delete(UUID messageId) {
+//    public boolean deleteById(UUID messageId) {
 //        Path path = resolvePath(messageId);
 //        if (Files.notExists(path)) {
 //            throw new NoSuchElementException("MassageId with id " + messageId + " not found");
 //        }
 //        try {
-//            Files.delete(path);
+//            Files.deleteById(path);
 //        } catch (IOException e) {
 //            throw new RuntimeException(e);
 //        }

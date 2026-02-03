@@ -109,7 +109,7 @@
 //
 //
 //    @Override
-//    public boolean delete(UUID userId) {
+//    public boolean deleteById(UUID userId) {
 //        User findUser = userRepository.findById(userId)
 //                .orElseThrow(() -> new RuntimeException("해당 유저를 찾을 수 없습니다."));
 //        userStatusRepository.deleteByUserId(userId);

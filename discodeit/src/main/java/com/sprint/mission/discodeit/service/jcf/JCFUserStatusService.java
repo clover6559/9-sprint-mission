@@ -33,8 +33,8 @@
 //    }
 //
 //    @Override
-//    public UserStatus find(UUID id) {
-//        return userStatusRepository.find(id)
+//    public UserStatus findById(UUID id) {
+//        return userStatusRepository.findById(id)
 //                .orElseThrow(() -> new RuntimeException("해당 유저 상태를 찾을 수 없습니다."));
 //
 //    }
@@ -54,17 +54,17 @@
 //
 //    @Override
 //    public UserStatus update(UserStatusUpdate update) {
-//        UserStatus userStatus = userStatusRepository.find(update.id())
+//        UserStatus userStatus = userStatusRepository.findById(update.id())
 //                .orElseThrow(() -> new RuntimeException("해당 유저 상태를 찾을 수 없습니다."));
 //        userStatus.updateUserStatus(update.statusMessage(), update.statusType());
 //        return userStatusRepository.save(userStatus);
 //    }
 //
 //    @Override
-//    public boolean delete(UUID id) {
-//        userStatusRepository.find(id)
+//    public boolean deleteById(UUID id) {
+//        userStatusRepository.findById(id)
 //                .orElseThrow(() -> new RuntimeException("해당 유저 상태를 찾을 수 없습니다."));
-//        userStatusRepository.delete(id);
+//        userStatusRepository.deleteById(id);
 //        return true;
 //    }
 //}

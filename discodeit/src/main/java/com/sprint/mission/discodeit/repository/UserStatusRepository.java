@@ -8,15 +8,11 @@ import java.util.UUID;
 
 public interface UserStatusRepository {
     UserStatus save(UserStatus userStatus);
+    Optional<UserStatus> findById(UUID id);
     Optional<UserStatus> findByUserId(UUID userId);
     boolean existsByUserId(UUID userId);
-    Optional<UserStatus> find(UUID id);
-
-
-    //    UserStatus update(UserStatusUpdate update);
-    void deleteByUserId(UUID userId);
-    void delete(UUID id);
     List<UserStatus> findAll();
-//    UserStatus updateByUserId(UUID userId);
+    void deleteByUserId(UUID userId);
+    void deleteById(UUID id);
 }
 

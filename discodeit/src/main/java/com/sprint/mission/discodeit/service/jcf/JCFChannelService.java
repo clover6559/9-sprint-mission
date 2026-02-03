@@ -113,7 +113,7 @@
 //
 //
 //    @Override
-//    public boolean delete(UUID channelId) {
+//    public boolean deleteById(UUID channelId) {
 //        Channel findChannel = channelRepository.findById(channelId)
 //                .orElseThrow(() -> new RuntimeException("해당 채널을를 찾을 수 없습니다."));
 //        messageRepository.deleteByChannelId(findChannel.getChannelId());

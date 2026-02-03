@@ -41,7 +41,7 @@
 //    }
 //
 //    @Override
-//    public ReadStatus find(UUID id) {
+//    public ReadStatus findById(UUID id) {
 //          return readStatusRepository.findById(id)
 //                  .orElseThrow(() -> new RuntimeException("해당 읽음상태를 찾을 수 없습니다."));
 //    }
@@ -55,7 +55,7 @@
 //    }
 //
 //    @Override
-//    public boolean delete(UUID id) {
+//    public boolean deleteById(UUID id) {
 //        readStatusRepository.findById(id)
 //                .orElseThrow(() -> new RuntimeException("해당 읽음 상태를 찾을 수 없습니다."));
 //        readStatusRepository.deleteById(id);

@@ -31,17 +31,21 @@ public class JCFMessageRepository implements MessageRepository {
         return messageRepo.containsKey(messageId);
     }
 
-    public Message update(UUID messageId, String content) {
-        Message message = findById(messageId)
-                .orElseThrow(()-> new NoSuchElementException("수정할 메세지가 없습니다."));
-        message.update(content);
-        return message;
+
+    @Override
+    public void deleteById(UUID messageId) {
+        messageRepo.remove(messageId);
+        }
+
+    @Override
+    public List<Message> findByChannelId(UUID channelId) {
+        return messageRepo.values().stream()
+                .filter(message -> message.getChannelId().equals(channelId))
+                .toList();
     }
 
     @Override
-    public void deleteById(UUID messageId) { if (messageRepo.get(messageId) == null) {
-        System.out.println("실패 : 존재하지 않는 채널 Id 입니다");
+    public void deleteByChannelId(UUID channelId) {
+        messageRepo.values().removeIf(message -> message.getChannelId().equals(channelId));
     }
-        messageRepo.remove(messageId);
-        }
 }
