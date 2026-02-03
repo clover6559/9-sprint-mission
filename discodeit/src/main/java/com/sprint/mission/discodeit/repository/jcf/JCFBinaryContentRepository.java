@@ -29,4 +29,9 @@ public class JCFBinaryContentRepository implements BinaryContentRepository {
         binaryContentMap.remove(id);
 
     }
+
+    @Override
+    public void deleteByRefId(UUID refId) {
+
+    }
 }
