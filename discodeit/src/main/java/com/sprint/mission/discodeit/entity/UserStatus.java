@@ -1,56 +1,42 @@
 package com.sprint.mission.discodeit.entity;
 
+import com.sprint.mission.discodeit.dto.UserStatus.StatusType;
+import lombok.Getter;
+
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 import static java.time.LocalTime.now;
-
+@Getter
 public class UserStatus {
     private UUID id;
     private UUID userId;
     private final Instant createdAt;
     private Instant updatedAt;
     private Instant lastActiveTime;
+    private String statusMessage;
     public enum Status {
-        ONLINE, OFFLINE
+        ONLINE, AWAY, OFFLINE
     }
     private Status status;
 
-    public UserStatus(Status status, UUID userId) {
+    public UserStatus(UUID userId, String statusMessage, Status statusType) {
         this.id = UUID.randomUUID();
         this.userId = userId;
         Instant now = Instant.now();
         this.updatedAt = now;
         this.createdAt = now;
         this.lastActiveTime = now;
-        this.status = status;
+        this.statusMessage = statusMessage;
+        this.status = statusType;
     }
     public boolean isOnline() {
         Instant fiveminute =  Instant.now().minus(5, ChronoUnit.MINUTES);
         return this.lastActiveTime.isAfter(fiveminute); }
 
-    public UUID getId() {
-        return id;
-    }
-
-    public UUID getUserId() {
-        return userId;
-    }
-
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
-
-    public Instant getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public Instant getLastActiveTime() {
-        return lastActiveTime;
-    }
-
-    public Status getStatus() {
-        return status;
+    public void updateUserStatus(String statusMessage, UserStatus.Status statusType) {
+        this.statusMessage = statusMessage;
+        this.status = statusType;
     }
 }
