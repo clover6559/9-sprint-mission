@@ -4,7 +4,6 @@ import com.sprint.mission.discodeit.entity.ReadStatus;
 import com.sprint.mission.discodeit.repository.ReadStatusRepository;
 import org.springframework.stereotype.Repository;
 
-import javax.xml.crypto.NoSuchMechanismException;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;

@@ -2,7 +2,6 @@ package com.sprint.mission.discodeit.repository.jcf;
 
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
-import org.springframework.stereotype.Repository;
 
 import java.util.*;
 
@@ -14,7 +13,7 @@ public class JCFChannelRepository implements ChannelRepository {
 
     @Override
     public Channel save(Channel channel) {
-        channelRepo.put(channel.getChannelId(), channel);
+        channelRepo.put(channel.getId(), channel);
         return channel;
     }
 

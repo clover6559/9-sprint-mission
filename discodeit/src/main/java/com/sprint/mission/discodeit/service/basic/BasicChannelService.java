@@ -27,18 +27,32 @@ public class BasicChannelService implements ChannelService {
     private final MessageRepository messageRepository;
 
     @Override
-    public Channel create(CreatePublic createPublic) {
+    public Channel createPublicChannel(CreatePublic createPublic) {
         Channel channel = new Channel(createPublic);
         channelRepository.save(channel);
 
         User member = createPublic.user();
         if (member != null) {
-            ReadStatus readStatus = new ReadStatus(channel.getChannelId(), member.getUserId());
+            ReadStatus readStatus = new ReadStatus(channel.getId(), member.getId());
             readStatusRepository.save(readStatus);
         }
         return channel;
     }
-    public Channel create(CreatePrivate createPrivate) {
+
+    @Override
+    public Channel createPrivateChannel(CreatePrivate createPrivate) {
+        Channel channel = new Channel(createPrivate);
+        channelRepository.save(channel);
+
+        User member = createPrivate.user();
+        if (member != null) {
+            ReadStatus readStatus = new ReadStatus(channel.getId(), member.getId());
+            readStatusRepository.save(readStatus);
+        }
+        return channel;
+    }
+
+    public Channel createPublicChannel(CreatePrivate createPrivate) {
         Channel channel = new Channel(createPrivate);
         channelRepository.save(channel);
         return channel;
@@ -65,7 +79,7 @@ public class BasicChannelService implements ChannelService {
     }
 
     @Override
-    public List<Channel> Search(ChannelSearch channelSearch) {
+    public List<Channel> search(ChannelSearch channelSearch) {
         return channelRepository.findAll().stream()
                 .filter(c -> channelSearch.getUserName() == null || channelSearch.getUserName().equals(c.getUserName()))
                 .filter(c -> channelSearch.getChannelName() == null || channelSearch.getChannelName().equals(c.getChannelName()))
@@ -79,11 +93,11 @@ public class BasicChannelService implements ChannelService {
                     if (channel.getChannelType() == Channel.ChannelType.PUBLIC)
                         return true;
                     if (channel.getChannelType() == Channel.ChannelType.PRIVATE)
-                        return readStatusRepository.existsByChannelIdAndUserId(channel.getChannelId(), userId);
+                        return readStatusRepository.existsByChannelIdAndUserId(channel.getId(), userId);
                     return false;
                 })
                 .map(channel -> {
-                    UUID currentId = channel.getChannelId();
+                    UUID currentId = channel.getId();
                     Instant lastMessageAt = messageRepository.findByChannelId(currentId).stream()
                             .map(Message::getCreatedAt)
                             .max(Comparator.naturalOrder())
@@ -115,7 +129,7 @@ public class BasicChannelService implements ChannelService {
     public boolean delete(UUID channelId) {
         Channel findChannel = channelRepository.findById(channelId)
                 .orElseThrow(() -> new RuntimeException("해당 채널을를 찾을 수 없습니다."));
-        messageRepository.deleteByChannelId(findChannel.getChannelId());
+        messageRepository.deleteByChannelId(findChannel.getId());
         readStatusRepository.deleteByChannelId(channelId);
         channelRepository.deleteById(channelId);
         return true;

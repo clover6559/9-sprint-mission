@@ -1,12 +1,9 @@
 package com.sprint.mission.discodeit.repository.file;
 
 import com.sprint.mission.discodeit.entity.BinaryContent;
-import com.sprint.mission.discodeit.entity.ReadStatus;
-import com.sprint.mission.discodeit.entity.UserStatus;
 import com.sprint.mission.discodeit.repository.BinaryContentRepository;
 import org.springframework.stereotype.Repository;
 
-import javax.xml.crypto.NoSuchMechanismException;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -114,9 +111,7 @@ public class FileBinaryContentRepository implements BinaryContentRepository {
 
     @Override
     public void deleteByRefId(UUID refId) {
-        BinaryContent binaryContent = findByRefId(refId)
-                .orElseThrow(() -> new NoSuchElementException("해당 첨부파일 정보가 없습니다: " + refId));
-        deleteById(binaryContent.getId());
+        findByRefId(refId).ifPresent(content -> deleteById(content.getId()));
     }
 
     @Override

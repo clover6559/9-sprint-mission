@@ -2,6 +2,7 @@ package com.sprint.mission.discodeit.service;
 
 import com.sprint.mission.discodeit.dto.channel.ChannelResponse;
 import com.sprint.mission.discodeit.dto.channel.ChannelUpdate;
+import com.sprint.mission.discodeit.dto.channel.CreatePrivate;
 import com.sprint.mission.discodeit.dto.channel.CreatePublic;
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.service.search.ChannelSearch;
@@ -11,13 +12,14 @@ import java.util.UUID;
 
 public interface ChannelService {
     //생성
-    Channel create(CreatePublic createPublic);
+    Channel createPublicChannel(CreatePublic createPublic);
+    Channel createPrivateChannel(CreatePrivate createPrivate);
 
     //조회(Id)
     ChannelResponse findCById(UUID channelId);
 
     //다건 조회
-    List<Channel> Search(ChannelSearch channelSearch);
+    List<Channel> search(ChannelSearch channelSearch);
 
     // 전체조회
     List<ChannelResponse> findAllByUserId(UUID userId);

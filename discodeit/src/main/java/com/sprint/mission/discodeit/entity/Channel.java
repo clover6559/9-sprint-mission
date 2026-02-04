@@ -20,27 +20,27 @@ public class Channel implements Serializable {
     private Instant updatedAt;
     private String channelName;
     private String description;
-    private UUID channelId;
+    private UUID id;
     private ChannelType channelType;
     private String userName;
 
     public Channel(CreatePublic createPublic) {
-        this.userId = createPublic.user().getUserId();
+        this.userId = createPublic.user().getId();
         Instant now = Instant.now();
         this.createdAt = now;
         this.updatedAt = now;
-        this.channelId = UUID.randomUUID();
+        this.id = UUID.randomUUID();
         this.channelName = createPublic.channelName();
         this.description = createPublic.description();
         this.channelType = ChannelType.PUBLIC;
         this.userName = createPublic.user().getUserName();
     }
     public Channel(CreatePrivate createPrivate) {
-        this.userId = createPrivate.user().getUserId();
+        this.userId = createPrivate.user().getId();
         Instant now = Instant.now();
         this.createdAt = now;
         this.updatedAt = now;
-        this.channelId = UUID.randomUUID();
+        this.id = UUID.randomUUID();
 //        this.channelName = privateChannel.channelName();
         this.channelType = ChannelType.PRIVATE;
 //        this.userName = privateChannel.user().getUserName();
@@ -67,7 +67,7 @@ public class Channel implements Serializable {
                 "유저 이름 : " + userName  + '\n' +
                 "채널 타입 : " + channelType + '\n' +
                 "채널 이름 : " + channelName + '\n' +
-                "채널 ID : " + channelId + '\n' +
+                "채널 ID : " + id + '\n' +
                 "채널 소개 : " + description + '\n' +
                 "생성시간 : " + User.formatTime(createdAt) + '\n' +
                 "수정시간 : " + User.formatTime(updatedAt) + '\n';

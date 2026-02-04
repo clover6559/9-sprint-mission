@@ -4,7 +4,6 @@ import com.sprint.mission.discodeit.entity.UserStatus;
 import com.sprint.mission.discodeit.repository.UserStatusRepository;
 import org.springframework.stereotype.Repository;
 
-import javax.xml.crypto.NoSuchMechanismException;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -99,9 +98,11 @@ public class FileUserStatusRepository implements UserStatusRepository {
 
     @Override
     public void deleteByUserId(UUID userId) {
-        UserStatus status = findByUserId(userId)
+        UserStatus status = findAll().stream()
+                .filter(target -> target.getUserId().equals(userId))
+                .findFirst()
                 .orElseThrow(() -> new NoSuchElementException("해당 유저의 상태 정보가 없습니다: " + userId));
-        deleteById(status.getUserId());
+        deleteById(status.getId());
     }
 
     @Override

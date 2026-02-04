@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.UUID;
 @Getter
 public class User implements Serializable {
+    private static final long serialVersionUID = 1L;
     private final UUID id;
     private String userName;
     private String email;

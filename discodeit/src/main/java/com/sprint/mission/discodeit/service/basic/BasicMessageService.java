@@ -46,8 +46,18 @@ public class BasicMessageService implements MessageService {
     @Override
     public List<Message> search(MessageSearch messageSearch) {
         return messageRepository.findAll().stream()
-                .filter(m-> messageSearch.getUserName() == null || messageSearch.getUserName().equals(m.getUserName()))
-                .filter(m -> messageSearch.getChannelName() == null || messageSearch.getChannelName().equals(m.getChannelName()))
+                .filter(m -> {
+                    if (messageSearch.getUserName() == null) return true;
+                    return userRepository.findById(m.getUserId())
+                            .map(u -> u.getUserName().equals(messageSearch.getUserName()))
+                            .orElse(false);
+                })
+                .filter(m -> {
+                    if (messageSearch.getChannelName() == null) return true;
+                    return channelRepository.findById(m.getChannelId())
+                            .map(c -> c.getChannelName().equals(messageSearch.getChannelName()))
+                            .orElse(false);
+                })
                 .toList();
     }
 
@@ -81,5 +91,5 @@ public class BasicMessageService implements MessageService {
         System.out.println("현재 남은 메세지 수: " + messages.size());
         messages.forEach(m -> System.out.println("- " + m.getContent()));
     }
-
 }
+

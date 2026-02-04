@@ -12,7 +12,7 @@ import java.util.UUID;
 public interface UserService {
 
     //생성
-    User create(UserCreate UserCreate);
+    User create(UserCreate userCreate);
 
     //조회(Id)
     UserResponse findById(UUID userId);
@@ -24,7 +24,7 @@ public interface UserService {
     List<UserResponse> findAll();
 
     //수정
-    String update(UserUpdate UserUpdate);
+    String update(UserUpdate userUpdate);
 
     //삭제
     boolean delete(UUID id);

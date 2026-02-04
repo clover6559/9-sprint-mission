@@ -1,5 +1,14 @@
 package com.sprint.mission.discodeit;
 
+import com.sprint.mission.discodeit.dto.channel.ChannelResponse;
+import com.sprint.mission.discodeit.dto.channel.ChannelUpdate;
+import com.sprint.mission.discodeit.dto.channel.CreatePrivate;
+import com.sprint.mission.discodeit.dto.channel.CreatePublic;
+import com.sprint.mission.discodeit.dto.message.MessageCreate;
+import com.sprint.mission.discodeit.dto.message.MessageUpdate;
+import com.sprint.mission.discodeit.dto.user.UserCreate;
+import com.sprint.mission.discodeit.dto.user.UserResponse;
+import com.sprint.mission.discodeit.dto.user.UserUpdate;
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.entity.User;
@@ -15,39 +24,40 @@ import org.springframework.context.ConfigurableApplicationContext;
 
 import java.util.List;
 
-import static com.sprint.mission.discodeit.FileApplication.setupChannel;
-import static com.sprint.mission.discodeit.FileApplication.setupUser;
-
 @SpringBootApplication
 public class DiscodeitApplication {
 
 	static void userCRUDTest(UserService userService) {
 		// 생성
 		System.out.println("========= [User] =========");
-		User user = userService.create("육선우","senwoo@gmail.com", "1456d25e");
+		UserCreate.BasicUserInfo userInfo = new UserCreate.BasicUserInfo("육선우","senwoo@gmail.com", "1456d25e");
+		UserCreate create = new UserCreate(userInfo, null);
+		User user = userService.create(create);
 		System.out.println("========= 유저 생성 =========" + '\n' +  user.toString());
 
 		// 조회(ID)
-		User foundUser = userService.findById(user.getUserId());
+		UserResponse foundUser = userService.findById(user.getId());
 		System.out.println("========= 유저 조회(ID) =========" +  '\n' +  foundUser.toString());
 		//조건 1개(이름)
-		UserSearch userSearch = new UserSearch("김사연");
-		List<User> foundUserByName = userService.Search(userSearch);
-		System.out.println("=========유저 조회(김사연) =========" );
+		UserSearch userSearch = new UserSearch("육선우");
+		List<User> foundUserByName = userService.search(userSearch);
+		System.out.println("=========유저 조회(육선우) =========" );
 		foundUserByName.forEach(System.out::println);
 		//전체 유저 조회
-		List<User> foundAllUsers = userService.findAll();
+		List<UserResponse> foundAllUsers = userService.findAll();
 		System.out.println("========= 전체 유저 조회 =========");
 		foundAllUsers.forEach(System.out::println);
 
 		// 수정
-		String updateUser = userService.update(user.getUserId(), null, null, "woody5678");
-		System.out.println("=========유저 수정 ========= " + '\n' + "[변경 사항]" + '\n' + updateUser);
+		UserUpdate.UserUpdateInfo updateInfo = new UserUpdate.UserUpdateInfo(null, null, "woody5678", null);
+		UserUpdate update = new UserUpdate(user.getId(), updateInfo);
+		String updateMessage = userService.update(update);
+		System.out.println("=========유저 수정 ========= " + '\n' + "[변경 사항]" + '\n' + updateMessage);
 		System.out.println();
-		System.out.println("[현재 유저 정보] " + '\n' + user);
+		System.out.println("[현재 유저 정보] " + '\n' + update);
 
 		//삭제
-		userService.delete(user.getUserId());
+		userService.delete(user.getId());
 		System.out.println("========= 유저 삭제 =========");
 		userService.printRemainUsers();
 		System.out.println();
@@ -56,79 +66,82 @@ public class DiscodeitApplication {
 	static void channelCRUDTest(ChannelService channelService, UserService userService) {
 		// 생성
 		System.out.println("========= [Channel] =========");
-		User user = userService.create("이진용","jinyoong@gmail.com", "566wrsd");
-		Channel channel = channelService.create(Channel.ChannelType.PUBLIC, "공지", "공지 채널입니다.", user);
+		UserCreate.BasicUserInfo userInfo = new UserCreate.BasicUserInfo("이진용","jinyoong@gmail.com", "566wrsd");
+		UserCreate create = new UserCreate(userInfo, null);
+		User user = userService.create(create);
+		CreatePublic createPublic = new CreatePublic("공지", "공지 채널입니다.", user);
+		Channel channel = channelService.createPublicChannel(createPublic);
 		System.out.println("========= 채널 생성 =========" + '\n' + channel.toString());
 
 		// 조회(ID)
-		Channel foundChannel = channelService.findCById(channel.getChannelId());
+		ChannelResponse foundChannel = channelService.findCById(channel.getId());
 		System.out.println("=========채널 조회(ID)========="+ '\n' + foundChannel.toString());
 		//조건 1개 조회(이름)
-		ChannelSearch channelSearch = new ChannelSearch("김사연",null);
-		List<Channel> result = channelService.Search(channelSearch);
-		System.out.println("========= 채널 조회(김사연) =========");
+		ChannelSearch channelSearch = new ChannelSearch("이진용",null);
+		List<Channel> result = channelService.search(channelSearch);
+		System.out.println("========= 채널 조회(이진용) =========");
 		result.forEach(System.out::println);
 		//조건 2개 조회(이름, 채널이름)
 		ChannelSearch channelSearch1 = new ChannelSearch("김사연", "공지");
-		List<Channel> result2 = channelService.Search(channelSearch1);
+		List<Channel> result2 = channelService.search(channelSearch1);
 		System.out.println("========= 채널 조회(김사연, 공지) =========" );
 		result2.forEach(System.out::println);
 
 		//전체 채널 조회
-		List<Channel> foundAllChannels = channelService.findAllByUserId();
+		List<ChannelResponse> foundAllChannels = channelService.findAllByUserId(user.getId());
 		System.out.println("========= 전체 채널 조회 =========");
 		foundAllChannels.forEach(System.out::println);
-		//전체 채널수 조회
-		List<Channel> foundChannels = channelService.findCById(foundChannel.getChannelId());
-		System.out.println("========= 채널 현황 조회 =========" +  '\n' + "남은 채널 : " + foundChannels.size() + "개");
-		System.out.println();
 
 		// 수정
-		String updateChannel = channelService.update(channel.getChannelId(), "공지사항", null);
-		System.out.println("========= 채널 수정 =========" + '\n' + "[변경 사항]" + '\n' + updateChannel);
+		ChannelUpdate.ChannelUpdateInfo channelUpdateInfo= new ChannelUpdate.ChannelUpdateInfo("공지사항", null);
+		ChannelUpdate update = new ChannelUpdate(channel.getId(), channelUpdateInfo);
+		String updateMessage = channelService.update(update);
+		System.out.println("========= 채널 수정 =========" + '\n' + "[변경 사항]" + '\n' + updateMessage);
 		System.out.println();
 		System.out.println("[현재 채널 정보] " + '\n' + channel);
 
 		// 삭제
-		channelService.delete(channel.getChannelId());
+		channelService.delete(channel.getId());
 		System.out.println("========= 채널 삭제 =========");
 		channelService.printRemainChannel();
 		System.out.println();
 	}
 
 	static void messageCRUDTest(MessageService messageService, UserService userService, ChannelService channelService) {
-		User user = userService.create("강지원","jinyoong@gmail.com", "566wrsd");
-		User user1 = userService.create("육선우","senwoo@gmail.com", "1456d25e");
-		Channel channel = channelService.create(Channel.ChannelType.PRIVATE, "사담", "사담합시다", user);
+		User user = userService.create(new UserCreate(new UserCreate.BasicUserInfo("강지원","jiwon@gmail.com", "566wrsd"), null));
+		User user1 = userService.create(new UserCreate(new UserCreate.BasicUserInfo("육선우","senwoo@gmail.com", "1456d25e"), null));
+		Channel channel = channelService.createPrivateChannel(new CreatePrivate(user));
 
 		// 생성
-		Message message = messageService.create("안녕하세요.", user, channel);
-		Message message1 =  messageService.create("안녕하세요", user1, channel);
-		Message message2 =  messageService.create("뭐하시나요", user, channel);
+		MessageCreate.BasicMessageInfo messageInfo = new MessageCreate.BasicMessageInfo(channel.getId(),user1.getId(),"안녕하세요.",null);
+		MessageCreate createDto = new MessageCreate(messageInfo, null);
+//		Message message2 =  messageService.create("뭐하시나요", user, channel);
 		System.out.println("========= [Message] =========");
+		Message message = messageService.create(createDto);
 		System.out.println("========= 메시지 생성 =========" + '\n' + message.toString());
 
 		// 조회(ID)
-		Message foundMessage = messageService.findById(message1.getId());
+		Message foundMessage = messageService.findById(message.getId());
 		System.out.println("========= 메시지 조회(단건) =========" + '\n' + foundMessage.toString());
 		//조건 1개 조회(이름)
 		MessageSearch Search1 = new MessageSearch("강지원", null);
-		List<Message> foundMessages = messageService.Search(Search1);
+		List<Message> foundMessages = messageService.search(Search1);
 		System.out.println("========= 메시지 조회(강지원) =========");
 		foundMessages.forEach(System.out::println);
 
 		//조건 2개(이름, 채널명)
 		MessageSearch messageSearch2 = new MessageSearch("강지원","사담");
-		List<Message> foundMessage2 = messageService.Search(messageSearch2);
+		List<Message> foundMessage2 = messageService.search(messageSearch2);
 		System.out.println("========= 메시지 조회(강지원, 사담) =========");
 		foundMessage2.forEach(System.out::println);
 		//전체 메세지 조회
-		List<Message> foundAllMessages = messageService.findAllByChannelId();
+		List<Message> foundAllMessages = messageService.findAllByChannelId(channel.getId());
 		System.out.println("========= 전체 메세지 조회 =========");
 		foundAllMessages.forEach(System.out::println);
 
 		// 수정
-		String updateMessage = messageService.update(message.getId(), "반갑습니다.");
+		MessageUpdate update = new MessageUpdate(message.getId(), "반갑습니다.");
+		String updateMessage = messageService.update(update);
 		System.out.println("========= 메시지 수정 =========" +  '\n' +"[변경 사항]" + '\n' + updateMessage);
 		System.out.println();
 		System.out.println("[현재 메시지] " + '\n' + message);
@@ -148,8 +161,8 @@ public class DiscodeitApplication {
 		ChannelService channelService = context.getBean(ChannelService.class);
 		MessageService messageService = context.getBean(MessageService.class);
 
-		User user = setupUser(userService);
-		Channel channel = setupChannel(channelService, user);
+//		User user = setupUser(userService);
+//		Channel channel = setupChannel(channelService, user);
 		// 테스트
 		userCRUDTest(userService);
 		channelCRUDTest(channelService, userService);

@@ -6,4 +6,5 @@ public record UserCreate(BasicUserInfo basicUserInfo, ProfileImageInfo profileIm
     public record BasicUserInfo(String userName, String email, String password) {}
     public record ProfileImageInfo(UUID profileId, String fileName, byte[] data) {
     }
+
 }

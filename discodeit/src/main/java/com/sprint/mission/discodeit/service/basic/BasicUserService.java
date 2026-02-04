@@ -15,7 +15,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.UUID;
 @Service
 @RequiredArgsConstructor
@@ -26,18 +25,18 @@ public class BasicUserService implements UserService {
 
 
     @Override
-    public User create(UserCreate UserCreate) {
-        if (userRepository.findByName(UserCreate.basicUserInfo().userName()) != null) {
+    public User create(UserCreate userCreate) {
+        if (userRepository.findByName(userCreate.basicUserInfo().userName()) != null) {
             throw new RuntimeException("이미 존재하는 이름입니다.");
         }
-        if (userRepository.findByEmail(UserCreate.basicUserInfo().email()) != null) {
+        if (userRepository.findByEmail(userCreate.basicUserInfo().email()) != null) {
             throw new RuntimeException("이미 존재하는 이메일입니다.");
         }
-        User savedUser = new User(UserCreate);
+        User savedUser = new User(userCreate);
         userRepository.save(savedUser);
 
-        if (UserCreate.profileImageInfo() != null) {
-            BinaryContent profileImage = new BinaryContent(savedUser.getId(), UserCreate.profileImageInfo().fileName(), UserCreate.profileImageInfo().data());
+        if (userCreate.profileImageInfo() != null) {
+            BinaryContent profileImage = new BinaryContent(savedUser.getId(), userCreate.profileImageInfo().fileName(), userCreate.profileImageInfo().data());
             binaryContentRepository.save(profileImage);
         }
 
@@ -81,15 +80,15 @@ public class BasicUserService implements UserService {
     }
 
     @Override
-    public String update(UserUpdate UserUpdate) {
-        User findUser = userRepository.findById(UserUpdate.targetId())
+    public String update(UserUpdate userUpdate) {
+        User findUser = userRepository.findById(userUpdate.targetId())
                 .orElseThrow(() -> new RuntimeException("해당 유저를 찾을 수 없습니다."));
-        String changes = findUser.changes(UserUpdate.userUpdateInfo());
-        if (UserUpdate.userUpdateInfo().profileImageInfo() != null) {
+        String changes = findUser.changes(userUpdate.userUpdateInfo());
+        if (userUpdate.userUpdateInfo().profileImageInfo() != null) {
             BinaryContent newContent = new BinaryContent(
                     findUser.getId(),
-                    UserUpdate.userUpdateInfo().profileImageInfo().fileName(),
-                    UserUpdate.userUpdateInfo().profileImageInfo().data()
+                    userUpdate.userUpdateInfo().profileImageInfo().fileName(),
+                    userUpdate.userUpdateInfo().profileImageInfo().data()
             );
             binaryContentRepository.save(newContent);
             UUID oldProfileId = findUser.getProfileId();
