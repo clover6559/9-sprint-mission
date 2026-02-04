@@ -89,12 +89,6 @@ public class FileChannelRepository implements ChannelRepository {
         return Files.exists(resolvePath(channelId));
     }
 
-    public Channel update(UUID channelId, String channelName, String description) {
-        Channel channel = findById(channelId)
-                .orElseThrow(() -> new NoSuchElementException("Channel with id " + channelId + " not found"));
-        channel.update(channelName, description);
-        return save(channel);
-    }
 
     @Override
     public void deleteById(UUID channelId) {

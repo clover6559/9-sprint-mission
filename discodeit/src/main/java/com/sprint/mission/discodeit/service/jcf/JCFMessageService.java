@@ -31,7 +31,7 @@
 //        Message message = new Message(MessageCreate);
 //        if (MessageCreate.basicMessageInfo().attachments() != null && !MessageCreate.basicMessageInfo().attachments().isEmpty()) {
 //            List<UUID> savedIds = MessageCreate.basicMessageInfo().attachments().stream()
-//                    .map(dto -> new BinaryContent(message.getMessageId(), dto.fileName(), dto.data()))
+//                    .map(dto -> new BinaryContent(message.getId(), dto.fileName(), dto.data()))
 //                    .map(binaryContentRepository::save)
 //                    .map(BinaryContent::getId)
 //                    .toList();
@@ -73,7 +73,7 @@
 //    public boolean deleteById(UUID messageId) {
 //        Message findMessage = messageRepository.findById(messageId)
 //                .orElseThrow(() -> new RuntimeException("해당 메세지를 찾을 수 없습니다."));
-//        binaryContentRepository.deleteByRefId(findMessage.getMessageId());
+//        binaryContentRepository.deleteByRefId(findMessage.getId());
 //        messageRepository.deleteById(messageId);
 //        return true;
 //         }

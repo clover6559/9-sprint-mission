@@ -4,6 +4,9 @@ import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.service.ChannelService;
+import com.sprint.mission.discodeit.service.basic.BasicChannelService;
+import com.sprint.mission.discodeit.service.basic.BasicMessageService;
+import com.sprint.mission.discodeit.service.basic.BasicUserService;
 import com.sprint.mission.discodeit.service.search.ChannelSearch;
 import com.sprint.mission.discodeit.service.search.MessageSearch;
 import com.sprint.mission.discodeit.service.MessageService;
@@ -28,7 +31,7 @@ public class JavaApplication {
         System.out.println("========= 유저 조회(ID) =========" +  '\n' +  foundUser.toString());
         //조건 1개(이름)
         UserSearch userSearch = new UserSearch("김사연");
-        List<User> foundUserByName = userService.Search(userSearch);
+        List<User> foundUserByName = userService.search(userSearch);
         System.out.println("=========유저 조회(김사연) =========" );
         foundUserByName.forEach(System.out::println);
         //전체 유저 조회
@@ -105,7 +108,7 @@ public class JavaApplication {
         System.out.println("========= 메시지 생성 =========" + '\n' + message.toString());
 
         // 조회(ID)
-        Message foundMessage = messageService.findById(message1.getMessageId());
+        Message foundMessage = messageService.findById(message1.getId());
         System.out.println("========= 메시지 조회(단건) =========" + '\n' + foundMessage.toString());
         //조건 1개 조회(이름)
         MessageSearch Search1 = new MessageSearch("강지원", null);
@@ -124,13 +127,13 @@ public class JavaApplication {
         foundAllMessages.forEach(System.out::println);
 
         // 수정
-        String updateMessage = messageService.update(message.getMessageId(), "반갑습니다.");
+        String updateMessage = messageService.update(message.getId(), "반갑습니다.");
         System.out.println("========= 메시지 수정 =========" +  '\n' +"[변경 사항]" + '\n' + updateMessage);
         System.out.println();
         System.out.println("[현재 메시지] " + '\n' + message);
 
         // 삭제
-        messageService.delete(message.getMessageId());
+        messageService.delete(message.getId());
         System.out.println("========= 메세지 삭제 =========");
         messageService.printRemainMessages();
         System.out.println();
@@ -139,9 +142,9 @@ public class JavaApplication {
     public static void main(String[] args) {
 
         // 서비스 초기화
-        UserService userService = new JCFUserService();
-        ChannelService channelService = new JCFChannelService(userService);
-        MessageService messageService = new JCFMessageService(userService, channelService);
+        UserService userService = new BasicUserService();
+        ChannelService channelService = new BasicChannelService(userService);
+        MessageService messageService = new BasicMessageService(userService, channelService);
 
         User user1 = userService.create("김사연", "sayeon@gmail.com", "125rtf");
         User user2 = userService.create("육선우", "senwoo@gmail.com", "1456d25e");

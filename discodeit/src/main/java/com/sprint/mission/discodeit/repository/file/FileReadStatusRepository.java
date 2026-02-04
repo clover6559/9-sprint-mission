@@ -1,9 +1,10 @@
 package com.sprint.mission.discodeit.repository.file;
 
-import com.sprint.mission.discodeit.entity.User;
-import com.sprint.mission.discodeit.repository.UserRepository;
+import com.sprint.mission.discodeit.entity.ReadStatus;
+import com.sprint.mission.discodeit.repository.ReadStatusRepository;
 import org.springframework.stereotype.Repository;
 
+import javax.xml.crypto.NoSuchMechanismException;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -12,14 +13,13 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
-
 @Repository
-public class FileUserRepository implements UserRepository {
+public class FileReadStatusRepository implements ReadStatusRepository {
     private final Path DIRECTORY;
     private final String EXTENSION = ".ser";
 
-    public FileUserRepository() {
-        this.DIRECTORY = Paths.get(System.getProperty("user.dir"), "file-data-map", User.class.getSimpleName());
+    public FileReadStatusRepository() {
+        this.DIRECTORY = Paths.get(System.getProperty("user.dir"), "file-data-map", ReadStatus.class.getSimpleName());
         if (Files.notExists(DIRECTORY)) {
             try {
                 Files.createDirectories(DIRECTORY);
@@ -28,47 +28,42 @@ public class FileUserRepository implements UserRepository {
             }
         }
     }
-
     private Path resolvePath(UUID id) {
         return DIRECTORY.resolve(id + EXTENSION);
     }
 
-
     @Override
-    public User save(User user) {
-        Path path = resolvePath(user.getId());
+    public ReadStatus save(ReadStatus readStatus) {
+        Path path = resolvePath(readStatus.getId());
         try (
                 FileOutputStream fos = new FileOutputStream(path.toFile());
                 ObjectOutputStream oos = new ObjectOutputStream(fos)
         ) {
-            oos.writeObject(user);
+            oos.writeObject(readStatus);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
-        return user;
+        return readStatus;
     }
 
     @Override
-    public Optional<User> findById(UUID userId) {
-        User userNullable = null;
-        Path path = resolvePath(userId);
+    public Optional<ReadStatus> findById(UUID id) {
+        ReadStatus readStatusNull = null;
+        Path path = resolvePath(id);
         if (Files.exists(path)) {
             try (
                     FileInputStream fis = new FileInputStream(path.toFile());
                     ObjectInputStream ois = new ObjectInputStream(fis)
-            ) {
-                userNullable = (User) ois.readObject();
+            ){
+                readStatusNull = (ReadStatus) ois.readObject();
             } catch (IOException | ClassNotFoundException e) {
                 throw new RuntimeException(e);
             }
         }
-
-        return Optional.ofNullable(userNullable);
+        return Optional.ofNullable(readStatusNull);
     }
-
     @Override
-    public List<User> findAll() {
+    public List<ReadStatus> findAll() {
         try {
             return Files.list(DIRECTORY)
                     .filter(path -> path.toString().endsWith(EXTENSION))
@@ -76,8 +71,8 @@ public class FileUserRepository implements UserRepository {
                         try (
                                 FileInputStream fis = new FileInputStream(path.toFile());
                                 ObjectInputStream ois = new ObjectInputStream(fis)
-                        ) {
-                            return (User) ois.readObject();
+                        ){
+                            return (ReadStatus) ois.readObject();
                         } catch (IOException | ClassNotFoundException e) {
                             throw new RuntimeException(e);
                         }
@@ -89,38 +84,46 @@ public class FileUserRepository implements UserRepository {
     }
 
     @Override
-    public boolean existsById(UUID userId) {
-        return Files.exists(resolvePath(userId));
+    public List<ReadStatus> findUserId(UUID userId) {
+        return findAll().stream()
+                .filter(ReadStatus -> ReadStatus.getUserId().equals(userId))
+                .toList();
     }
 
     @Override
-    public void deleteById(UUID userId) {
-        Path path = resolvePath(userId);
+    public List<ReadStatus> findByChannelId(UUID channelId) {
+        return findAll().stream()
+                .filter(ReadStatus -> ReadStatus.getChannelId().equals(channelId))
+                .toList();
+    }
+
+    @Override
+    public boolean existsByChannelIdAndUserId(UUID channelId, UUID userId) {
+        return findAll().stream()
+                .anyMatch(readStatus -> readStatus.getChannelId().equals(channelId) && readStatus.getUserId().equals(userId));
+    }
+
+    @Override
+    public void deleteById(UUID id) {
+        Path path = resolvePath(id);
         if (Files.notExists(path)) {
-            throw new NoSuchElementException("User with id " + userId + " not found");
+            throw new NoSuchElementException("ReadStatus with id " + id + " not found");
         }
         try {
             Files.delete(path);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
     }
 
     @Override
-    public User findByName(String userName) {
-        return findAll().stream()
-                .filter(user -> user.getUserName().equals(userName))
-                .findFirst()
-                .orElse(null);
-    }
-
-
-    @Override
-    public User findByEmail(String email) {
-        return findAll().stream()
-                .filter(user -> user.getEmail().equals(email))
-                .findFirst()
-                .orElse(null);
+    public void deleteByChannelId(UUID channelId) {
+        findByChannelId(channelId).forEach(readStatus -> {
+            try {
+                Files.deleteIfExists(resolvePath(readStatus.getId()));
+            } catch (IOException e) {
+                throw new RuntimeException("삭제 실패: " + readStatus.getId(), e);
+            }
+        });
     }
 }

@@ -18,7 +18,7 @@ public class Message implements Serializable {
     private String userName;
     private String email;
     private UUID channelId;
-    private UUID messageId;
+    private UUID id;
     private List<UUID> attachmentIds;
 
     public Message(MessageCreate MessageCreate) {
@@ -31,7 +31,7 @@ public class Message implements Serializable {
 //        this.channelName = messageCreate.basicMessageInfo().
 //        this.userName = user.getUserName();
 //        this.email = user.getEmail();
-        this.messageId = UUID.randomUUID();
+        this.id = UUID.randomUUID();
         this.attachmentIds = new ArrayList<>();
 //        if (messageCreate.binaryCreateDto().data() != null) {
 //         this.attachmentIds.add(binaryContent.getId());
@@ -58,7 +58,7 @@ public class Message implements Serializable {
                 "채널 이름 : " + channelName + '\n' +
                 "채널 ID : " + channelId + '\n' +
                 "내용 : " + content + '\n' +
-                "메세지 ID : " + messageId + '\n' +
+                "메세지 ID : " + id + '\n' +
                 "생성시간 : " + User.formatTime(createdAt) + '\n' +
                 "수정시간 : " + User.formatTime(updatedAt) + '\n';
     }

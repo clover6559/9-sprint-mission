@@ -34,7 +34,7 @@ public class FileMessageRepository implements MessageRepository {
 
     @Override
     public Message save(Message message) {
-        Path path = resolvePath(message.getMessageId());
+        Path path = resolvePath(message.getId());
         try (
                 FileOutputStream fos = new FileOutputStream(path.toFile());
                 ObjectOutputStream oos = new ObjectOutputStream(fos)
@@ -90,23 +90,36 @@ public class FileMessageRepository implements MessageRepository {
         return Files.exists(resolvePath(messageId));
     }
 
-    public Message update(UUID messageId, String content) {
-       Message message = findById(messageId)
-               .orElseThrow(()-> new NoSuchElementException("수정할 메세지가 없습니다."));
-        message.update(content);
-       return save(message);
-    }
-
     @Override
     public void deleteById(UUID messageId) {
         Path path = resolvePath(messageId);
         if (Files.notExists(path)) {
-            throw new NoSuchElementException("MassageId with id " + messageId + " not found");
+            throw new NoSuchElementException("MessageId with id " + messageId + " not found");
         }
         try {
             Files.delete(path);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public List<Message> findByChannelId(UUID channelId) {
+        return findAll().stream()
+                .filter(message -> message.getChannelId().equals(channelId))
+                .toList();
+    }
+
+    @Override
+    public void deleteByChannelId(UUID channelId) {
+        findByChannelId(channelId).stream()
+                .map(message -> resolvePath(message.getId()))
+                .forEach(path -> {
+                    try {
+                        Files.deleteIfExists(path);
+                    } catch (IOException e) {
+                        throw new RuntimeException("파일 삭제 중 오류 발생: " + path, e);
+                    }
+                });
     }
 }

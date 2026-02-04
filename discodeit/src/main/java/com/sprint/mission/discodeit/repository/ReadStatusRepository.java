@@ -1,6 +1,7 @@
 package com.sprint.mission.discodeit.repository;
 
 import com.sprint.mission.discodeit.entity.ReadStatus;
+import com.sprint.mission.discodeit.entity.UserStatus;
 
 import java.util.List;
 import java.util.Optional;
@@ -11,7 +12,7 @@ public interface ReadStatusRepository {
     Optional<ReadStatus> findById(UUID id);
     List<ReadStatus> findUserId(UUID userId);
     List<ReadStatus> findByChannelId(UUID channelId);
-
+    List<ReadStatus> findAll();
     boolean existsByChannelIdAndUserId(UUID channelId, UUID userId);
     void deleteById(UUID id);
     void deleteByChannelId(UUID channelId);

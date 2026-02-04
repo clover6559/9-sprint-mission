@@ -70,18 +70,18 @@ public class FileApplication {
             Message message = messageService.create("안녕하세요.", user, channel);
             System.out.println("[메시지 생성]" + '\n' + message.toString());
             // 조회
-            Message foundMessage = messageService.findById(message.getMessageId());
+            Message foundMessage = messageService.findById(message.getId());
             System.out.println("[메시지 조회(Id)] " + '\n' + foundMessage.toString());
             List<Message> foundMessages = messageService.findAllByChannelId();
             System.out.println("[메시지 전체 조회] ");
             foundMessages.forEach(System.out::println);
             // 수정
-            String updatedMessage = messageService.update(message.getMessageId(), "반갑습니다.");
+            String updatedMessage = messageService.update(message.getId(), "반갑습니다.");
             System.out.println("[메시지 수정]" +  '\n' + "[변경 사항]" + '\n' +  updatedMessage);
             System.out.println();
             System.out.println("[현재 메시지] " + '\n' + message);
             // 삭재
-            messageService.delete(message.getMessageId());
+            messageService.delete(message.getId());
             System.out.println("[메세지 삭제]");
             messageService.printRemainMessages();
             System.out.println();
@@ -99,14 +99,10 @@ public class FileApplication {
 
         static void messageCreateTest(MessageService messageService, User user, Channel channel) {
             Message message = messageService.create("안녕하세요.", user, channel);
-            System.out.println("메시지 생성: " + message.getMessageId());
+            System.out.println("메시지 생성: " + message.getId());
         }
 
         public static void main(String[] args) {
-            // 서비스 초기화
-//            UserService userService = new FileUserService();
-//            ChannelService channelService = new FileChannelService(userService);
-//            MessageService messageService = new FileMessageService(userService, channelService);
 
             UserRepository userRepository = new FileUserRepository();
             ChannelRepository channelRepository = new FileChannelRepository();

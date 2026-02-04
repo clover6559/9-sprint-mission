@@ -37,11 +37,11 @@ public class BasicUserService implements UserService {
         userRepository.save(savedUser);
 
         if (UserCreate.profileImageInfo() != null) {
-            BinaryContent profileImage = new BinaryContent(savedUser.getUserId(), UserCreate.profileImageInfo().fileName(), UserCreate.profileImageInfo().data());
+            BinaryContent profileImage = new BinaryContent(savedUser.getId(), UserCreate.profileImageInfo().fileName(), UserCreate.profileImageInfo().data());
             binaryContentRepository.save(profileImage);
         }
 
-        UserStatus userStatus = new UserStatus(savedUser.getUserId(), "기본 상태 메시지", UserStatus.Status.ONLINE);
+        UserStatus userStatus = new UserStatus(savedUser.getId(), "기본 상태 메시지", UserStatus.Status.ONLINE);
         userStatusRepository.save(userStatus);
         return savedUser;
 
@@ -51,10 +51,10 @@ public class BasicUserService implements UserService {
     public UserResponse findById(UUID userId) {
         User findUser = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("해당 유저를 찾을 수 없습니다."));
-        UserStatus userStatus = userStatusRepository.findByUserId(findUser.getUserId())
+        UserStatus userStatus = userStatusRepository.findByUserId(findUser.getId())
                 .orElse(null);
         boolean isOnline = (userStatus != null) && userStatus.isOnline();
-        return new UserResponse(isOnline, findUser.getUserId(), findUser.getUserName(), findUser.getEmail());
+        return new UserResponse(isOnline, findUser.getId(), findUser.getUserName(), findUser.getEmail());
 
     }
 
@@ -63,11 +63,11 @@ public class BasicUserService implements UserService {
         List<User> userList = userRepository.findAll();
         return userList.stream()
                 .map(user -> {
-                    UserStatus status = userStatusRepository.findByUserId(user.getUserId())
+                    UserStatus status = userStatusRepository.findByUserId(user.getId())
                             .orElse(null);
                     boolean isOnline = (status != null) && status.isOnline();
                     return new UserResponse(
-                            isOnline, user.getUserId(), user.getUserName(), user.getEmail()
+                            isOnline, user.getId(), user.getUserName(), user.getEmail()
                     );
                 })
                 .toList();
@@ -87,7 +87,7 @@ public class BasicUserService implements UserService {
         String changes = findUser.changes(UserUpdate.userUpdateInfo());
         if (UserUpdate.userUpdateInfo().profileImageInfo() != null) {
             BinaryContent newContent = new BinaryContent(
-                    findUser.getUserId(),
+                    findUser.getId(),
                     UserUpdate.userUpdateInfo().profileImageInfo().fileName(),
                     UserUpdate.userUpdateInfo().profileImageInfo().data()
             );

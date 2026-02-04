@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.UUID;
 @Getter
 public class User implements Serializable {
-    private final UUID userId;
+    private final UUID id;
     private String userName;
     private String email;
     private final Instant createdAt;
@@ -23,7 +23,7 @@ public class User implements Serializable {
 
 
     public User(UserCreate UserCreate) {
-        this.userId = UUID.randomUUID();
+        this.id = UUID.randomUUID();
         this.userName = UserCreate.basicUserInfo().userName();
         Instant now = Instant.now();
         this.updatedAt = now;
@@ -42,7 +42,7 @@ public class User implements Serializable {
 
     @Override
     public String toString() {
-        return "유저 ID : " + userId + '\n' +
+        return "유저 ID : " + id + '\n' +
                 "유저 이름 : " + userName + '\n' +
                 "유저 PW : " + password + '\n' +
                 "이메일 : " + email + '\n' +

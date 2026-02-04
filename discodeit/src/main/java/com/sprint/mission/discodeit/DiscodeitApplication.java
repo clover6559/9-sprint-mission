@@ -109,7 +109,7 @@ public class DiscodeitApplication {
 		System.out.println("========= 메시지 생성 =========" + '\n' + message.toString());
 
 		// 조회(ID)
-		Message foundMessage = messageService.findById(message1.getMessageId());
+		Message foundMessage = messageService.findById(message1.getId());
 		System.out.println("========= 메시지 조회(단건) =========" + '\n' + foundMessage.toString());
 		//조건 1개 조회(이름)
 		MessageSearch Search1 = new MessageSearch("강지원", null);
@@ -128,13 +128,13 @@ public class DiscodeitApplication {
 		foundAllMessages.forEach(System.out::println);
 
 		// 수정
-		String updateMessage = messageService.update(message.getMessageId(), "반갑습니다.");
+		String updateMessage = messageService.update(message.getId(), "반갑습니다.");
 		System.out.println("========= 메시지 수정 =========" +  '\n' +"[변경 사항]" + '\n' + updateMessage);
 		System.out.println();
 		System.out.println("[현재 메시지] " + '\n' + message);
 
 		// 삭제
-		messageService.delete(message.getMessageId());
+		messageService.delete(message.getId());
 		System.out.println("========= 메세지 삭제 =========");
 		messageService.printRemainMessages();
 		System.out.println();
