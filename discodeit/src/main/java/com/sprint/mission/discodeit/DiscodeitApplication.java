@@ -74,17 +74,17 @@ public class DiscodeitApplication {
 		System.out.println("========= 채널 생성 =========" + '\n' + channel.toString());
 
 		// 조회(ID)
-		ChannelResponse foundChannel = channelService.findCById(channel.getId());
+		ChannelResponse foundChannel = channelService.findById(channel.getId());
 		System.out.println("=========채널 조회(ID)========="+ '\n' + foundChannel.toString());
 		//조건 1개 조회(이름)
-		ChannelSearch channelSearch = new ChannelSearch("이진용",null);
+		ChannelSearch channelSearch = new ChannelSearch("이진용",null, Channel.ChannelType.PUBLIC);
 		List<Channel> result = channelService.search(channelSearch);
 		System.out.println("========= 채널 조회(이진용) =========");
 		result.forEach(System.out::println);
 		//조건 2개 조회(이름, 채널이름)
-		ChannelSearch channelSearch1 = new ChannelSearch("김사연", "공지");
+		ChannelSearch channelSearch1 = new ChannelSearch("이진용", "공지", Channel.ChannelType.PRIVATE);
 		List<Channel> result2 = channelService.search(channelSearch1);
-		System.out.println("========= 채널 조회(김사연, 공지) =========" );
+		System.out.println("========= 채널 조회(이진용, Public) =========" );
 		result2.forEach(System.out::println);
 
 		//전체 채널 조회
@@ -110,12 +110,13 @@ public class DiscodeitApplication {
 	static void messageCRUDTest(MessageService messageService, UserService userService, ChannelService channelService) {
 		User user = userService.create(new UserCreate(new UserCreate.BasicUserInfo("강지원","jiwon@gmail.com", "566wrsd"), null));
 		User user1 = userService.create(new UserCreate(new UserCreate.BasicUserInfo("육선우","senwoo@gmail.com", "1456d25e"), null));
-		Channel channel = channelService.createPrivateChannel(new CreatePrivate(user));
+		Channel channel = channelService.createPublicChannel(new CreatePublic("공지","공지", user));
 
 		// 생성
-		MessageCreate.BasicMessageInfo messageInfo = new MessageCreate.BasicMessageInfo(channel.getId(),user1.getId(),"안녕하세요.",null);
+		MessageCreate.BasicMessageInfo messageInfo = new MessageCreate.BasicMessageInfo(channel.getId(),user.getId(),"안녕하세요.",null);
 		MessageCreate createDto = new MessageCreate(messageInfo, null);
-//		Message message2 =  messageService.create("뭐하시나요", user, channel);
+		MessageCreate.BasicMessageInfo messageInfo1 = new MessageCreate.BasicMessageInfo(channel.getId(),user1.getId(),"뭐하시나요.",null);
+		MessageCreate createDto1 = new MessageCreate(messageInfo1, null);
 		System.out.println("========= [Message] =========");
 		Message message = messageService.create(createDto);
 		System.out.println("========= 메시지 생성 =========" + '\n' + message.toString());
@@ -124,16 +125,14 @@ public class DiscodeitApplication {
 		Message foundMessage = messageService.findById(message.getId());
 		System.out.println("========= 메시지 조회(단건) =========" + '\n' + foundMessage.toString());
 		//조건 1개 조회(이름)
-		MessageSearch Search1 = new MessageSearch("강지원", null);
-		List<Message> foundMessages = messageService.search(Search1);
 		System.out.println("========= 메시지 조회(강지원) =========");
-		foundMessages.forEach(System.out::println);
+		messageService.search(new MessageSearch("강지원", null))
+				.forEach(System.out::println);
 
 		//조건 2개(이름, 채널명)
-		MessageSearch messageSearch2 = new MessageSearch("강지원","사담");
-		List<Message> foundMessage2 = messageService.search(messageSearch2);
-		System.out.println("========= 메시지 조회(강지원, 사담) =========");
-		foundMessage2.forEach(System.out::println);
+		System.out.println("========= 메시지 조회(강지원, 공지) =========");
+		messageService.search(new MessageSearch("강지원","공지"))
+				.forEach(System.out::println);
 		//전체 메세지 조회
 		List<Message> foundAllMessages = messageService.findAllByChannelId(channel.getId());
 		System.out.println("========= 전체 메세지 조회 =========");

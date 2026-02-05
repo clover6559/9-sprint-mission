@@ -12,6 +12,7 @@ public class JCFUserRepository implements UserRepository {
         private final Map<UUID, User> userRepo = new HashMap<>();
 
         public JCFUserRepository() {
+            System.out.println("[시스템] JCF 모드가 활성화되었습니다. 데이터를 메모리에 저장합니다.");
         }
         @Override
         public User save(User user) {

@@ -38,6 +38,6 @@ public class UserStatus implements Serializable {
     public void updateUserStatus(String statusMessage, UserStatus.Status statusType) {
         this.statusMessage = statusMessage;
         this.status = statusType;
-        this.lastActiveTime = lastActiveTime;
+        this.lastActiveTime = Instant.now();
     }
 }

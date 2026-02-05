@@ -23,7 +23,7 @@ public class FileUserRepository implements UserRepository {
 
     public FileUserRepository(
             @Value("${discodeit.repository.file-directory:file-data-map}") String fileDirectory)
-    {
+    {System.out.println("[시스템] File 모드가 활성화되었습니다. 저장 경로: " + fileDirectory);
         this.DIRECTORY = Paths.get(System.getProperty("user.dir"), fileDirectory, User.class.getSimpleName());
         if (Files.notExists(DIRECTORY)) {
             try {

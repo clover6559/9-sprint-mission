@@ -19,7 +19,7 @@ public class BasicAuthService implements AuthService {
         if (user != null && user.getPassword().equals(autowired.password())) {
             return user;
         }
-        return null;
+        throw new RuntimeException("아이디 또는 비밀번호가 일치하지 않습니다.");
     }
 
     @Override

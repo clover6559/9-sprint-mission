@@ -14,9 +14,6 @@ public class Message implements Serializable {
     private String content;
     private Instant createdAt;
     private Instant updatedAt;
-    private String channelName;
-    private String userName;
-    private String email;
     private UUID channelId;
     private UUID id;
     private List<UUID> attachmentIds;
@@ -28,14 +25,8 @@ public class Message implements Serializable {
         this.updatedAt = now;
         this.content = MessageCreate.basicMessageInfo().content();
         this.channelId = MessageCreate.basicMessageInfo().channelId();
-//        this.channelName = messageCreate.basicMessageInfo().
-//        this.userName = user.getUserName();
-//        this.email = user.getEmail();
         this.id = UUID.randomUUID();
         this.attachmentIds = new ArrayList<>();
-//        if (messageCreate.binaryCreateDto().data() != null) {
-//         this.attachmentIds.add(binaryContent.getId());
-//    }
 }
     public void updateAttachmentIds(List<UUID> attachmentIds) {
         this.attachmentIds = attachmentIds;
@@ -54,13 +45,12 @@ public class Message implements Serializable {
 
     @Override
     public String toString() {
-        return  "유저 이름 : " + userName + '\n' +
-                "채널 이름 : " + channelName + '\n' +
-                "채널 ID : " + channelId + '\n' +
-                "내용 : " + content + '\n' +
-                "메세지 ID : " + id + '\n' +
-                "생성시간 : " + User.formatTime(createdAt) + '\n' +
-                "수정시간 : " + User.formatTime(updatedAt) + '\n';
+        return  "메시지 ID: " + id + '\n' +
+                "채널 ID: " + channelId + '\n' +
+                "유저 ID: " + userId + '\n' +
+                "내용: " + content + '\n' +
+                "생성 시간: " + User.formatTime(createdAt) + '\n' +
+                "수정 시간: " + User.formatTime(updatedAt) + '\n' +
+                "첨부 파일 ID: " + attachmentIds;
     }
 }
-

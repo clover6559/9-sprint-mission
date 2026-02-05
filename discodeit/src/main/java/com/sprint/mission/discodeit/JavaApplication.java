@@ -57,7 +57,7 @@
 //        System.out.println("========= 채널 생성 =========" + '\n' + channel.toString());
 //
 //        // 조회(ID)
-//        Channel foundChannel = channelService.findCById(channel.getId());
+//        Channel foundChannel = channelService.findById(channel.getId());
 //        System.out.println("=========채널 조회(ID)========="+ '\n' + foundChannel.toString());
 //        //조건 1개 조회(이름)
 //        ChannelSearch channelSearch = new ChannelSearch("김사연",null);

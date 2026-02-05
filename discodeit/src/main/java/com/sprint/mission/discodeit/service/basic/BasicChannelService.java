@@ -52,14 +52,8 @@ public class BasicChannelService implements ChannelService {
         return channel;
     }
 
-    public Channel createPublicChannel(CreatePrivate createPrivate) {
-        Channel channel = new Channel(createPrivate);
-        channelRepository.save(channel);
-        return channel;
-    }
-
     @Override
-    public ChannelResponse findCById(UUID channelId) {
+    public ChannelResponse findById(UUID channelId) {
         Channel channel =  channelRepository.findById(channelId)
                 .orElseThrow(() -> new RuntimeException("해당 채널을 찾을 수 없습니다. "));
         messageRepository.findByChannelId(channelId);
@@ -79,10 +73,11 @@ public class BasicChannelService implements ChannelService {
     }
 
     @Override
-    public List<Channel> search(ChannelSearch channelSearch) {
+    public List<Channel> search(ChannelSearch search) {
         return channelRepository.findAll().stream()
-                .filter(c -> channelSearch.getUserName() == null || channelSearch.getUserName().equals(c.getUserName()))
-                .filter(c -> channelSearch.getChannelName() == null || channelSearch.getChannelName().equals(c.getChannelName()))
+                .filter(c -> search.getUserName() == null || search.getUserName().equals(c.getUserName()))
+                .filter(c -> search.getChannelType() == null || c.getChannelType().name().equals(search.getChannelType().name()))
+                .filter(c -> search.getChannelName() == null || c.getChannelName().contains(search.getChannelName()))
                 .toList();
     }
 

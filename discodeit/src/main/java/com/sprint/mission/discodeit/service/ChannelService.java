@@ -16,7 +16,7 @@ public interface ChannelService {
     Channel createPrivateChannel(CreatePrivate createPrivate);
 
     //조회(Id)
-    ChannelResponse findCById(UUID channelId);
+    ChannelResponse findById(UUID channelId);
 
     //다건 조회
     List<Channel> search(ChannelSearch channelSearch);

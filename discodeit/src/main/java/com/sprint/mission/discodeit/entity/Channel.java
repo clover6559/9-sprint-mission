@@ -41,9 +41,7 @@ public class Channel implements Serializable {
         this.createdAt = now;
         this.updatedAt = now;
         this.id = UUID.randomUUID();
-//        this.channelName = privateChannel.channelName();
         this.channelType = ChannelType.PRIVATE;
-//        this.userName = privateChannel.user().getUserName();
     }
 
     public String changes(ChannelUpdate.ChannelUpdateInfo channelUpdateInfo) {

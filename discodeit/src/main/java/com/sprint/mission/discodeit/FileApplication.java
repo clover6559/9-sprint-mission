@@ -48,7 +48,7 @@
 //            Channel channel = channelService.create(Channel.ChannelType.PUBLIC, "공지", "공지 채널입니다.", user);
 //            System.out.println("[채널 생성]" + '\n' + channel.toString());
 //            // 조회
-//            Channel foundChannel = channelService.findCById(channel.getId());
+//            Channel foundChannel = channelService.findById(channel.getId());
 //            System.out.println("[채널 조회(Id)]" + '\n' + foundChannel.toString());
 //            List<Channel> foundChannels = channelService.findAllByUserId();
 //            System.out.println("[채널 전체 조회]");
