@@ -53,7 +53,7 @@ public class BasicChannelService implements ChannelService {
     }
 
     @Override
-    public ChannelResponse findById(UUID channelId) {
+    public ChannelResponse find(UUID channelId) {
         Channel channel =  channelRepository.findById(channelId)
                 .orElseThrow(() -> new RuntimeException("해당 채널을 찾을 수 없습니다. "));
         messageRepository.findByChannelId(channelId);

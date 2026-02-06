@@ -47,7 +47,7 @@ public class BasicUserService implements UserService {
     }
 
     @Override
-    public UserResponse findById(UUID userId) {
+    public UserResponse find(UUID userId) {
         User findUser = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("해당 유저를 찾을 수 없습니다."));
         UserStatus userStatus = userStatusRepository.findByUserId(findUser.getId())
@@ -121,13 +121,4 @@ public class BasicUserService implements UserService {
         users.forEach(u -> System.out.println("- " + u.getUserName()));
     }
 
-    @Override
-    public User findByName(String userName) {
-        return userRepository.findByName(userName);
-    }
-
-    @Override
-    public User findByEmail(String email) {
-        return userRepository.findByEmail(email);
-    }
 }

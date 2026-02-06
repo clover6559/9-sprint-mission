@@ -11,23 +11,18 @@ import java.util.List;
 import java.util.UUID;
 
 public interface ChannelService {
-    //생성
+
     Channel createPublicChannel(CreatePublic createPublic);
     Channel createPrivateChannel(CreatePrivate createPrivate);
 
-    //조회(Id)
-    ChannelResponse findById(UUID channelId);
+    ChannelResponse find(UUID channelId);
 
-    //다건 조회
     List<Channel> search(ChannelSearch channelSearch);
 
-    // 전체조회
     List<ChannelResponse> findAllByUserId(UUID userId);
 
-    //수정
     String update(ChannelUpdate ChannelUpdate);
 
-    //삭제
     boolean delete(UUID channelId);
 
     void printRemainChannel();

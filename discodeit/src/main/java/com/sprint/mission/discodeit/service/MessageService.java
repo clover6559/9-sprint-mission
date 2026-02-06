@@ -9,25 +9,18 @@ import java.util.List;
 import java.util.UUID;
 
 public interface MessageService {
-    //생성
     Message create(MessageCreate MessageCreate);
 
-    //조회(Id)
     Message findById(UUID messageId);
 
-    //다건 조회 & 전체조회
     List<Message> search(MessageSearch condition);
 
-    // 전체조회
     List<Message> findAllByChannelId(UUID channelId);
 
-    //수정
     String update(MessageUpdate MessageUpdate);
 
-    //삭제
     boolean delete(UUID messageId);
 
     void printRemainMessages();
 
-    interface ReadStatusService {}
 }

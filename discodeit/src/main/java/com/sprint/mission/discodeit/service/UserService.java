@@ -11,28 +11,20 @@ import java.util.UUID;
 
 public interface UserService {
 
-    //생성
     User create(UserCreate userCreate);
 
-    //조회(Id)
-    UserResponse findById(UUID userId);
+    UserResponse find(UUID userId);
 
-    //다건 조회
     List<User> search(UserSearch userSearch);
 
-    // 전체조회
     List<UserResponse> findAll();
 
-    //수정
     String update(UserUpdate userUpdate);
 
-    //삭제
     boolean delete(UUID id);
 
     void printRemainUsers();
 
-    User findByName(String userName);
-    User findByEmail(String email);
     }
 
 

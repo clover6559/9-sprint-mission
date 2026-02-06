@@ -24,7 +24,7 @@
 //        System.out.println("========= 유저 생성 =========" + '\n' +  user.toString());
 //
 //        // 조회(ID)
-//        User foundUser = userService.findById(user.getUserId());
+//        User foundUser = userService.find(user.getAuthordId());
 //        System.out.println("========= 유저 조회(ID) =========" +  '\n' +  foundUser.toString());
 //        //조건 1개(이름)
 //        UserSearch userSearch = new UserSearch("김사연");
@@ -37,13 +37,13 @@
 //        foundAllUsers.forEach(System.out::println);
 //
 //        // 수정
-//        String updateUser = userService.update(user.getUserId(), null, null, "woody5678");
+//        String updateUser = userService.update(user.getAuthordId(), null, null, "woody5678");
 //        System.out.println("=========유저 수정 ========= " + '\n' + "[변경 사항]" + '\n' + updateUser);
 //        System.out.println();
 //        System.out.println("[현재 유저 정보] " + '\n' + user);
 //
 //        //삭제
-//        userService.delete(user.getUserId());
+//        userService.delete(user.getAuthordId());
 //        System.out.println("========= 유저 삭제 =========");
 //        userService.printRemainUsers();
 //        System.out.println();
@@ -57,7 +57,7 @@
 //        System.out.println("========= 채널 생성 =========" + '\n' + channel.toString());
 //
 //        // 조회(ID)
-//        Channel foundChannel = channelService.findById(channel.getId());
+//        Channel foundChannel = channelService.find(channel.getId());
 //        System.out.println("=========채널 조회(ID)========="+ '\n' + foundChannel.toString());
 //        //조건 1개 조회(이름)
 //        ChannelSearch channelSearch = new ChannelSearch("김사연",null);
@@ -105,7 +105,7 @@
 //        System.out.println("========= 메시지 생성 =========" + '\n' + message.toString());
 //
 //        // 조회(ID)
-//        Message foundMessage = messageService.findById(message1.getId());
+//        Message foundMessage = messageService.find(message1.getId());
 //        System.out.println("========= 메시지 조회(단건) =========" + '\n' + foundMessage.toString());
 //        //조건 1개 조회(이름)
 //        MessageSearch Search1 = new MessageSearch("강지원", null);

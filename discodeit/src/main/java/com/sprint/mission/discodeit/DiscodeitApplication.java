@@ -2,7 +2,6 @@ package com.sprint.mission.discodeit;
 
 import com.sprint.mission.discodeit.dto.channel.ChannelResponse;
 import com.sprint.mission.discodeit.dto.channel.ChannelUpdate;
-import com.sprint.mission.discodeit.dto.channel.CreatePrivate;
 import com.sprint.mission.discodeit.dto.channel.CreatePublic;
 import com.sprint.mission.discodeit.dto.message.MessageCreate;
 import com.sprint.mission.discodeit.dto.message.MessageUpdate;
@@ -36,7 +35,7 @@ public class DiscodeitApplication {
 		System.out.println("========= 유저 생성 =========" + '\n' +  user.toString());
 
 		// 조회(ID)
-		UserResponse foundUser = userService.findById(user.getId());
+		UserResponse foundUser = userService.find(user.getId());
 		System.out.println("========= 유저 조회(ID) =========" +  '\n' +  foundUser.toString());
 		//조건 1개(이름)
 		UserSearch userSearch = new UserSearch("육선우");
@@ -74,7 +73,7 @@ public class DiscodeitApplication {
 		System.out.println("========= 채널 생성 =========" + '\n' + channel.toString());
 
 		// 조회(ID)
-		ChannelResponse foundChannel = channelService.findById(channel.getId());
+		ChannelResponse foundChannel = channelService.find(channel.getId());
 		System.out.println("=========채널 조회(ID)========="+ '\n' + foundChannel.toString());
 		//조건 1개 조회(이름)
 		ChannelSearch channelSearch = new ChannelSearch("이진용",null, Channel.ChannelType.PUBLIC);

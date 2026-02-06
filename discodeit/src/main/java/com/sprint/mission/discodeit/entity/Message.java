@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.UUID;
 @Getter
 public class Message implements Serializable {
-    private UUID userId;
+    private UUID authordId;
     private String content;
     private Instant createdAt;
     private Instant updatedAt;
@@ -19,7 +19,7 @@ public class Message implements Serializable {
     private List<UUID> attachmentIds;
 
     public Message(MessageCreate MessageCreate) {
-        this.userId = MessageCreate.basicMessageInfo().senderId();
+        this.authordId = MessageCreate.basicMessageInfo().senderId();
         Instant now = Instant.now();
         this.createdAt = now;
         this.updatedAt = now;
@@ -47,7 +47,7 @@ public class Message implements Serializable {
     public String toString() {
         return  "메시지 ID: " + id + '\n' +
                 "채널 ID: " + channelId + '\n' +
-                "유저 ID: " + userId + '\n' +
+                "유저 ID: " + authordId + '\n' +
                 "내용: " + content + '\n' +
                 "생성 시간: " + User.formatTime(createdAt) + '\n' +
                 "수정 시간: " + User.formatTime(updatedAt) + '\n' +

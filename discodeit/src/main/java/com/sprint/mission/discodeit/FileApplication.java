@@ -25,19 +25,19 @@
 //            User user = userService.create("강지원","jinyoong@gmail.com", "566wrsd");
 //            System.out.println("[유저 생성]" + '\n' +  user.toString());
 //            // 조회
-//            User foundUser = userService.findById(user.getUserId());
+//            User foundUser = userService.find(user.getAuthordId());
 //            System.out.println("[유저 조회(Id)] " + '\n' +  foundUser.toString());
 //            List<User> foundUsers = userService.findAll();
 //            System.out.println("[유저 조회(전체)] ");
 //            foundUsers.forEach(System.out::println);
 //            //수정
-//            String updatedUser = userService.update(user.getUserId(), null, null, "woody5678");
+//            String updatedUser = userService.update(user.getAuthordId(), null, null, "woody5678");
 //            System.out.println("[유저 수정]" +  '\n' + "[변경 사항]" + '\n' +  updatedUser);
 //            System.out.println();
 //            System.out.println("[현재 유저 정보] " + '\n' + user);
 //
 //            // 삭제
-//            userService.delete(user.getUserId());
+//            userService.delete(user.getAuthordId());
 //            System.out.println("[유저 삭제]");
 //            userService.printRemainUsers();
 //            System.out.println();
@@ -48,7 +48,7 @@
 //            Channel channel = channelService.create(Channel.ChannelType.PUBLIC, "공지", "공지 채널입니다.", user);
 //            System.out.println("[채널 생성]" + '\n' + channel.toString());
 //            // 조회
-//            Channel foundChannel = channelService.findById(channel.getId());
+//            Channel foundChannel = channelService.find(channel.getId());
 //            System.out.println("[채널 조회(Id)]" + '\n' + foundChannel.toString());
 //            List<Channel> foundChannels = channelService.findAllByUserId();
 //            System.out.println("[채널 전체 조회]");
@@ -70,7 +70,7 @@
 //            Message message = messageService.create("안녕하세요.", user, channel);
 //            System.out.println("[메시지 생성]" + '\n' + message.toString());
 //            // 조회
-//            Message foundMessage = messageService.findById(message.getId());
+//            Message foundMessage = messageService.find(message.getId());
 //            System.out.println("[메시지 조회(Id)] " + '\n' + foundMessage.toString());
 //            List<Message> foundMessages = messageService.findAllByChannelId();
 //            System.out.println("[메시지 전체 조회] ");

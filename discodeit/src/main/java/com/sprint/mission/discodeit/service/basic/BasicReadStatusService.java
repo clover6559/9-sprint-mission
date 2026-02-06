@@ -40,7 +40,7 @@ public class BasicReadStatusService implements ReadStatusService {
     }
 
     @Override
-    public ReadStatus findById(UUID id) {
+    public ReadStatus find(UUID id) {
         return readStatusRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("해당 읽음상태를 찾을 수 없습니다."));
     }

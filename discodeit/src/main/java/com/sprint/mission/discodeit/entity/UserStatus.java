@@ -32,12 +32,13 @@ public class UserStatus implements Serializable {
         this.status = statusType;
     }
     public boolean isOnline() {
-        Instant fiveminute =  Instant.now().minus(5, ChronoUnit.MINUTES);
-        return this.lastActiveTime.isAfter(fiveminute); }
+        Instant fiveMinute =  Instant.now().minus(5, ChronoUnit.MINUTES);
+        return this.lastActiveTime.isAfter(fiveMinute); }
 
     public void updateUserStatus(String statusMessage, UserStatus.Status statusType) {
         this.statusMessage = statusMessage;
         this.status = statusType;
         this.lastActiveTime = Instant.now();
+        this.updatedAt = Instant.now();
     }
 }
