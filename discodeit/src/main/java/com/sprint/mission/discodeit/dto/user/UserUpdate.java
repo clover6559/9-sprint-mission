@@ -14,5 +14,3 @@ public record UserUpdate(UUID targetId, UserUpdateInfo userUpdateInfo) {
                         "비밀번호 : " + userUpdateInfo.password;
         }
 }
-
-

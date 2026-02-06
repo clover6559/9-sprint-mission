@@ -8,6 +8,9 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import static com.sprint.mission.discodeit.entity.DateUtil.formatTime;
+
 @Getter
 public class Message implements Serializable {
     private UUID authordId;
@@ -45,12 +48,11 @@ public class Message implements Serializable {
 
     @Override
     public String toString() {
-        return  "메시지 ID: " + id + '\n' +
-                "채널 ID: " + channelId + '\n' +
+        return  "채널 ID: " + channelId + '\n' +
                 "유저 ID: " + authordId + '\n' +
                 "내용: " + content + '\n' +
-                "생성 시간: " + User.formatTime(createdAt) + '\n' +
-                "수정 시간: " + User.formatTime(updatedAt) + '\n' +
+                "생성 시간: " + formatTime(createdAt) + '\n' +
+                "수정 시간: " + formatTime(updatedAt) + '\n' +
                 "첨부 파일 ID: " + attachmentIds;
     }
 }

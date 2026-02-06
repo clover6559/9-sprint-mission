@@ -10,6 +10,9 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import static com.sprint.mission.discodeit.entity.DateUtil.formatTime;
+
 @Getter
 public class Channel implements Serializable {
     public enum ChannelType {
@@ -61,14 +64,12 @@ public class Channel implements Serializable {
 
     @Override
     public String toString() {
-        return  "유저 Id : " + userId + '\n' +
-                "유저 이름 : " + userName  + '\n' +
+        return  "유저 이름 : " + userName  + '\n' +
                 "채널 타입 : " + channelType + '\n' +
                 "채널 이름 : " + channelName + '\n' +
-                "채널 ID : " + id + '\n' +
-                "채널 소개 : " + description + '\n' +
-                "생성시간 : " + User.formatTime(createdAt) + '\n' +
-                "수정시간 : " + User.formatTime(updatedAt) + '\n';
+                "채널 소개 : " + description + '\n' ;
+//                "생성시간 : " + formatTime(createdAt) + '\n' +
+//                "수정시간 : " + formatTime(updatedAt) + '\n';
     }
 }
 

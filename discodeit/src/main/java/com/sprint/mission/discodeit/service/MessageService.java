@@ -23,4 +23,8 @@ public interface MessageService {
 
     void printRemainMessages();
 
+    String formatMessage(Message message);
+
+    List<String> formatMessages(List<Message> messages);
+
 }

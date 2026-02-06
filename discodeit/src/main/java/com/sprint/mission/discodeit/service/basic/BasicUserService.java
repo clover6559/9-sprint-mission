@@ -73,17 +73,25 @@ public class BasicUserService implements UserService {
     }
 
     @Override
-    public List<User> search(UserSearch userSearch) {
+    public List<UserResponse> search(UserSearch userSearch) {
         return userRepository.findAll().stream()
                 .filter(u -> userSearch.getUserName() == null || userSearch.getUserName().equals(u.getUserName()))
+                .map(user -> {
+                   UserStatus status =  userStatusRepository.findByUserId(user.getId())
+                           .orElse(null);
+                   boolean isOnline = (status != null) && status.isOnline();
+                   return new UserResponse(
+                           isOnline, user.getId(), user.getUserName(), user.getEmail()
+                   );
+                })
                 .toList();
     }
 
     @Override
-    public String update(UserUpdate userUpdate) {
+    public void update(UserUpdate userUpdate) {
         User findUser = userRepository.findById(userUpdate.targetId())
                 .orElseThrow(() -> new RuntimeException("해당 유저를 찾을 수 없습니다."));
-        String changes = findUser.changes(userUpdate.userUpdateInfo());
+        findUser.updateInfo(userUpdate.userUpdateInfo());
         if (userUpdate.userUpdateInfo().profileImageInfo() != null) {
             BinaryContent newContent = new BinaryContent(
                     findUser.getId(),
@@ -96,10 +104,9 @@ public class BasicUserService implements UserService {
             if (oldProfileId != null) {
                 binaryContentRepository.deleteById(oldProfileId);
             }
-            changes += ", 프로필 이미지 교체됨";
+            System.out.println("[Service]" +'\n' + "프로필 이미지 교체 완료");
         }
         userRepository.save(findUser);
-        return changes + " 및 프로필 이미지 업데이트 완료";
     }
 
 

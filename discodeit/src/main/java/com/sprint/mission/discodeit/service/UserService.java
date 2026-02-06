@@ -15,11 +15,11 @@ public interface UserService {
 
     UserResponse find(UUID userId);
 
-    List<User> search(UserSearch userSearch);
+    List<UserResponse> search(UserSearch userSearch);
 
     List<UserResponse> findAll();
 
-    String update(UserUpdate userUpdate);
+    void update(UserUpdate userUpdate);
 
     boolean delete(UUID id);
 

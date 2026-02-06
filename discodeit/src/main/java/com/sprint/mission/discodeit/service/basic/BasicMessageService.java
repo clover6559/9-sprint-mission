@@ -3,7 +3,9 @@ package com.sprint.mission.discodeit.service.basic;
 import com.sprint.mission.discodeit.dto.message.MessageCreate;
 import com.sprint.mission.discodeit.dto.message.MessageUpdate;
 import com.sprint.mission.discodeit.entity.BinaryContent;
+import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.Message;
+import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.repository.BinaryContentRepository;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
 import com.sprint.mission.discodeit.repository.MessageRepository;
@@ -15,6 +17,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
+
+import static com.sprint.mission.discodeit.entity.DateUtil.formatTime;
+
 @Service
 @RequiredArgsConstructor
 public class BasicMessageService implements MessageService {
@@ -90,5 +96,28 @@ public class BasicMessageService implements MessageService {
         List<Message> messages = messageRepository.findAll();
         System.out.println("현재 남은 메세지 수: " + messages.size());
         messages.forEach(m -> System.out.println("- " + m.getContent()));
+    }
+
+    @Override
+    public String formatMessage(Message message) {
+        String userName = userRepository.findById(message.getAuthordId()).map(User::getUserName).orElse("알 수 없는 유저");
+        String channelName = channelRepository.findById(message.getChannelId()).map(Channel::getChannelName).orElse("알 수 없는 채널");
+        String attachments = binaryContentRepository.findAllByIdIn(message.getAttachmentIds()).stream()
+                .map(BinaryContent::getFileName)
+                .collect(Collectors.joining(", "));
+
+        return "유저이름: " + userName + "\n" +
+               "채널이름: " + channelName + "\n" +
+               "내용: " + message.getContent() + "\n" +
+               "첨부파일: " + (attachments.isEmpty() ? "없음" : attachments) + "\n" +
+               "생성시간: " + formatTime(message.getCreatedAt()) + "\n" +
+               "수정시간: " + formatTime(message.getUpdatedAt());
+    }
+
+    @Override
+    public List<String> formatMessages(List<Message> messages) {
+        return messages.stream()
+                .map(this::formatMessage)
+                .toList();
     }
 }

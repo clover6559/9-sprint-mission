@@ -6,11 +6,10 @@ import lombok.Getter;
 
 import java.io.Serializable;
 import java.time.Instant;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
+
+import static com.sprint.mission.discodeit.entity.DateUtil.formatTime;
+
 @Getter
 public class User implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -51,26 +50,25 @@ public class User implements Serializable {
                 "수정 시간 : " + formatTime(updatedAt) + '\n';
     }
 
-    public String changes(UserUpdate.UserUpdateInfo updateInfo) {
-        List<String> changes = new ArrayList<>();
-        if (updateInfo.userName() != null && ! updateInfo.userName().isBlank()) {
+    public void updateInfo(UserUpdate.UserUpdateInfo updateInfo) {
+        if (updateInfo == null) return;
+        StringBuilder changes = new StringBuilder();
+        if (updateInfo.userName() != null && !updateInfo.userName().isBlank()) {
             this.userName = updateInfo.userName();
-            changes.add("이름 : " + userName);
+            changes.append("이름 : ").append(userName).append('\n');
         }
         if (updateInfo.email() != null && !updateInfo.email().isBlank()) {
             this.email = updateInfo.email();
-            changes.add("이메일 : " + email);
+            changes.append("이메일 : ").append(email).append('\n');
         }
         if (updateInfo.password() != null && !updateInfo.password().isBlank()) {
             this.password = updateInfo.password();
-            changes.add("비밀번호 : " + password);
+            changes.append("비밀번호 : ").append(password).append('\n');
         }
-        this.updatedAt = Instant.now();
-        return changes.isEmpty() ? "변경 사항 없음: " : String.join(", ", changes) + "로 수정됨";
+        if (changes.length() > 0) {
+            this.updatedAt = Instant.now();
+            System.out.println("[수정완료] " + '\n' + changes.toString());
+        }
+
     }
-    public static DateTimeFormatter formatter =  DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-    public static String formatTime(Instant timeStamp) {
-        String zonedDateTime = timeStamp.atZone(ZoneId.systemDefault()).format(formatter);
-        return zonedDateTime;
     }
-}
