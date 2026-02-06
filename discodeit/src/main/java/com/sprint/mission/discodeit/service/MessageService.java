@@ -10,21 +10,13 @@ import java.util.UUID;
 
 public interface MessageService {
     Message create(MessageCreate MessageCreate);
-
     Message findById(UUID messageId);
-
     List<Message> search(MessageSearch condition);
-
     List<Message> findAllByChannelId(UUID channelId);
-
-    String update(MessageUpdate MessageUpdate);
-
+    void update(MessageUpdate MessageUpdate);
     boolean delete(UUID messageId);
-
     void printRemainMessages();
-
     String formatMessage(Message message);
-
     List<String> formatMessages(List<Message> messages);
 
 }

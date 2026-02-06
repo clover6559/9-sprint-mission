@@ -74,12 +74,11 @@ public class BasicMessageService implements MessageService {
 
 
     @Override
-    public String update(MessageUpdate MessageUpdate) {
+    public void update(MessageUpdate MessageUpdate) {
         Message foundMessage = messageRepository.findById(MessageUpdate.targetId())
                 .orElseThrow(() -> new RuntimeException("해당 메세지를 찾을 수 없습니다."));
-        foundMessage.update(MessageUpdate.content());
+        foundMessage.updateInfo(MessageUpdate.content());
         messageRepository.save(foundMessage);
-        return foundMessage.getContent();
     }
 
     @Override

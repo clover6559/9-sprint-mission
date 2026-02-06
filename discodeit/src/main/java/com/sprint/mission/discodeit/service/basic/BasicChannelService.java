@@ -1,9 +1,6 @@
 package com.sprint.mission.discodeit.service.basic;
 
-import com.sprint.mission.discodeit.dto.channel.ChannelResponse;
-import com.sprint.mission.discodeit.dto.channel.ChannelUpdate;
-import com.sprint.mission.discodeit.dto.channel.CreatePrivate;
-import com.sprint.mission.discodeit.dto.channel.CreatePublic;
+import com.sprint.mission.discodeit.dto.channel.*;
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.entity.ReadStatus;
@@ -53,7 +50,7 @@ public class BasicChannelService implements ChannelService {
     }
 
     @Override
-    public ChannelResponse find(UUID channelId) {
+    public ChannelFind find(UUID channelId) {
         Channel channel =  channelRepository.findById(channelId)
                 .orElseThrow(() -> new RuntimeException("해당 채널을 찾을 수 없습니다. "));
         messageRepository.findByChannelId(channelId);
@@ -62,13 +59,12 @@ public class BasicChannelService implements ChannelService {
                 .max(Comparator.naturalOrder())
                 .orElse(null);
 
-
         List<UUID> memberIds = new ArrayList<>();
         if (channel.getChannelType() == Channel.ChannelType.PRIVATE) {
             memberIds =  readStatusRepository.findByChannelId(channelId).stream()
                     .map(ReadStatus::getUserId).toList();
         }
-        return new ChannelResponse(channel, lastMessageAt, memberIds);
+        return new ChannelFind(channel, lastMessageAt, memberIds);
 
     }
 
@@ -108,15 +104,14 @@ public class BasicChannelService implements ChannelService {
     }
 
     @Override
-    public String update(ChannelUpdate channelUpdateChannel) {
+    public void update(ChannelUpdate channelUpdateChannel) {
         Channel foundChannel = channelRepository.findById(channelUpdateChannel.targetId())
                 .orElseThrow(() -> new RuntimeException("해당 채널을 찾을 수 없습니다."));
         if (foundChannel.getChannelType() == Channel.ChannelType.PRIVATE) {
             throw new IllegalArgumentException("수정이 불가능한 채널입니다");
         }
-        String changes = foundChannel.changes(channelUpdateChannel.channelUpdateInfo());
+        foundChannel.updateInfo(channelUpdateChannel.channelUpdateInfo());
         channelRepository.save(foundChannel);
-        return changes;
     }
 
 

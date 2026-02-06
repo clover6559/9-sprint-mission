@@ -1,13 +1,10 @@
 package com.sprint.mission.discodeit;
 
-import com.sprint.mission.discodeit.dto.channel.ChannelResponse;
-import com.sprint.mission.discodeit.dto.channel.ChannelUpdate;
-import com.sprint.mission.discodeit.dto.channel.CreatePrivate;
-import com.sprint.mission.discodeit.dto.channel.CreatePublic;
+import com.sprint.mission.discodeit.dto.channel.*;
 import com.sprint.mission.discodeit.dto.message.MessageCreate;
 import com.sprint.mission.discodeit.dto.message.MessageUpdate;
 import com.sprint.mission.discodeit.dto.user.UserCreate;
-import com.sprint.mission.discodeit.dto.user.UserResponse;
+import com.sprint.mission.discodeit.dto.user.UserFind;
 import com.sprint.mission.discodeit.dto.user.UserUpdate;
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.Message;
@@ -36,15 +33,15 @@ public class DiscodeitApplication {
 		System.out.println("========= 유저 생성 =========" + '\n' +  user.toString());
 
 		// 조회(ID)
-		UserResponse foundUser = userService.find(user.getId());
+		UserFind foundUser = userService.find(user.getId());
 		System.out.println("========= 유저 조회(ID) =========" +  '\n' +  foundUser.toString());
 		//조건 1개(이름)
 		UserSearch userSearch = new UserSearch("육선우");
-		List<UserResponse> foundUserByName = userService.search(userSearch);
+		List<UserFind> foundUserByName = userService.search(userSearch);
 		System.out.println("=========유저 조회(육선우) =========" );
 		foundUserByName.forEach(System.out::println);
 		//전체 유저 조회
-		List<UserResponse> foundAllUsers = userService.findAll();
+		List<UserFind> foundAllUsers = userService.findAll();
 		System.out.println("========= 전체 유저 조회 =========");
 		foundAllUsers.forEach(System.out::println);
 
@@ -54,7 +51,7 @@ public class DiscodeitApplication {
 		System.out.println("=========유저 수정 ========= ");
 		userService.update(update);
 		System.out.println();
-		UserResponse updatedUser = userService.find(user.getId());
+		UserFind updatedUser = userService.find(user.getId());
 		System.out.println("[현재 유저 정보] " + '\n' + updatedUser);
 
 		//삭제
@@ -75,7 +72,7 @@ public class DiscodeitApplication {
 		System.out.println("========= 채널 생성 =========" + '\n' + channel.toString());
 
 		// 조회(ID)
-		ChannelResponse foundChannel = channelService.find(channel.getId());
+		ChannelFind foundChannel = channelService.find(channel.getId());
 		System.out.println("=========채널 조회(ID)========="+ '\n' + foundChannel.toString());
 		//조건 1개 조회(이름)
 		ChannelSearch channelSearch = new ChannelSearch("이진용",null, Channel.ChannelType.PUBLIC);
@@ -96,10 +93,10 @@ public class DiscodeitApplication {
 		// 수정
 		ChannelUpdate.ChannelUpdateInfo channelUpdateInfo= new ChannelUpdate.ChannelUpdateInfo("공지사항", null);
 		ChannelUpdate update = new ChannelUpdate(channel.getId(), channelUpdateInfo);
-		String updateMessage = channelService.update(update);
-		System.out.println("========= 채널 수정 =========" + '\n' + "[변경 사항]" + '\n' + updateMessage);
-		System.out.println();
-		System.out.println("[현재 채널 정보] " + '\n' + channel);
+		ChannelFind updateChannel = channelService.find(channel.getId());
+		System.out.println("========= 채널 수정 =========");
+		channelService.update(update);
+		System.out.println("[현재 채널 정보] " + '\n' + updateChannel);
 
 		// 삭제
 		channelService.delete(channel.getId());
@@ -146,12 +143,11 @@ public class DiscodeitApplication {
 
 		// 수정
 		MessageUpdate update = new MessageUpdate(message.getId(), "반갑습니다.");
-		String updateMessage = messageService.update(update);
-		System.out.println("========= 메시지 수정 =========" +  '\n' +"[변경 사항]" + '\n' + updateMessage);
+		Message updateMessage = messageService.findById(message.getId());
+		System.out.println("========= 메시지 수정 =========" );
+		messageService.update(update);
 		System.out.println();
-		System.out.println("[현재 메시지 정보]");
-		System.out.println(messageService.formatMessage(messageService.findById(message.getId())));
-
+		System.out.println("[현재 메시지 정보]" + '\n' + updateMessage.toString());
 
 		// 삭제
 		messageService.delete(message.getId());

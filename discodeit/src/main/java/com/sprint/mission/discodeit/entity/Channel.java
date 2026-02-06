@@ -11,8 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static com.sprint.mission.discodeit.entity.DateUtil.formatTime;
-
 @Getter
 public class Channel implements Serializable {
     public enum ChannelType {
@@ -47,18 +45,21 @@ public class Channel implements Serializable {
         this.channelType = ChannelType.PRIVATE;
     }
 
-    public String changes(ChannelUpdate.ChannelUpdateInfo channelUpdateInfo) {
-        List<String> changes = new ArrayList<>();
-        if (channelUpdateInfo.channelName() != null && !channelUpdateInfo.channelName().isBlank()) {
-            this.channelName = channelUpdateInfo.channelName();
-            changes.add("채널 이름 : " + channelName);
+    public void updateInfo(ChannelUpdate.ChannelUpdateInfo updateInfo) {
+        if (updateInfo == null) return;
+        StringBuilder changes = new StringBuilder();
+        if (updateInfo.channelName() != null && !updateInfo.channelName().isBlank()) {
+            this.channelName = updateInfo.channelName();
+            changes.append("채널 이름 : ").append(channelName).append('\n');
         }
-        if (channelUpdateInfo.description() != null && !channelUpdateInfo.description().isBlank()) {
-            this.description = channelUpdateInfo.description();
-            changes.add("소개 : " + description);
+        if (updateInfo.description() != null && !updateInfo.description().isBlank()) {
+            this.description = updateInfo.description();
+            changes.append("소개 : ").append(channelName).append('\n');
         }
-        this.updatedAt = Instant.now();
-    return changes.isEmpty() ? "변경 사항 없음: " : String.join(", ", changes) + "로 수정됨";
+        if (changes.length() > 0) {
+            this.updatedAt = Instant.now();
+            System.out.println("[수정완료] " + '\n' + changes.toString());
+        }
     }
 
 

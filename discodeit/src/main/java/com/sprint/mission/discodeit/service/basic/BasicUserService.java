@@ -1,7 +1,7 @@
 package com.sprint.mission.discodeit.service.basic;
 
 import com.sprint.mission.discodeit.dto.user.UserCreate;
-import com.sprint.mission.discodeit.dto.user.UserResponse;
+import com.sprint.mission.discodeit.dto.user.UserFind;
 import com.sprint.mission.discodeit.dto.user.UserUpdate;
 import com.sprint.mission.discodeit.entity.BinaryContent;
 import com.sprint.mission.discodeit.entity.User;
@@ -47,25 +47,25 @@ public class BasicUserService implements UserService {
     }
 
     @Override
-    public UserResponse find(UUID userId) {
+    public UserFind find(UUID userId) {
         User findUser = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("해당 유저를 찾을 수 없습니다."));
         UserStatus userStatus = userStatusRepository.findByUserId(findUser.getId())
                 .orElse(null);
         boolean isOnline = (userStatus != null) && userStatus.isOnline();
-        return new UserResponse(isOnline, findUser.getId(), findUser.getUserName(), findUser.getEmail());
+        return new UserFind(isOnline, findUser.getId(), findUser.getUserName(), findUser.getEmail());
 
     }
 
     @Override
-    public List<UserResponse> findAll() {
+    public List<UserFind> findAll() {
         List<User> userList = userRepository.findAll();
         return userList.stream()
                 .map(user -> {
                     UserStatus status = userStatusRepository.findByUserId(user.getId())
                             .orElse(null);
                     boolean isOnline = (status != null) && status.isOnline();
-                    return new UserResponse(
+                    return new UserFind(
                             isOnline, user.getId(), user.getUserName(), user.getEmail()
                     );
                 })
@@ -73,14 +73,14 @@ public class BasicUserService implements UserService {
     }
 
     @Override
-    public List<UserResponse> search(UserSearch userSearch) {
+    public List<UserFind> search(UserSearch userSearch) {
         return userRepository.findAll().stream()
                 .filter(u -> userSearch.getUserName() == null || userSearch.getUserName().equals(u.getUserName()))
                 .map(user -> {
                    UserStatus status =  userStatusRepository.findByUserId(user.getId())
                            .orElse(null);
                    boolean isOnline = (status != null) && status.isOnline();
-                   return new UserResponse(
+                   return new UserFind(
                            isOnline, user.getId(), user.getUserName(), user.getEmail()
                    );
                 })

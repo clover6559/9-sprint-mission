@@ -35,16 +35,17 @@ public class Message implements Serializable {
         this.attachmentIds = attachmentIds;
     }
 
-    public String update(String content) {
-        List<String> changes = new ArrayList<>();
+    public void updateInfo(String content) {
+        StringBuilder changes = new StringBuilder();
         if (content != null && !content.isBlank()) {
             this.content = content;
-            changes.add("메세지 내용 : " + content);
+            changes.append("메세지 내용 : ").append(content);
         }
-        this.updatedAt = Instant.now();
-        return changes.isEmpty() ? "변경 사항 없음: " : String.join(", ", changes) + "로 수정됨";
-
-    }
+        if (changes.length() > 0 ) {
+            System.out.println("[수정완료] " + '\n' + changes.toString());
+            this.updatedAt = Instant.now();
+        }
+     }
 
     @Override
     public String toString() {
