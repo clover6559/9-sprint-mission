@@ -42,9 +42,7 @@ public class UserController {
         }
         UserCreate requestDto = new UserCreate(basicUserInfo, profileImageInfo);
         User createdUser = userService.create(requestDto);
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(createdUser);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
     }
 
     @RequestMapping(

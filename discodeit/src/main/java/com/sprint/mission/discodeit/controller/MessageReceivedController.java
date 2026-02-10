@@ -1,4 +1,4 @@
 package com.sprint.mission.discodeit.controller;
 
-public class ReadStatusController {
+public class MessageReceivedController {
 }
