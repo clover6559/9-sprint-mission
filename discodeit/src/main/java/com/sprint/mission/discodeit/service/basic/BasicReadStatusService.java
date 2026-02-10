@@ -10,6 +10,7 @@ import com.sprint.mission.discodeit.service.ReadStatusService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -29,7 +30,7 @@ public class BasicReadStatusService implements ReadStatusService {
         if (readStatusRepository.existsByChannelIdAndUserId(readStatusCreate.channelId(),readStatusCreate.userId())) {
             throw new RuntimeException("해당 채널에 대한 유저의 읽음 상태가 이미 존재합니다.");
         }
-        ReadStatus newStatus = new ReadStatus(readStatusCreate.channelId(), readStatusCreate.userId());
+        ReadStatus newStatus = new ReadStatus(readStatusCreate.channelId(), readStatusCreate.userId(), Instant.now());
         return readStatusRepository.save(newStatus);
     }
 
@@ -46,10 +47,11 @@ public class BasicReadStatusService implements ReadStatusService {
     }
 
     @Override
-    public ReadStatus update(ReadStatusUpdate readStatusUpdate) {
-        ReadStatus foundStatus = readStatusRepository.findById(readStatusUpdate.targetId())
-                .orElseThrow(() -> new RuntimeException("해당 읽음 상태를 찾을 수 없습니다."));
-        foundStatus.updateLastReadAt(readStatusUpdate.lastReadAt());
+    public ReadStatus update(UUID readStatusId, ReadStatusUpdate readStatusUpdate) {
+        Instant newLastReadAt = readStatusUpdate.newLastReadAt();
+        ReadStatus foundStatus = readStatusRepository.findById(readStatusId)
+                .orElseThrow(() -> new RuntimeException("해당 채널의 읽음 상태를 찾을 수 없습니다."));
+        foundStatus.update(newLastReadAt);
         return readStatusRepository.save(foundStatus);
     }
 

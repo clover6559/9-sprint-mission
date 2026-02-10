@@ -3,8 +3,8 @@ package com.sprint.mission.discodeit.entity;
 import lombok.Getter;
 
 import java.io.Serializable;
+import java.time.Duration;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 @Getter
@@ -14,31 +14,32 @@ public class UserStatus implements Serializable {
     private UUID userId;
     private final Instant createdAt;
     private Instant updatedAt;
-    private Instant lastActiveTime;
-    private String statusMessage;
-    public enum Status {
-        ONLINE, AWAY, OFFLINE
-    }
-    private Status status;
+    private Instant lastActiveAt;
 
-    public UserStatus(UUID userId, String statusMessage, Status statusType) {
+
+    public UserStatus(UUID userId, Instant lastActiveAt ) {
         this.id = UUID.randomUUID();
         this.userId = userId;
         Instant now = Instant.now();
         this.updatedAt = now;
         this.createdAt = now;
-        this.lastActiveTime = now;
-        this.statusMessage = statusMessage;
-        this.status = statusType;
-    }
-    public boolean isOnline() {
-        Instant fiveMinute =  Instant.now().minus(5, ChronoUnit.MINUTES);
-        return this.lastActiveTime.isAfter(fiveMinute); }
+        this.lastActiveAt = lastActiveAt;
 
-    public void updateUserStatus(String statusMessage, UserStatus.Status statusType) {
-        this.statusMessage = statusMessage;
-        this.status = statusType;
-        this.lastActiveTime = Instant.now();
-        this.updatedAt = Instant.now();
+    }
+    public Boolean isOnline() {
+        Instant instantFiveMinutesAgo = Instant.now().minus(Duration.ofMinutes(5));
+        return lastActiveAt.isAfter(instantFiveMinutesAgo);
+    }
+
+    public void updateUserStatus(Instant lastActiveAt) {
+        boolean anyValueUpdated = false;
+        if (lastActiveAt != null && !lastActiveAt.equals(this.lastActiveAt)) {
+            this.lastActiveAt = lastActiveAt;
+            anyValueUpdated = true;
+        }
+
+        if (anyValueUpdated) {
+            this.updatedAt = Instant.now();
+        }
     }
 }

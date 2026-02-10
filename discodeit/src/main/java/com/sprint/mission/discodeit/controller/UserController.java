@@ -2,7 +2,7 @@ package com.sprint.mission.discodeit.controller;
 
 import com.sprint.mission.discodeit.dto.UserStatus.UserStatusUpdate;
 import com.sprint.mission.discodeit.dto.user.UserCreate;
-import com.sprint.mission.discodeit.dto.user.UserFind;
+import com.sprint.mission.discodeit.dto.user.UserDto;
 import com.sprint.mission.discodeit.dto.user.UserUpdate;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.service.UserService;
@@ -86,8 +86,8 @@ public class UserController {
     @RequestMapping(
             method = RequestMethod.GET
     )
-    public ResponseEntity<List<UserFind>> findAll() {
-        List<UserFind> userList = userService.findAll();
+    public ResponseEntity<List<UserDto>> findAll() {
+        List<UserDto> userList = userService.findAll();
         return ResponseEntity.ok(userList);
     }
 
@@ -99,8 +99,7 @@ public class UserController {
             @PathVariable UUID userId,
             @RequestBody UserStatusUpdate request
     ) throws IllegalArgumentException {
-        UserStatusUpdate status = new UserStatusUpdate(userId,request.statusMessage(), request.statusType());
-        userStatusService.update(status);
+        userStatusService.update(userId,request);
         return ResponseEntity.ok().build();
     }
 }

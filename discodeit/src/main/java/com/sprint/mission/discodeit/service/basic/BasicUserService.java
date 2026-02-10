@@ -1,6 +1,7 @@
 package com.sprint.mission.discodeit.service.basic;
 
 import com.sprint.mission.discodeit.dto.user.UserCreate;
+import com.sprint.mission.discodeit.dto.user.UserDto;
 import com.sprint.mission.discodeit.dto.user.UserFind;
 import com.sprint.mission.discodeit.dto.user.UserUpdate;
 import com.sprint.mission.discodeit.entity.BinaryContent;
@@ -14,6 +15,7 @@ import com.sprint.mission.discodeit.service.search.UserSearch;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 @Service
@@ -39,8 +41,8 @@ public class BasicUserService implements UserService {
             BinaryContent profileImage = new BinaryContent(savedUser.getId(), userCreate.profileImageInfo().fileName(), userCreate.profileImageInfo().data());
             binaryContentRepository.save(profileImage);
         }
-
-        UserStatus userStatus = new UserStatus(savedUser.getId(), "기본 상태 메시지", UserStatus.Status.ONLINE);
+        Instant now = Instant.now();
+        UserStatus userStatus = new UserStatus(savedUser.getId(), now);
         userStatusRepository.save(userStatus);
         return savedUser;
 
@@ -58,15 +60,15 @@ public class BasicUserService implements UserService {
     }
 
     @Override
-    public List<UserFind> findAll() {
+    public List<UserDto> findAll() {
         List<User> userList = userRepository.findAll();
         return userList.stream()
                 .map(user -> {
                     UserStatus status = userStatusRepository.findByUserId(user.getId())
                             .orElse(null);
                     boolean isOnline = (status != null) && status.isOnline();
-                    return new UserFind(
-                            isOnline, user.getId(), user.getUserName(), user.getEmail()
+                    return new UserDto(
+                            user.getId(), user.getCreatedAt(), user.getUpdatedAt(), user.getUserName(), user.getEmail(), user.getProfileId(),isOnline
                     );
                 })
                 .toList();
@@ -80,9 +82,7 @@ public class BasicUserService implements UserService {
                    UserStatus status =  userStatusRepository.findByUserId(user.getId())
                            .orElse(null);
                    boolean isOnline = (status != null) && status.isOnline();
-                   return new UserFind(
-                           isOnline, user.getId(), user.getUserName(), user.getEmail()
-                   );
+                   return new UserFind(isOnline, user.getId(), user.getUserName(), user.getEmail());
                 })
                 .toList();
     }

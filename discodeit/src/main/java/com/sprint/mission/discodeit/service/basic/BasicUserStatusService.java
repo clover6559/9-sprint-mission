@@ -9,6 +9,7 @@ import com.sprint.mission.discodeit.service.UserStatusService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -26,13 +27,14 @@ public class BasicUserStatusService implements UserStatusService {
         if (userStatusRepository.existsByUserId(create.userId())) {
             throw new RuntimeException("해당 유저에 대한 유저 상태가 이미 존재합니다.");
         }
-        UserStatus userStatus = new UserStatus(create.userId(), create.statusMessage(), create.statusType());
+        Instant lastActiveAt = create.lastActiveAt();
+        UserStatus userStatus = new UserStatus(create.userId(),lastActiveAt);
         return userStatusRepository.save(userStatus);
     }
 
     @Override
-    public UserStatus find(UUID id) {
-        return userStatusRepository.findById(id)
+    public UserStatus find(UUID userStatusId) {
+        return userStatusRepository.findById(userStatusId)
                 .orElseThrow(() -> new RuntimeException("해당 유저 상태를 찾을 수 없습니다."));
 
     }
@@ -44,17 +46,19 @@ public class BasicUserStatusService implements UserStatusService {
 
     @Override
     public UserStatus updateByUserId(UUID userId, UserStatusUpdate update) {
+        Instant newLastActiveAt = update.newLastActiveAt();
         UserStatus userStatus =  userStatusRepository.findByUserId(userId)
                 .orElseThrow(() -> new RuntimeException("해당 유저의 상태를 찾을 수 없습니다. "));
-        userStatus.updateUserStatus(update.statusMessage(), update.statusType());
+        userStatus.updateUserStatus(newLastActiveAt);
         return userStatusRepository.save(userStatus);
     }
 
     @Override
-    public UserStatus update(UserStatusUpdate update) {
-        UserStatus userStatus = userStatusRepository.findById(update.id())
+    public UserStatus update(UUID userStatusId, UserStatusUpdate update) {
+        Instant newLastActiveAt = update.newLastActiveAt();
+        UserStatus userStatus = userStatusRepository.findById(userStatusId)
                 .orElseThrow(() -> new RuntimeException("해당 유저 상태를 찾을 수 없습니다."));
-        userStatus.updateUserStatus(update.statusMessage(), update.statusType());
+        userStatus.updateUserStatus(newLastActiveAt);
         return userStatusRepository.save(userStatus);
     }
 
