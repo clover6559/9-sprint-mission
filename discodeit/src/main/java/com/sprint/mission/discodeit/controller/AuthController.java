@@ -1,27 +1,27 @@
 package com.sprint.mission.discodeit.controller;
 
-import com.sprint.mission.discodeit.dto.loginDto;
+import com.sprint.mission.discodeit.dto.LoginDto;
+import com.sprint.mission.discodeit.entity.User;
+import com.sprint.mission.discodeit.service.AuthService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
-
-@Controller
-@RequestMapping("/login")
+@RestController
+@RequestMapping("/auth")
+@RequiredArgsConstructor
 public class AuthController {
+    private final AuthService authService;
 
     @RequestMapping(
             path = "login",
             method = RequestMethod.POST
-
     )
-    public ResponseEntity<loginDto> login(
-            @RequestPart("loginRequest")loginDto loginDto
+    public ResponseEntity<User> login(
+            @RequestBody LoginDto loginDto
 
-    ) throws IOException {
-
+    ) {
+        User login = authService.login(loginDto);
+        return ResponseEntity.ok(login);
     }
 }
