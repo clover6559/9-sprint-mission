@@ -68,7 +68,7 @@ public class DiscodeitApplication {
 //		UserCreate create = new UserCreate(userInfo, null);
 //		User user = userService.create(create);
 //		CreatePublic createPublic = new CreatePublic("공지", "공지 채널입니다.", user);
-//		Channel channel = channelService.createPublicChannel(createPublic);
+//		Channel channel = channelService.create(createPublic);
 //		System.out.println("========= 채널 생성 =========" + '\n' + channel.toString());
 //
 //		// 조회(ID)
@@ -108,7 +108,7 @@ public class DiscodeitApplication {
 //	static void messageCRUDTest(MessageService messageService, UserService userService, ChannelService channelService) {
 //		User user = userService.create(new UserCreate(new UserCreate.BasicUserInfo("강지원","jiwon@gmail.com", "566wrsd"), null));
 //		User user1 = userService.create(new UserCreate(new UserCreate.BasicUserInfo("육선우","senwoo@gmail.com", "1456d25e"), null));
-//		Channel channel = channelService.createPublicChannel(new CreatePublic("공지", "공지 채널입니다", user));
+//		Channel channel = channelService.create(new CreatePublic("공지", "공지 채널입니다", user));
 //
 //		// 생성
 //		MessageCreate.BasicMessageInfo messageInfo = new MessageCreate.BasicMessageInfo(channel.getId(),user.getId(),"안녕하세요.",null);

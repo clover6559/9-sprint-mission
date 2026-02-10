@@ -26,7 +26,7 @@ public class Channel implements Serializable {
     private String userName;
 
     public Channel(CreatePublic createPublic) {
-        this.userId = createPublic.user().getId();
+        this.userId = createPublic.user().userId();
         Instant now = Instant.now();
         this.createdAt = now;
         this.updatedAt = now;
@@ -34,10 +34,10 @@ public class Channel implements Serializable {
         this.channelName = createPublic.channelName();
         this.description = createPublic.description();
         this.channelType = ChannelType.PUBLIC;
-        this.userName = createPublic.user().getUserName();
+        this.userName = createPublic.user().userName();
     }
     public Channel(CreatePrivate createPrivate) {
-        this.userId = createPrivate.user().getId();
+        this.userId = createPrivate.user().userId();
         Instant now = Instant.now();
         this.createdAt = now;
         this.updatedAt = now;

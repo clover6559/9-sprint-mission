@@ -1,11 +1,12 @@
 package com.sprint.mission.discodeit.controller;
 
+import com.sprint.mission.discodeit.dto.UserStatus.UserStatusUpdate;
 import com.sprint.mission.discodeit.dto.user.UserCreate;
 import com.sprint.mission.discodeit.dto.user.UserFind;
 import com.sprint.mission.discodeit.dto.user.UserUpdate;
 import com.sprint.mission.discodeit.entity.User;
-import com.sprint.mission.discodeit.entity.UserStatus;
 import com.sprint.mission.discodeit.service.UserService;
+import com.sprint.mission.discodeit.service.UserStatusService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -22,6 +23,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+    private final UserStatusService userStatusService;
 
     @RequestMapping(
             path = "/create",
@@ -35,7 +37,7 @@ public class UserController {
         UserCreate.ProfileImageInfo profileImageInfo = null;
         if (profile != null && !profile.isEmpty()) {
             profileImageInfo = new UserCreate.ProfileImageInfo(
-                    UUID.randomUUID(), profile.getOriginalFilename(), profile.getBytes()
+                    UUID.randomUUID(),profile.getOriginalFilename(), profile.getBytes()
             );
         }
         UserCreate requestDto = new UserCreate(basicUserInfo, profileImageInfo);
@@ -46,12 +48,12 @@ public class UserController {
     }
 
     @RequestMapping(
-            path = "/update",
+            path = "/{userId}",
             method = RequestMethod.PATCH,
             consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}
     )
-    public ResponseEntity<User> update(
-            @RequestPart("targetId") UUID targetId,
+    public ResponseEntity<Void> update(
+            @PathVariable UUID userId,
             @RequestPart("userUpdateInfo") UserUpdate.UserUpdateInfo userUpdateInfo,
             @RequestPart(value = "profile", required = false) MultipartFile profile
     ) throws IOException {
@@ -67,7 +69,7 @@ public class UserController {
                 userUpdateInfo.password(),
                 profileImageInfo
         );
-        UserUpdate userUpdate = new UserUpdate(targetId, finalUpdateInfo);
+        UserUpdate userUpdate = new UserUpdate(userId, finalUpdateInfo);
         userService.update(userUpdate);
         return ResponseEntity.ok().build();
     }
@@ -92,13 +94,15 @@ public class UserController {
     }
 
     @RequestMapping(
+            path = "/{userId}/status",
             method = RequestMethod.PATCH
     )
-    public ResponseEntity<UserStatus> statusUpdate(
+    public ResponseEntity<Void> statusUpdate(
             @PathVariable UUID userId,
-            @RequestBody UserStatus userStatus
+            @RequestBody UserStatusUpdate request
     ) throws IllegalArgumentException {
-        UserStatus status = new UserStatus(userId, userStatus.getStatusMessage(), userStatus.getStatus());
-        return ResponseEntity.ok(status);
+        UserStatusUpdate status = new UserStatusUpdate(userId,request.statusMessage(), request.statusType());
+        userStatusService.update(status);
+        return ResponseEntity.ok().build();
     }
 }

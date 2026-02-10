@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.UUID;
 
 public interface ChannelService {
-    Channel createPublicChannel(CreatePublic createPublic);
-    Channel createPrivateChannel(CreatePrivate createPrivate);
+    Channel create(CreatePublic createPublic);
+    Channel create(CreatePrivate createPrivate);
     ChannelFind find(UUID channelId);
     List<Channel> search(ChannelSearch channelSearch);
     List<ChannelResponse> findAllByUserId(UUID userId);

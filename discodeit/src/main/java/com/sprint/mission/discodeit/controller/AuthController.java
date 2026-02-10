@@ -18,7 +18,7 @@ public class AuthController {
             method = RequestMethod.POST
 
     )
-    public ResponseEntity<Login> login(
+    public ResponseEntity<loginDto> login(
             @RequestPart("loginRequest")loginDto loginDto
 
     ) throws IOException {

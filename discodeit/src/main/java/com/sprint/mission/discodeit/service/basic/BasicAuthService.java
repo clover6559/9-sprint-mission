@@ -15,11 +15,15 @@ public class BasicAuthService implements AuthService {
 
     @Override
     public User login(loginDto autowired) {
-        User user = userRepository.findByName(autowired.userName());
-        if (user != null && user.getPassword().equals(autowired.password())) {
-            return user;
+        String username = autowired.userName();
+        String password = autowired.password();
+        User user = userRepository.findByName(username);
+
+        if (user != null && !user.getPassword().equals(password)) {
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
-        throw new RuntimeException("아이디 또는 비밀번호가 일치하지 않습니다.");
+
+        return user;
     }
 
     @Override
