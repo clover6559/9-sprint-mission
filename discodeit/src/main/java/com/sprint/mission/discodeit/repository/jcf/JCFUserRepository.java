@@ -44,7 +44,7 @@ public class JCFUserRepository implements UserRepository {
     @Override
     public User findByName(String userName) {
         return userRepo.values().stream()
-                .filter(user -> user.getUserName().equals(userName))
+                .filter(user -> userName != null &&  userName.equals(user.getUserName()))
                 .findFirst()
                 .orElse(null);
     }

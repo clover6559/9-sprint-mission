@@ -31,7 +31,7 @@ public class MessageReadStatusController {
     }
 
     @RequestMapping(
-            path = "/readStatusId}}",
+            path = "/{readStatusId}",
             method = RequestMethod.PATCH
     )
     public ResponseEntity<ReadStatus> update(

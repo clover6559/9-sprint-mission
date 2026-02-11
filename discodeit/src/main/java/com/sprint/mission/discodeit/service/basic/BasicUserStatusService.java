@@ -54,9 +54,9 @@ public class BasicUserStatusService implements UserStatusService {
     }
 
     @Override
-    public UserStatus update(UUID userStatusId, UserStatusUpdate update) {
+    public UserStatus update(UUID userId, UserStatusUpdate update) {
         Instant newLastActiveAt = update.newLastActiveAt();
-        UserStatus userStatus = userStatusRepository.findById(userStatusId)
+        UserStatus userStatus = userStatusRepository.findByUserId(userId)
                 .orElseThrow(() -> new RuntimeException("해당 유저 상태를 찾을 수 없습니다."));
         userStatus.updateUserStatus(newLastActiveAt);
         return userStatusRepository.save(userStatus);

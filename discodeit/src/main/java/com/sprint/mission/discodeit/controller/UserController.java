@@ -5,6 +5,7 @@ import com.sprint.mission.discodeit.dto.user.UserCreate;
 import com.sprint.mission.discodeit.dto.user.UserDto;
 import com.sprint.mission.discodeit.dto.user.UserUpdate;
 import com.sprint.mission.discodeit.entity.User;
+import com.sprint.mission.discodeit.entity.UserStatus;
 import com.sprint.mission.discodeit.service.UserService;
 import com.sprint.mission.discodeit.service.UserStatusService;
 import lombok.RequiredArgsConstructor;
@@ -95,11 +96,11 @@ public class UserController {
             path = "/{userId}/status",
             method = RequestMethod.PATCH
     )
-    public ResponseEntity<Void> statusUpdate(
+    public ResponseEntity<UserStatus> statusUpdate(
             @PathVariable UUID userId,
             @RequestBody UserStatusUpdate request
     ) throws IllegalArgumentException {
-        userStatusService.update(userId,request);
-        return ResponseEntity.ok().build();
+        UserStatus userStatus = userStatusService.update(userId,request);
+        return ResponseEntity.ok(userStatus);
     }
 }
