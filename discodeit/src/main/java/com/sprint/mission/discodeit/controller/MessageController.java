@@ -32,7 +32,7 @@ public class MessageController {
             ) throws IOException {
         MessageCreate.BinaryCreateDto binaryCreateDto = null;
         if (content != null && !content.isEmpty()) {
-            binaryCreateDto = new MessageCreate.BinaryCreateDto(binaryCreateDto.fileName(), binaryCreateDto.data());
+            binaryCreateDto = new MessageCreate.BinaryCreateDto(content.getOriginalFilename(),content.getBytes());
         }
         MessageCreate messageCreate = new MessageCreate(basicMessageInfo, binaryCreateDto);
         Message message = messageService.create(messageCreate);
