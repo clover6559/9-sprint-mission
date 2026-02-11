@@ -10,7 +10,6 @@ public interface BinaryContentRepository {
     BinaryContent save(BinaryContent binaryContent);
     Optional<BinaryContent> findByRefId(UUID refId);
     Optional<BinaryContent> findById(UUID id);
-    boolean existsByRefId(UUID refId);
     List<BinaryContent> findAll();
     void deleteById(UUID id);
     void deleteByRefId(UUID refId);

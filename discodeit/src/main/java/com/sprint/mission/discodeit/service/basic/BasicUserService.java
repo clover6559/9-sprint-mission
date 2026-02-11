@@ -28,6 +28,7 @@ public class BasicUserService implements UserService {
 
     @Override
     public User create(UserCreate userCreate) {
+        // 1. 유효성 검사 (데이터 구조 변경에 맞춰 .basicUserInfo()로 접근)
         if (userRepository.findByName(userCreate.basicUserInfo().userName()) != null) {
             throw new RuntimeException("이미 존재하는 이름입니다.");
         }
@@ -38,14 +39,24 @@ public class BasicUserService implements UserService {
         userRepository.save(savedUser);
 
         if (userCreate.profileImageInfo() != null) {
-            BinaryContent profileImage = new BinaryContent(savedUser.getId(), userCreate.profileImageInfo().fileName(), userCreate.profileImageInfo().data());
-            binaryContentRepository.save(profileImage);
+            BinaryContent profileImage = new BinaryContent(
+                    userCreate.profileImageInfo().fileName(),userCreate.profileImageInfo().size(),userCreate.profileImageInfo().contentType(),
+                    userCreate.profileImageInfo().data()
+            );
+            // 이미지 저장
+            BinaryContent savedImage = binaryContentRepository.save(profileImage);
+
+            // [중요] 생성된 이미지 ID를 유저에게 업데이트 (연결)
+            savedUser.updateProfileId(savedImage.getId());
+            userRepository.save(savedUser); // 업데이트 반영
         }
+
+        // 4. 유저 상태 초기화
         Instant now = Instant.now();
         UserStatus userStatus = new UserStatus(savedUser.getId(), now);
         userStatusRepository.save(userStatus);
-        return savedUser;
 
+        return savedUser;
     }
 
     @Override
@@ -94,17 +105,20 @@ public class BasicUserService implements UserService {
         findUser.updateInfo(userUpdate.userUpdateInfo());
         if (userUpdate.userUpdateInfo().profileImageInfo() != null) {
             BinaryContent newContent = new BinaryContent(
-                    findUser.getId(),
-                    userUpdate.userUpdateInfo().profileImageInfo().fileName(),
-                    userUpdate.userUpdateInfo().profileImageInfo().data()
+                    userUpdate.userUpdateInfo().profileImageInfo().fileName(), userUpdate.userUpdateInfo().profileImageInfo().size(),
+                    userUpdate.userUpdateInfo().profileImageInfo().contentType(),userUpdate.userUpdateInfo().profileImageInfo().data()
             );
-            binaryContentRepository.save(newContent);
+            BinaryContent savedContent = binaryContentRepository.save(newContent);
+
             UUID oldProfileId = findUser.getProfileId();
-            findUser.updateProfileId(newContent.getId());
+
+            // 새 프로필 ID로 업데이트
+            findUser.updateProfileId(savedContent.getId());
+
             if (oldProfileId != null) {
                 binaryContentRepository.deleteById(oldProfileId);
             }
-            System.out.println("[Service]" +'\n' + "프로필 이미지 교체 완료");
+            System.out.println("[Service]\n프로필 이미지 교체 완료");
         }
         userRepository.save(findUser);
     }

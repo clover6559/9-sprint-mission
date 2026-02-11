@@ -17,10 +17,15 @@ public class BasicBinaryContentService implements BinaryContentService {
 
     @Override
     public BinaryContent create(BinaryContentCreate create) {
-        if (binaryContentRepository.existsByRefId(create.refId())) {
-            throw new RuntimeException("해당 참조 ID에 대한 바이너리 데이터가 이미 존재합니다.");
-        }
-        BinaryContent binaryContent = new BinaryContent(create.refId(), create.fileName(), create.data());
+        String fileName = create.fileName();
+        byte[] bytes = create.bytes();
+        String contentType = create.contentType();
+        BinaryContent binaryContent = new BinaryContent(
+                fileName,
+                (long) bytes.length,
+                contentType,
+                bytes
+        );
         return binaryContentRepository.save(binaryContent);
     }
 

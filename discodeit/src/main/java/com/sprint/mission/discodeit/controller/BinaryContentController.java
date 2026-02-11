@@ -16,7 +16,7 @@ public class BinaryContentController {
     private final BinaryContentService binaryContentService;
 
     @RequestMapping(
-            path = "/find/{uuidList}",
+            path = "/find",
             method = RequestMethod.GET
     )
     public ResponseEntity<List<BinaryContent>> findAll(

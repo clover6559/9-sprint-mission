@@ -6,3 +6,4 @@ discodeit:
   repository:
     type: jcf
     file-directory: .discodeit
+

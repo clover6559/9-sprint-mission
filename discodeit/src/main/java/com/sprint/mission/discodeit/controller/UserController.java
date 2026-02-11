@@ -38,7 +38,7 @@ public class UserController {
         UserCreate.ProfileImageInfo profileImageInfo = null;
         if (profile != null && !profile.isEmpty()) {
             profileImageInfo = new UserCreate.ProfileImageInfo(
-                    UUID.randomUUID(),profile.getOriginalFilename(), profile.getBytes()
+                    UUID.randomUUID(),profile.getOriginalFilename(), profileImageInfo.size(), profileImageInfo.contentType(),profile.getBytes()
             );
         }
         UserCreate requestDto = new UserCreate(basicUserInfo, profileImageInfo);
@@ -59,7 +59,7 @@ public class UserController {
         UserCreate.ProfileImageInfo profileImageInfo = null;
         if (profile != null && !profile.isEmpty()) {
             profileImageInfo = new UserCreate.ProfileImageInfo(
-                    null,profile.getOriginalFilename(), profile.getBytes()
+                    null,profile.getOriginalFilename(), profileImageInfo.size(), profileImageInfo.contentType(), profile.getBytes()
             );
         }
         UserUpdate.UserUpdateInfo finalUpdateInfo = new UserUpdate.UserUpdateInfo(

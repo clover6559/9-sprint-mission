@@ -1,5 +1,6 @@
 package com.sprint.mission.discodeit.controller;
 
+import com.sprint.mission.discodeit.dto.BinaryContentCreate;
 import com.sprint.mission.discodeit.dto.message.MessageCreate;
 import com.sprint.mission.discodeit.dto.message.MessageUpdate;
 import com.sprint.mission.discodeit.entity.Message;
@@ -27,17 +28,19 @@ public class MessageController {
             consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}
     )
     public ResponseEntity<Message> create(
-            @RequestPart ("messageCreate") MessageCreate.BasicMessageInfo basicMessageInfo,
-            @RequestPart (value = "content", required = false) MultipartFile content
+            @RequestPart ("messageCreate") MessageCreate messageCreate,
+            @RequestPart (value = "file", required = false) MultipartFile file
             ) throws IOException {
-        MessageCreate.BinaryCreateDto binaryCreateDto = null;
-        if (content != null && !content.isEmpty()) {
-            binaryCreateDto = new MessageCreate.BinaryCreateDto(content.getOriginalFilename(),content.getBytes());
+        BinaryContentCreate binaryCreate = null;        if (file != null && !file.isEmpty()) {
+            binaryCreate = new BinaryContentCreate(
+                    file.getOriginalFilename(),
+                    file.getContentType(),
+                    file.getBytes()
+            );
         }
-        MessageCreate messageCreate = new MessageCreate(basicMessageInfo, binaryCreateDto);
-        Message message = messageService.create(messageCreate);
+        Message message = messageService.create(messageCreate, binaryCreate);
         return ResponseEntity.status(HttpStatus.CREATED).body(message);
-    }
+        }
 
     @RequestMapping(
             path = "/update",

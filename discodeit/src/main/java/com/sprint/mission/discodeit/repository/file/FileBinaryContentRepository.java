@@ -54,7 +54,7 @@ public class FileBinaryContentRepository implements BinaryContentRepository {
     @Override
     public Optional<BinaryContent> findByRefId(UUID refId) {
         return findAll().stream()
-                .filter(content -> content.getRefId().equals(refId))
+                .filter(content -> content.getId().equals(refId))
                 .findFirst();
     }
 
@@ -73,11 +73,6 @@ public class FileBinaryContentRepository implements BinaryContentRepository {
             }
         }
         return Optional.ofNullable(binaryContentNull);
-    }
-    @Override
-    public boolean existsByRefId(UUID refId) {
-        return findAll().stream()
-                .anyMatch(content -> content.getRefId().equals(refId));
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.sprint.mission.discodeit.service.basic;
 
+import com.sprint.mission.discodeit.dto.BinaryContentCreate;
 import com.sprint.mission.discodeit.dto.message.MessageCreate;
 import com.sprint.mission.discodeit.dto.message.MessageUpdate;
 import com.sprint.mission.discodeit.entity.BinaryContent;
@@ -15,7 +16,9 @@ import com.sprint.mission.discodeit.service.search.MessageSearch;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -30,16 +33,27 @@ public class BasicMessageService implements MessageService {
     private final BinaryContentRepository binaryContentRepository;
 
     @Override
-    public Message create(MessageCreate MessageCreate) {
-        Message message = new Message(MessageCreate);
-        if (MessageCreate.basicMessageInfo().attachments() != null && !MessageCreate.basicMessageInfo().attachments().isEmpty()) {
-            List<UUID> savedIds = MessageCreate.basicMessageInfo().attachments().stream()
-                    .map(dto -> new BinaryContent(message.getId(), dto.fileName(), dto.data()))
-                    .map(binaryContentRepository::save)
-                    .map(BinaryContent::getId)
-                    .toList();
-            message.updateAttachmentIds(savedIds);
+    public Message create(MessageCreate messageCreate, BinaryContentCreate binaryCreate) {
+        List<UUID> attachmentIds = new ArrayList<>();
+        if (binaryCreate != null && binaryCreate.bytes() != null) {
+            long fileSize = (long) binaryCreate.bytes().length;
+
+            BinaryContent binaryContent = new BinaryContent(
+                    binaryCreate.fileName(),
+                    fileSize,
+                    binaryCreate.contentType(),
+                    binaryCreate.bytes()
+            );
+            BinaryContent savedContent = binaryContentRepository.save(binaryContent);
+            attachmentIds.add(savedContent.getId());
         }
+
+        Message message = new Message(
+                messageCreate.content(),
+                messageCreate.channelId(),
+                messageCreate.authorId(),
+                attachmentIds
+        );
         return messageRepository.save(message);
     }
 
@@ -113,10 +127,4 @@ public class BasicMessageService implements MessageService {
                "수정시간: " + formatTime(message.getUpdatedAt());
     }
 
-    @Override
-    public List<String> formatMessages(List<Message> messages) {
-        return messages.stream()
-                .map(this::formatMessage)
-                .toList();
-    }
 }
