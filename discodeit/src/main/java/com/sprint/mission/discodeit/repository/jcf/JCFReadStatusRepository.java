@@ -45,7 +45,8 @@ public class JCFReadStatusRepository implements ReadStatusRepository {
     public boolean existsByChannelIdAndUserId(UUID channelId, UUID userId) {
         return readStatusMap.values().stream()
                 .anyMatch(readStatus ->
-                        readStatus.getChannelId().equals(channelId) &&
+                        channelId.equals(readStatus.getChannelId()) &&
+                        readStatus.getUserId() != null &&                       readStatus.getChannelId().equals(channelId) &&
                         readStatus.getUserId().equals(userId)
                 );
     }

@@ -43,11 +43,17 @@ public class BasicChannelService implements ChannelService {
         Channel channel = new Channel(createPrivate);
         channelRepository.save(channel);
 
-        UserFind member = createPrivate.user();
-        if (member != null) {
-            ReadStatus readStatus = new ReadStatus(channel.getId(), member.userId(), lastActiveAt);
-            readStatusRepository.save(readStatus);
-        }
+        readStatusRepository.save(
+                new ReadStatus(channel.getId(),
+                        createPrivate.creatorId(),
+                        lastActiveAt)
+        );
+        readStatusRepository.save(
+                new ReadStatus(channel.getId(),
+                        createPrivate.user().userId(),
+                        lastActiveAt)
+        );
+
         return channel;
     }
 

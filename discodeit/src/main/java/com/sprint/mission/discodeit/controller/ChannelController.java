@@ -3,6 +3,7 @@ package com.sprint.mission.discodeit.controller;
 import com.sprint.mission.discodeit.dto.channel.*;
 import com.sprint.mission.discodeit.dto.user.UserFind;
 import com.sprint.mission.discodeit.entity.Channel;
+import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.service.ChannelService;
 import com.sprint.mission.discodeit.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -43,7 +44,9 @@ public class ChannelController {
             @RequestBody CreatePrivateRequest request
     ) {
         UserFind user = userService.find(request.userId());
-        CreatePrivate createPrivate = new CreatePrivate(user);
+        UUID creatorId = request.creatorId();
+
+        CreatePrivate createPrivate = new CreatePrivate(creatorId, user);
         Channel channel = channelService.create(createPrivate);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(channel);
@@ -55,9 +58,9 @@ public class ChannelController {
     )
     public ResponseEntity<Void> update(
             @PathVariable UUID channelId,
-            @RequestBody ChannelUpdate update
-    ) {
-        ChannelUpdate channelUpdate = new ChannelUpdate(channelId, update.channelUpdateInfo());
+            @RequestBody ChannelUpdate.ChannelUpdateInfo channelUpdateInfo
+            ) {
+        ChannelUpdate channelUpdate = new ChannelUpdate(channelId, channelUpdateInfo);
         channelService.update(channelUpdate);
         return ResponseEntity.ok().build();
     }
