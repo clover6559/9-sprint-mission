@@ -38,7 +38,7 @@ public class UserController {
         UserCreate.ProfileImageInfo profileImageInfo = null;
         if (profile != null && !profile.isEmpty()) {
             profileImageInfo = new UserCreate.ProfileImageInfo(
-                    UUID.randomUUID(),profile.getOriginalFilename(), profileImageInfo.size(), profileImageInfo.contentType(),profile.getBytes()
+                    UUID.randomUUID(),profile.getOriginalFilename(), profile.getSize(), profile.getContentType(),profile.getBytes()
             );
         }
         UserCreate requestDto = new UserCreate(basicUserInfo, profileImageInfo);
@@ -59,7 +59,7 @@ public class UserController {
         UserCreate.ProfileImageInfo profileImageInfo = null;
         if (profile != null && !profile.isEmpty()) {
             profileImageInfo = new UserCreate.ProfileImageInfo(
-                    null,profile.getOriginalFilename(), profileImageInfo.size(), profileImageInfo.contentType(), profile.getBytes()
+                    null,profile.getOriginalFilename(), profile.getSize(), profile.getContentType(), profile.getBytes()
             );
         }
         UserUpdate.UserUpdateInfo finalUpdateInfo = new UserUpdate.UserUpdateInfo(
@@ -85,6 +85,7 @@ public class UserController {
     }
 
     @RequestMapping(
+            path = "/findAll",
             method = RequestMethod.GET
     )
     public ResponseEntity<List<UserDto>> findAll() {
