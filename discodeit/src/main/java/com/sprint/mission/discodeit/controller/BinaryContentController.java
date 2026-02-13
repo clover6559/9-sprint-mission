@@ -35,7 +35,7 @@ public class BinaryContentController {
     )
     public ResponseEntity<BinaryContent> find(
             @RequestParam ("binaryContentId") UUID binaryContentId
-    ){
+    )throws RuntimeException{
         BinaryContent binaryContent = binaryContentService.find(binaryContentId);
         return ResponseEntity.ok(binaryContent);
     }
