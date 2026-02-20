@@ -30,7 +30,8 @@ public class BasicUserService implements UserService {
 
 
   @Override
-  public User create(UserCreate userCreate, Optional<BinaryContentCreate> optionalProfileCreateRequest) {
+  public User create(UserCreate userCreate,
+      Optional<BinaryContentCreate> optionalProfileCreateRequest) {
     String username = userCreate.username();
     String email = userCreate.email();
     if (userRepository.existsByEmail(email)) {
@@ -61,6 +62,7 @@ public class BasicUserService implements UserService {
 
     return createdUser;
   }
+
   @Override
   public UserDto find(UUID userId) {
     return userRepository.findById(userId)
@@ -78,7 +80,8 @@ public class BasicUserService implements UserService {
 
 
   @Override
-  public User update(UUID userId, UserUpdateRequest userUpdate, Optional<BinaryContentCreate> optionalProfileCreateRequest) {
+  public User update(UUID userId, UserUpdateRequest userUpdate,
+      Optional<BinaryContentCreate> optionalProfileCreateRequest) {
     User user = userRepository.findById(userId)
         .orElseThrow(() -> new NoSuchElementException("User with id " + userId + " not found"));
 
@@ -122,6 +125,7 @@ public class BasicUserService implements UserService {
 
     userRepository.deleteById(userId);
   }
+
   private UserDto toDto(User user) {
     Boolean online = userStatusRepository.findByUserId(user.getId())
         .map(UserStatus::isOnline)
@@ -136,5 +140,5 @@ public class BasicUserService implements UserService {
         user.getProfileId(),
         online
     );
-
+  }
 }

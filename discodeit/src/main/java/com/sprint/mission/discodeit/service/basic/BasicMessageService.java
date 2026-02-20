@@ -4,9 +4,7 @@ import com.sprint.mission.discodeit.dto.BinaryContentCreate;
 import com.sprint.mission.discodeit.dto.message.MessageCreate;
 import com.sprint.mission.discodeit.dto.message.MessageUpdate;
 import com.sprint.mission.discodeit.entity.BinaryContent;
-import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.Message;
-import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.repository.BinaryContentRepository;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
 import com.sprint.mission.discodeit.repository.MessageRepository;
@@ -18,9 +16,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
-
-import static com.sprint.mission.discodeit.entity.DateUtil.formatTime;
 
 @Service
 @RequiredArgsConstructor
@@ -75,7 +70,7 @@ public class BasicMessageService implements MessageService {
 
   @Override
   public List<Message> findAllByChannelId(UUID channelId) {
-    return messageRepository.findByChannelId(channelId).stream().toList();
+    return messageRepository.findAllByChannelId(channelId).stream().toList();
   }
 
   @Override

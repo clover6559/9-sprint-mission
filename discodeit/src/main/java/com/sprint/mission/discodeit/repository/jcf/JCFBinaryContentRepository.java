@@ -6,47 +6,43 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
+
 @Repository
-@ConditionalOnProperty(name = "discodeit.repository.type",havingValue = "jcf", matchIfMissing = true)
+@ConditionalOnProperty(name = "discodeit.repository.type", havingValue = "jcf", matchIfMissing = true)
 public class JCFBinaryContentRepository implements BinaryContentRepository {
-    private final Map<UUID, BinaryContent>  binaryContentMap = new HashMap<>();
 
-    @Override
-    public BinaryContent save(BinaryContent binaryContent) {
-        binaryContentMap.put(binaryContent.getId(),binaryContent);
-        return binaryContent;
-    }
+  private final Map<UUID, BinaryContent> data;
 
-    @Override
-    public Optional<BinaryContent> findByRefId(UUID refId) {
-        return binaryContentMap.values().stream()
-                .filter(content -> content.getId().equals(refId))
-                .findFirst();
-    }
+  public JCFBinaryContentRepository() {
+    this.data = new HashMap<>();
+  }
 
-    @Override
-    public Optional<BinaryContent> findById(UUID id) {
-        return Optional.ofNullable(binaryContentMap.get(id));
-    }
+  @Override
+  public BinaryContent save(BinaryContent binaryContent) {
+    this.data.put(binaryContent.getId(), binaryContent);
+    return binaryContent;
+  }
 
-    @Override
-    public List<BinaryContent> findAll() {
-        return binaryContentMap.values().stream().toList();
-    }
+  @Override
+  public Optional<BinaryContent> findById(UUID id) {
+    return Optional.ofNullable(this.data.get(id));
+  }
 
-    @Override
-    public void deleteById(UUID id) {
-        binaryContentMap.remove(id);
-    }
+  @Override
+  public List<BinaryContent> findAllByIdIn(List<UUID> ids) {
+    return this.data.values().stream()
+        .filter(content -> ids.contains(content.getId()))
+        .toList();
+  }
 
-    @Override
-    public void deleteByRefId(UUID refId) {
-        binaryContentMap.values().removeIf(content -> content.getId().equals(refId));
-    }
-    @Override
-    public List<BinaryContent> findAllByIdIn(List<UUID> ids) {
-        return binaryContentMap.values().stream()
-                .filter(content -> ids.contains(content.getId()))
-                .toList();
-    }
+  @Override
+  public boolean existsById(UUID id) {
+    return this.data.containsKey(id);
+  }
+
+  @Override
+  public void deleteById(UUID id) {
+    this.data.remove(id);
+  }
+
 }

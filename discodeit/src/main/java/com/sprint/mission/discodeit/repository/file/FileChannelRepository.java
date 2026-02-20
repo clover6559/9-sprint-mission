@@ -63,9 +63,9 @@ public class FileChannelRepository implements ChannelRepository {
   }
 
   @Override
-  public Optional<Channel> findById(UUID channelId) {
+  public Optional<Channel> findById(UUID id) {
     Channel channelNullable = null;
-    Path path = resolvePath(channelId);
+    Path path = resolvePath(id);
     ReentrantLock lock = fileLockProvider.getLock(path);
     lock.lock();
     if (Files.exists(path)) {
@@ -116,10 +116,10 @@ public class FileChannelRepository implements ChannelRepository {
 
 
   @Override
-  public void deleteById(UUID channelId) {
-    Path path = resolvePath(channelId);
+  public void deleteById(UUID id) {
+    Path path = resolvePath(id);
     if (Files.notExists(path)) {
-      throw new NoSuchElementException("Channel with id " + channelId + " not found");
+      throw new NoSuchElementException("Channel with id " + id + " not found");
     }
     try {
       Files.delete(path);

@@ -8,46 +8,51 @@ import org.springframework.stereotype.Repository;
 import java.util.*;
 
 @Repository
-@ConditionalOnProperty(name = "discodeit.repository.type",havingValue = "jcf", matchIfMissing = true)
+@ConditionalOnProperty(name = "discodeit.repository.type", havingValue = "jcf", matchIfMissing = true)
 public class JCFUserStatusRepository implements UserStatusRepository {
-    private final Map<UUID, UserStatus> statusMap = new HashMap<>();
 
-    @Override
-    public UserStatus save(UserStatus userStatus) {
-        statusMap.put(userStatus.getId(),userStatus);
-        return userStatus;
-    }
+  private final Map<UUID, UserStatus> data;
 
-    @Override
-    public Optional<UserStatus> findByUserId(UUID userId) {
-        return statusMap.values().stream()
-                .filter(status -> status.getUserId().equals(userId))
-                .findFirst();
-    }
+  public JCFUserStatusRepository() {
+    this.data = new HashMap<>();
+  }
 
-    @Override
-    public boolean existsByUserId(UUID userId) {
-        return statusMap.values().stream()
-                .anyMatch(status -> status.getUserId().equals(userId));
-    }
+  @Override
+  public UserStatus save(UserStatus userStatus) {
+    this.data.put(userStatus.getId(), userStatus);
+    return userStatus;
+  }
 
-    @Override
-    public Optional<UserStatus> findById(UUID id) {
-        return Optional.ofNullable(statusMap.get(id));
-    }
+  @Override
+  public Optional<UserStatus> findByUserId(UUID userId) {
+    return this.findAll().stream()
+        .filter(status -> status.getUserId().equals(userId))
+        .findFirst();
+  }
 
-    @Override
-    public void deleteByUserId(UUID userId) {
-        statusMap.values().removeIf(status -> status.getUserId().equals(userId));
-    }
+  @Override
+  public boolean existsById(UUID id) {
+    return this.data.containsKey(id);
+  }
 
-    @Override
-    public void deleteById(UUID id) {
-        statusMap.remove(id);
-    }
+  @Override
+  public Optional<UserStatus> findById(UUID id) {
+    return Optional.ofNullable(this.data.get(id));
+  }
 
-    @Override
-    public List<UserStatus> findAll() {
-        return statusMap.values().stream().toList();
-    }
+  @Override
+  public void deleteByUserId(UUID userId) {
+    this.findByUserId(userId)
+        .ifPresent(userStatus -> this.deleteByUserId(userStatus.getId()));
+  }
+
+  @Override
+  public void deleteById(UUID id) {
+    this.data.remove(id);
+  }
+
+  @Override
+  public List<UserStatus> findAll() {
+    return this.data.values().stream().toList();
+  }
 }

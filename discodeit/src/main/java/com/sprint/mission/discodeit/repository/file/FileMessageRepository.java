@@ -63,9 +63,9 @@ public class FileMessageRepository implements MessageRepository {
   }
 
   @Override
-  public Optional<Message> findById(UUID messageId) {
+  public Optional<Message> findById(UUID id) {
     Message messageNullable = null;
-    Path path = resolvePath(messageId);
+    Path path = resolvePath(id);
     ReentrantLock lock = fileLockProvider.getLock(path);
     lock.lock();
     if (Files.exists(path)) {
@@ -111,10 +111,10 @@ public class FileMessageRepository implements MessageRepository {
   }
 
   @Override
-  public void deleteById(UUID messageId) {
-    Path path = resolvePath(messageId);
+  public void deleteById(UUID id) {
+    Path path = resolvePath(id);
     if (Files.notExists(path)) {
-      throw new NoSuchElementException("MessageId with id " + messageId + " not found");
+      throw new NoSuchElementException("MessageId with id " + id + " not found");
     }
     try {
       Files.delete(path);
@@ -124,7 +124,7 @@ public class FileMessageRepository implements MessageRepository {
   }
 
   @Override
-  public List<Message> findByChannelId(UUID channelId) {
+  public List<Message> findAllByChannelId(UUID channelId) {
     try (Stream<Path> paths = Files.list(DIRECTORY)) {
       return paths
           .filter(path -> path.toString().endsWith(EXTENSION))
@@ -150,8 +150,8 @@ public class FileMessageRepository implements MessageRepository {
   }
 
   @Override
-  public void deleteByChannelId(UUID channelId) {
-    findByChannelId(channelId).stream()
+  public void deleteAllByChannelId(UUID channelId) {
+    findAllByChannelId(channelId).stream()
         .map(message -> resolvePath(message.getId()))
         .forEach(path -> {
           try {

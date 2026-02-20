@@ -35,7 +35,7 @@ public class BasicReadStatusService implements ReadStatusService {
         userId)) {
       throw new RuntimeException("해당 채널에 대한 유저의 읽음 상태가 이미 존재합니다.");
     }
-    return readStatusRepository.findUserId(userId).stream()
+    return readStatusRepository.findAllByUserId(userId).stream()
         .filter(readStatus -> readStatus.getChannelId().equals(channelId))
         .findFirst()
         .orElseGet(
@@ -49,7 +49,7 @@ public class BasicReadStatusService implements ReadStatusService {
 
   @Override
   public List<ReadStatus> findAllByUserId(UUID userId) {
-    return readStatusRepository.findUserId(userId).stream().toList();
+    return readStatusRepository.findAllByUserId(userId).stream().toList();
 
   }
 

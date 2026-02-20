@@ -105,7 +105,7 @@ public class FileReadStatusRepository implements ReadStatusRepository {
   }
 
   @Override
-  public List<ReadStatus> findUserId(UUID userId) {
+  public List<ReadStatus> findAllByUserId(UUID userId) {
     try (Stream<Path> paths = Files.list(DIRECTORY)) {
       return paths
           .filter(path -> path.toString().endsWith(EXTENSION))
@@ -131,7 +131,7 @@ public class FileReadStatusRepository implements ReadStatusRepository {
   }
 
   @Override
-  public List<ReadStatus> findByChannelId(UUID channelId) {
+  public List<ReadStatus> findAllByChannelId(UUID channelId) {
     try (Stream<Path> paths = Files.list(DIRECTORY)) {
       return paths
           .filter(path -> path.toString().endsWith(EXTENSION))
@@ -178,8 +178,8 @@ public class FileReadStatusRepository implements ReadStatusRepository {
   }
 
   @Override
-  public void deleteByChannelId(UUID channelId) {
-    findByChannelId(channelId).forEach(readStatus -> {
+  public void deleteAllByChannelId(UUID channelId) {
+    findAllByChannelId(channelId).forEach(readStatus -> {
       try {
         Files.deleteIfExists(resolvePath(readStatus.getId()));
       } catch (IOException e) {

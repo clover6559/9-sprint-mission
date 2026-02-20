@@ -8,18 +8,17 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface MessageRepository {
-    Message save(Message message);
 
-    Optional<Message> findById(UUID messageId);
+  Message save(Message message);
 
-    List<Message> findAll();
+  Optional<Message> findById(UUID id);
 
-    boolean existsById(UUID id);
+  List<Message> findAllByChannelId(UUID channelId);
 
-    void deleteById(UUID messageId);
+  boolean existsById(UUID id);
 
-    List<Message> findByChannelId(UUID channelId);
+  void deleteById(UUID id);
 
-    void deleteByChannelId(UUID channelId);
+  void deleteAllByChannelId(UUID channelId);
 
 }
