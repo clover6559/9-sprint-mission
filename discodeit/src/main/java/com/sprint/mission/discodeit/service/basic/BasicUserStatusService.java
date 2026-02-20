@@ -22,14 +22,14 @@ public class BasicUserStatusService implements UserStatusService {
 
 
   @Override
-  public UserStatus create(UserStatusCreate create) {
-    userRepository.findById(create.userId())
+  public UserStatus create(UserStatusCreate request) {
+    userRepository.findById(request.userId())
         .orElseThrow(() -> new RuntimeException("해당 유저를을 찾을 수 없습니다. "));
-    if (userStatusRepository.existsByUserId(create.userId())) {
+    if (userStatusRepository.existsByUserId(request.userId())) {
       throw new RuntimeException("해당 유저에 대한 유저 상태가 이미 존재합니다.");
     }
-    Instant lastActiveAt = create.lastActiveAt();
-    UserStatus userStatus = new UserStatus(create.userId(), lastActiveAt);
+    Instant lastActiveAt = request.lastActiveAt();
+    UserStatus userStatus = new UserStatus(request.userId(), lastActiveAt);
     return userStatusRepository.save(userStatus);
   }
 
@@ -64,7 +64,7 @@ public class BasicUserStatusService implements UserStatusService {
   }
 
   @Override
-  public boolean delete(UUID id) {
+  public void delete(UUID id) {
     userStatusRepository.findById(id)
         .orElseThrow(() -> new RuntimeException("해당 유저 상태를 찾을 수 없습니다."));
     userStatusRepository.deleteById(id);

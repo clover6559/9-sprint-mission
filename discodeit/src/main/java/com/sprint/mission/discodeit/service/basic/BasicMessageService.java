@@ -67,17 +67,17 @@ public class BasicMessageService implements MessageService {
   public List<Message> search(MessageSearch messageSearch) {
     return messageRepository.findAll().stream()
         .filter(m -> {
-            if (messageSearch.getUserName() == null) {
-                return true;
-            }
+          if (messageSearch.getUserName() == null) {
+            return true;
+          }
           return userRepository.findById(m.getAuthordId())
               .map(u -> u.getUsername().equals(messageSearch.getUserName()))
               .orElse(false);
         })
         .filter(m -> {
-            if (messageSearch.getChannelName() == null) {
-                return true;
-            }
+          if (messageSearch.getChannelName() == null) {
+            return true;
+          }
           return channelRepository.findById(m.getChannelId())
               .map(c -> c.getChannelName().equals(messageSearch.getChannelName()))
               .orElse(false);
@@ -92,15 +92,15 @@ public class BasicMessageService implements MessageService {
 
 
   @Override
-  public void update(UUID messageId, MessageUpdate MessageUpdate) {
+  public Message update(UUID messageId, MessageUpdate request) {
     Message foundMessage = messageRepository.findById(messageId)
         .orElseThrow(() -> new RuntimeException("해당 메세지를 찾을 수 없습니다."));
-    foundMessage.update(MessageUpdate.content());
+    foundMessage.update(request.content());
     messageRepository.save(foundMessage);
   }
 
   @Override
-  public boolean delete(UUID messageId) {
+  public void delete(UUID messageId) {
     Message findMessage = messageRepository.findById(messageId)
         .orElseThrow(() -> new RuntimeException("해당 메세지를 찾을 수 없습니다."));
     binaryContentRepository.deleteByRefId(findMessage.getId());

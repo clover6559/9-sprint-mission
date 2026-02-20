@@ -7,9 +7,13 @@ import java.util.List;
 import java.util.UUID;
 
 public interface BinaryContentService {
-    BinaryContent create(BinaryContentCreate create);
-    BinaryContent find(UUID id);
-    List<BinaryContent>findAllByIdIn(List<UUID> uuidList);
-    boolean delete(UUID id);
+
+  BinaryContent create(BinaryContentCreate create);
+
+  BinaryContent find(UUID binaryContentId);
+
+  List<BinaryContent> findAllByIdIn(List<UUID> binaryContentIds);
+
+  void delete(UUID binaryContentId);
 
 }

@@ -17,50 +17,53 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class BasicReadStatusService implements ReadStatusService {
-    private final ReadStatusRepository readStatusRepository;
-    private final UserRepository userRepository;
-    private final ChannelRepository channelRepository;
 
-    @Override
-    public ReadStatus create(ReadStatusCreate readStatusCreate) {
-        userRepository.findById(readStatusCreate.userId())
-                .orElseThrow(() -> new RuntimeException("해당 유저를을 찾을 수 없습니다. "));
-        channelRepository.findById(readStatusCreate.channelId())
-                .orElseThrow(() -> new RuntimeException("해당 채널을 찾을 수 없습니다. "));
-        if (readStatusRepository.existsByChannelIdAndUserId(readStatusCreate.channelId(),readStatusCreate.userId())) {
-            throw new RuntimeException("해당 채널에 대한 유저의 읽음 상태가 이미 존재합니다.");
-        }
-        ReadStatus newStatus = new ReadStatus(readStatusCreate.channelId(), readStatusCreate.userId(), Instant.now());
-        return readStatusRepository.save(newStatus);
+  private final ReadStatusRepository readStatusRepository;
+  private final UserRepository userRepository;
+  private final ChannelRepository channelRepository;
+
+  @Override
+  public ReadStatus create(ReadStatusCreate readStatusCreate) {
+    userRepository.findById(readStatusCreate.userId())
+        .orElseThrow(() -> new RuntimeException("해당 유저를을 찾을 수 없습니다. "));
+    channelRepository.findById(readStatusCreate.channelId())
+        .orElseThrow(() -> new RuntimeException("해당 채널을 찾을 수 없습니다. "));
+    if (readStatusRepository.existsByChannelIdAndUserId(readStatusCreate.channelId(),
+        readStatusCreate.userId())) {
+      throw new RuntimeException("해당 채널에 대한 유저의 읽음 상태가 이미 존재합니다.");
     }
+    ReadStatus newStatus = new ReadStatus(readStatusCreate.channelId(), readStatusCreate.userId(),
+        Instant.now());
+    return readStatusRepository.save(newStatus);
+  }
 
-    @Override
-    public List<ReadStatus> findAllByUserId(UUID userId) {
-        return readStatusRepository.findUserId(userId);
+  @Override
+  public List<ReadStatus> findAllByUserId(UUID userId) {
+    return readStatusRepository.findUserId(userId);
 
-    }
+  }
 
-    @Override
-    public ReadStatus find(UUID id) {
-        return readStatusRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("해당 읽음상태를 찾을 수 없습니다."));
-    }
+  @Override
+  public ReadStatus find(UUID id) {
+    return readStatusRepository.findById(id)
+        .orElseThrow(() -> new RuntimeException("해당 읽음상태를 찾을 수 없습니다."));
+  }
 
-    @Override
-    public ReadStatus update(UUID readStatusId, ReadStatusUpdate readStatusUpdate) {
-        Instant newLastReadAt = readStatusUpdate.newLastReadAt();
-        ReadStatus foundStatus = readStatusRepository.findById(readStatusId)
-                .orElseThrow(() -> new RuntimeException("해당 채널의 읽음 상태를 찾을 수 없습니다."));
-        foundStatus.update(newLastReadAt);
-        return readStatusRepository.save(foundStatus);
-    }
+  @Override
+  public ReadStatus update(UUID readStatusId, ReadStatusUpdate request) {
+    Instant newLastReadAt = request.newLastReadAt();
+    ReadStatus foundStatus = readStatusRepository.findById(readStatusId)
+        .orElseThrow(() -> new RuntimeException("해당 채널의 읽음 상태를 찾을 수 없습니다."));
+    foundStatus.update(newLastReadAt);
+    return readStatusRepository.save(foundStatus);
+  }
 
-    @Override
-    public boolean delete(UUID id) {
-        readStatusRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("해당 읽음 상태를 찾을 수 없습니다."));
-        readStatusRepository.deleteById(id);
-        return true;
+  @Override
+  public boolean delete(UUID id) {
+    readStatusRepository.findById(id)
+        .orElseThrow(() -> new RuntimeException("해당 읽음 상태를 찾을 수 없습니다."));
+    readStatusRepository.deleteById(id);
+    return true;
 
-    }
+  }
 }
