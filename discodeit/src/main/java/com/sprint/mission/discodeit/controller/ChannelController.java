@@ -3,6 +3,7 @@ package com.sprint.mission.discodeit.controller;
 import com.sprint.mission.discodeit.dto.channel.*;
 import com.sprint.mission.discodeit.dto.user.UserFind;
 import com.sprint.mission.discodeit.entity.Channel;
+import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.service.ChannelService;
 import com.sprint.mission.discodeit.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -30,7 +31,7 @@ public class ChannelController {
       @RequestBody CreatePublicRequest request
   ) {
     UserFind user = userService.find(request.userId());
-    CreatePublic createPublic = new CreatePublic(request.channelName(), request.description(),
+    CreatePublic createPublic = new CreatePublic(request.name(), request.description(),
         user);
     Channel channel = channelService.create(createPublic);
     return ResponseEntity.status(HttpStatus.CREATED)

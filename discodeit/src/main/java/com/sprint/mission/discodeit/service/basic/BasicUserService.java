@@ -69,7 +69,7 @@ public class BasicUserService implements UserService {
     UserStatus userStatus = userStatusRepository.findByUserId(findUser.getId())
         .orElse(null);
     boolean isOnline = (userStatus != null) && userStatus.isOnline();
-    return new UserFind(isOnline, findUser.getId(), findUser.getUserName(), findUser.getEmail());
+    return new UserFind(isOnline, findUser.getId(), findUser.getUsername(), findUser.getEmail());
 
   }
 
@@ -82,7 +82,7 @@ public class BasicUserService implements UserService {
               .orElse(null);
           boolean isOnline = (status != null) && status.isOnline();
           return new UserDto(
-              user.getId(), user.getCreatedAt(), user.getUpdatedAt(), user.getUserName(),
+              user.getId(), user.getCreatedAt(), user.getUpdatedAt(), user.getUsername(),
               user.getEmail(), user.getProfileId(), isOnline
           );
         })
@@ -93,12 +93,12 @@ public class BasicUserService implements UserService {
   public List<UserFind> search(UserSearch userSearch) {
     return userRepository.findAll().stream()
         .filter(u -> userSearch.getUserName() == null || userSearch.getUserName()
-            .equals(u.getUserName()))
+            .equals(u.getUsername()))
         .map(user -> {
           UserStatus status = userStatusRepository.findByUserId(user.getId())
               .orElse(null);
           boolean isOnline = (status != null) && status.isOnline();
-          return new UserFind(isOnline, user.getId(), user.getUserName(), user.getEmail());
+          return new UserFind(isOnline, user.getId(), user.getUsername(), user.getEmail());
         })
         .toList();
   }
@@ -146,7 +146,7 @@ public class BasicUserService implements UserService {
   public void printRemainUsers() {
     List<User> users = userRepository.findAll();
     System.out.println("현재 남은 유저 수: " + users.size());
-    users.forEach(u -> System.out.println("- " + u.getUserName()));
+    users.forEach(u -> System.out.println("- " + u.getUsername()));
   }
 
 }

@@ -134,7 +134,7 @@ public class FileUserRepository implements UserRepository {
   @Override
   public User findByName(String userName) {
     return findAll().stream()
-        .filter(user -> user.getUserName().equals(userName))
+        .filter(user -> user.getUsername().equals(userName))
         .findFirst()
         .orElse(null);
   }

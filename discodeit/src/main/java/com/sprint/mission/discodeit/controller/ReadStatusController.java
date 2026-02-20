@@ -44,7 +44,7 @@ public class ReadStatusController {
   @Operation(summary = "사용자의 메세지 읽음 상태 조회")
   @GetMapping
   public ResponseEntity<List<ReadStatus>> findByUserId(
-      @RequestBody UUID userId
+      @RequestParam UUID userId
   ) {
     List<ReadStatus> readStatusList = readStatusService.findAllByUserId(userId);
     return ResponseEntity.ok(readStatusList);

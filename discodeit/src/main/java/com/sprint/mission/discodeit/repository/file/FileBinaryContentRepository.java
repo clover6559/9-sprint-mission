@@ -57,6 +57,8 @@ public class FileBinaryContentRepository implements BinaryContentRepository {
       oos.writeObject(binaryContent);
     } catch (IOException e) {
       throw new RuntimeException(e);
+    } finally {
+      lock.unlock();
     }
     return binaryContent;
   }

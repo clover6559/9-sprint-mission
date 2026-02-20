@@ -16,58 +16,59 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class BasicUserStatusService implements UserStatusService {
-    private final UserStatusRepository userStatusRepository;
-    private final UserRepository userRepository;
+
+  private final UserStatusRepository userStatusRepository;
+  private final UserRepository userRepository;
 
 
-    @Override
-    public UserStatus create(UserStatusCreate create) {
-        userRepository.findById(create.userId())
-                .orElseThrow(() -> new RuntimeException("해당 유저를을 찾을 수 없습니다. "));
-        if (userStatusRepository.existsByUserId(create.userId())) {
-            throw new RuntimeException("해당 유저에 대한 유저 상태가 이미 존재합니다.");
-        }
-        Instant lastActiveAt = create.lastActiveAt();
-        UserStatus userStatus = new UserStatus(create.userId(),lastActiveAt);
-        return userStatusRepository.save(userStatus);
+  @Override
+  public UserStatus create(UserStatusCreate create) {
+    userRepository.findById(create.userId())
+        .orElseThrow(() -> new RuntimeException("해당 유저를을 찾을 수 없습니다. "));
+    if (userStatusRepository.existsByUserId(create.userId())) {
+      throw new RuntimeException("해당 유저에 대한 유저 상태가 이미 존재합니다.");
     }
+    Instant lastActiveAt = create.lastActiveAt();
+    UserStatus userStatus = new UserStatus(create.userId(), lastActiveAt);
+    return userStatusRepository.save(userStatus);
+  }
 
-    @Override
-    public UserStatus find(UUID userStatusId) {
-        return userStatusRepository.findById(userStatusId)
-                .orElseThrow(() -> new RuntimeException("해당 유저 상태를 찾을 수 없습니다."));
+  @Override
+  public UserStatus find(UUID userStatusId) {
+    return userStatusRepository.findById(userStatusId)
+        .orElseThrow(() -> new RuntimeException("해당 유저 상태를 찾을 수 없습니다."));
 
-    }
+  }
 
-    @Override
-    public List<UserStatus> findAll() {
-        return userStatusRepository.findAll();
-    }
+  @Override
+  public List<UserStatus> findAll() {
+    return userStatusRepository.findAll();
+  }
 
-    @Override
-    public UserStatus updateByUserId(UUID userId, UserStatusUpdate update) {
-        Instant newLastActiveAt = update.newLastActiveAt();
-        UserStatus userStatus =  userStatusRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("해당 유저의 상태를 찾을 수 없습니다. "));
-        userStatus.updateUserStatus(newLastActiveAt);
-        return userStatusRepository.save(userStatus);
-    }
+  @Override
+  public UserStatus updateByUserId(UUID userId, UserStatusUpdate update) {
+    Instant newLastActiveAt = update.newLastActiveAt();
+    UserStatus userStatus = userStatusRepository.findByUserId(userId)
+        .orElseThrow(() -> new RuntimeException("해당 유저의 상태를 찾을 수 없습니다. "));
+    userStatus.update(newLastActiveAt);
+    return userStatusRepository.save(userStatus);
+  }
 
-    @Override
-    public UserStatus update(UUID userId, UserStatusUpdate update) {
-        Instant newLastActiveAt = update.newLastActiveAt();
-        UserStatus userStatus = userStatusRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("해당 유저 상태를 찾을 수 없습니다."));
-        userStatus.updateUserStatus(newLastActiveAt);
-        return userStatusRepository.save(userStatus);
-    }
+  @Override
+  public UserStatus update(UUID userId, UserStatusUpdate update) {
+    Instant newLastActiveAt = update.newLastActiveAt();
+    UserStatus userStatus = userStatusRepository.findByUserId(userId)
+        .orElseThrow(() -> new RuntimeException("해당 유저 상태를 찾을 수 없습니다."));
+    userStatus.update(newLastActiveAt);
+    return userStatusRepository.save(userStatus);
+  }
 
-    @Override
-    public boolean delete(UUID id) {
-        userStatusRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("해당 유저 상태를 찾을 수 없습니다."));
-        userStatusRepository.deleteById(id);
-        return true;
-    }
+  @Override
+  public boolean delete(UUID id) {
+    userStatusRepository.findById(id)
+        .orElseThrow(() -> new RuntimeException("해당 유저 상태를 찾을 수 없습니다."));
+    userStatusRepository.deleteById(id);
+    return true;
+  }
 }
 
