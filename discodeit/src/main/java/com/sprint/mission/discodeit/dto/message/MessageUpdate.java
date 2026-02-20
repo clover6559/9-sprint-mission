@@ -1,6 +1,5 @@
 package com.sprint.mission.discodeit.dto.message;
 
-import java.util.UUID;
 
-public record MessageUpdate(UUID messageId, String content) {
+public record MessageUpdate(String content) {
 }

@@ -8,6 +8,8 @@ import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.entity.UserStatus;
 import com.sprint.mission.discodeit.service.UserService;
 import com.sprint.mission.discodeit.service.UserStatusService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -19,89 +21,86 @@ import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
+@Tag(name = "User API")
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/api/users")
 @RequiredArgsConstructor
 public class UserController {
-    private final UserService userService;
-    private final UserStatusService userStatusService;
 
-    @RequestMapping(
-            path = "/create",
-            method = RequestMethod.POST,
-            consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}
-    )
-    public ResponseEntity<User> create(
-            @RequestPart("userCreateRequest") UserCreate.BasicUserInfo basicUserInfo,
-            @RequestPart(value = "profile", required = false) MultipartFile profile
-    ) throws IOException {
-        UserCreate.ProfileImageInfo profileImageInfo = null;
-        if (profile != null && !profile.isEmpty()) {
-            profileImageInfo = new UserCreate.ProfileImageInfo(
-                    UUID.randomUUID(),profile.getOriginalFilename(), profile.getSize(), profile.getContentType(),profile.getBytes()
-            );
-        }
-        UserCreate requestDto = new UserCreate(basicUserInfo, profileImageInfo);
-        User createdUser = userService.create(requestDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
-    }
+  private final UserService userService;
+  private final UserStatusService userStatusService;
 
-    @RequestMapping(
-            path = "/{userId}",
-            method = RequestMethod.PATCH,
-            consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}
-    )
-    public ResponseEntity<Void> update(
-            @PathVariable UUID userId,
-            @RequestPart("userUpdateInfo") UserUpdate.UserUpdateInfo userUpdateInfo,
-            @RequestPart(value = "profile", required = false) MultipartFile profile
-    ) throws IOException {
-        UserCreate.ProfileImageInfo profileImageInfo = null;
-        if (profile != null && !profile.isEmpty()) {
-            profileImageInfo = new UserCreate.ProfileImageInfo(
-                    null,profile.getOriginalFilename(), profile.getSize(), profile.getContentType(), profile.getBytes()
-            );
-        }
-        UserUpdate.UserUpdateInfo finalUpdateInfo = new UserUpdate.UserUpdateInfo(
-                userUpdateInfo.userName(),
-                userUpdateInfo.email(),
-                userUpdateInfo.password(),
-                profileImageInfo
-        );
-        UserUpdate userUpdate = new UserUpdate(userId, finalUpdateInfo);
-        userService.update(userUpdate);
-        return ResponseEntity.ok().build();
+  @Operation(summary = "회원 등록")
+  @PostMapping(
+      consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}
+  )
+  public ResponseEntity<User> create(
+      @RequestPart("userCreateRequest") UserCreate.BasicUserInfo basicUserInfo,
+      @RequestPart(value = "profile", required = false) MultipartFile profile
+  ) throws IOException {
+    UserCreate.ProfileImageInfo profileImageInfo = null;
+    if (profile != null && !profile.isEmpty()) {
+      profileImageInfo = new UserCreate.ProfileImageInfo(
+          UUID.randomUUID(), profile.getOriginalFilename(), profile.getSize(),
+          profile.getContentType(), profile.getBytes()
+      );
     }
+    UserCreate requestDto = new UserCreate(basicUserInfo, profileImageInfo);
+    User createdUser = userService.create(requestDto);
+    return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
+  }
 
-    @RequestMapping(
-            path = "/{userId}",
-            method = RequestMethod.DELETE
-    )
-    public ResponseEntity<Void> delete(
-            @PathVariable UUID userId
-    )  {
-        userService.delete(userId);
-        return ResponseEntity.noContent().build();
+  @Operation(summary = "회원 정보 수정")
+  @PatchMapping(
+      path = "/{userId}",
+      consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}
+  )
+  public ResponseEntity<Void> update(
+      @PathVariable UUID userId,
+      @RequestPart("userUpdateRequest") UserUpdate.UserUpdateInfo userUpdateRequest,
+      @RequestPart(value = "profile", required = false) MultipartFile profile
+  ) throws IOException {
+    UserCreate.ProfileImageInfo profileImageInfo = null;
+    if (profile != null && !profile.isEmpty()) {
+      profileImageInfo = new UserCreate.ProfileImageInfo(
+          null, profile.getOriginalFilename(), profile.getSize(), profile.getContentType(),
+          profile.getBytes()
+      );
     }
+    UserUpdate.UserUpdateInfo finalUpdateInfo = new UserUpdate.UserUpdateInfo(
+        userUpdateRequest.newUsername(),
+        userUpdateRequest.newEmail(),
+        userUpdateRequest.newPassword(),
+        profileImageInfo
+    );
+    UserUpdate userUpdate = new UserUpdate(userId, finalUpdateInfo);
+    userService.update(userUpdate);
+    return ResponseEntity.ok().build();
+  }
 
-    @RequestMapping(
-            path = "/findAll",
-            method = RequestMethod.GET
-    )
-    public ResponseEntity<List<UserDto>> findAll() {
-        List<UserDto> userList = userService.findAll();
-        return ResponseEntity.ok(userList);
-    }
+  @Operation(summary = "회원 삭제")
+  @DeleteMapping("/{userId}")
+  public ResponseEntity<Void> delete(
+      @PathVariable UUID userId
+  ) {
+    userService.delete(userId);
+    return ResponseEntity.noContent().build();
+  }
 
-    @RequestMapping(
-            path = "/{userId}/status",
-            method = RequestMethod.PATCH
-    )
-    public ResponseEntity<UserStatus> statusUpdate(
-            @PathVariable UUID userId,
-            @RequestBody UserStatusUpdate request
-    ) throws IllegalArgumentException {
-        UserStatus userStatus = userStatusService.update(userId,request);
-        return ResponseEntity.ok(userStatus);
-    }
+  @Operation(summary = "전체 회원 조회")
+  @GetMapping
+  public ResponseEntity<List<UserDto>> findAll() {
+    List<UserDto> userList = userService.findAll();
+    return ResponseEntity.ok(userList);
+  }
+
+  @Operation(summary = "회원의 온라인 상태 업데이트")
+  @PatchMapping("/{userId}/userStatus")
+  public ResponseEntity<UserStatus> statusUpdate(
+      @PathVariable UUID userId,
+      @RequestBody UserStatusUpdate request
+  ) throws IllegalArgumentException {
+    UserStatus userStatus = userStatusService.update(userId, request);
+    return ResponseEntity.ok(userStatus);
+  }
 }

@@ -14,7 +14,7 @@ public interface MessageService {
     Message findById(UUID messageId);
     List<Message> search(MessageSearch condition);
     List<Message> findAllByChannelId(UUID channelId);
-    void update(MessageUpdate MessageUpdate);
+    void update(UUID messageId, MessageUpdate MessageUpdate);
     boolean delete(UUID messageId);
     void printRemainMessages();
     String formatMessage(Message message);
