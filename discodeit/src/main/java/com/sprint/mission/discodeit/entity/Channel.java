@@ -19,7 +19,7 @@ public class Channel implements Serializable {
   private String name;
   private String description;
   private UUID id;
-  private ChannelType channelType;
+  private ChannelType type;
 
   public Channel(ChannelType type, String name, String description) {
     Instant now = Instant.now();
@@ -28,19 +28,10 @@ public class Channel implements Serializable {
     this.id = UUID.randomUUID();
     this.name = name;
     this.description = description;
-    this.channelType = type;
+    this.type = type;
   }
-//
-//  public Channel(CreatePrivate createPrivate) {
-//    this.userId = createPrivate.user().userId();
-//    Instant now = Instant.now();
-//    this.createdAt = now;
-//    this.updatedAt = now;
-//    this.id = UUID.randomUUID();
-//    this.channelType = ChannelType.PRIVATE;
-//  }
 
-  public void updateInfo(String newName, String newDescription) {
+  public void update(String newName, String newDescription) {
     boolean anyValueUpdated = false;
     if (newName != null && !newName.equals(this.name)) {
       this.name = newName;

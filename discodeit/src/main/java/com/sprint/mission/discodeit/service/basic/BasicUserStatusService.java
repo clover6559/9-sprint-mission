@@ -23,13 +23,14 @@ public class BasicUserStatusService implements UserStatusService {
 
   @Override
   public UserStatus create(UserStatusCreate request) {
-    userRepository.findById(request.userId())
+    UUID userId = request.userId();
+    userRepository.findById(userId)
         .orElseThrow(() -> new RuntimeException("해당 유저를을 찾을 수 없습니다. "));
-    if (userStatusRepository.existsByUserId(request.userId())) {
+    if (userStatusRepository.existsByUserId(userId)) {
       throw new RuntimeException("해당 유저에 대한 유저 상태가 이미 존재합니다.");
     }
     Instant lastActiveAt = request.lastActiveAt();
-    UserStatus userStatus = new UserStatus(request.userId(), lastActiveAt);
+    UserStatus userStatus = new UserStatus(userId, lastActiveAt);
     return userStatusRepository.save(userStatus);
   }
 
@@ -49,26 +50,26 @@ public class BasicUserStatusService implements UserStatusService {
   public UserStatus updateByUserId(UUID userId, UserStatusUpdate update) {
     Instant newLastActiveAt = update.newLastActiveAt();
     UserStatus userStatus = userStatusRepository.findByUserId(userId)
-        .orElseThrow(() -> new RuntimeException("해당 유저의 상태를 찾을 수 없습니다. "));
+        .orElseThrow(() -> new RuntimeException("해당 유저의 읽음 상태를 찾을 수 없습니다. "));
     userStatus.update(newLastActiveAt);
     return userStatusRepository.save(userStatus);
   }
 
   @Override
-  public UserStatus update(UUID userId, UserStatusUpdate update) {
+  public UserStatus update(UUID userStatusId, UserStatusUpdate update) {
     Instant newLastActiveAt = update.newLastActiveAt();
-    UserStatus userStatus = userStatusRepository.findByUserId(userId)
-        .orElseThrow(() -> new RuntimeException("해당 유저 상태를 찾을 수 없습니다."));
+    UserStatus userStatus = userStatusRepository.findByUserId(userStatusId)
+        .orElseThrow(() -> new RuntimeException("읽음 상태를 찾을 수 없습니다."));
     userStatus.update(newLastActiveAt);
     return userStatusRepository.save(userStatus);
   }
 
   @Override
-  public void delete(UUID id) {
-    userStatusRepository.findById(id)
+  public void delete(UUID userStatusId) {
+    userStatusRepository.findById(userStatusId)
         .orElseThrow(() -> new RuntimeException("해당 유저 상태를 찾을 수 없습니다."));
-    userStatusRepository.deleteById(id);
-    return true;
+    userStatusRepository.deleteById(userStatusId);
+
   }
 }
 

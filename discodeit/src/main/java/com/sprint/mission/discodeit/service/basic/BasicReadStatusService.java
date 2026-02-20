@@ -7,6 +7,7 @@ import com.sprint.mission.discodeit.repository.ChannelRepository;
 import com.sprint.mission.discodeit.repository.ReadStatusRepository;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.service.ReadStatusService;
+import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -23,29 +24,38 @@ public class BasicReadStatusService implements ReadStatusService {
   private final ChannelRepository channelRepository;
 
   @Override
-  public ReadStatus create(ReadStatusCreate readStatusCreate) {
-    userRepository.findById(readStatusCreate.userId())
+  public ReadStatus create(ReadStatusCreate request) {
+    UUID userId = request.userId();
+    UUID channelId = request.channelId();
+    userRepository.findById(userId)
         .orElseThrow(() -> new RuntimeException("해당 유저를을 찾을 수 없습니다. "));
-    channelRepository.findById(readStatusCreate.channelId())
+    channelRepository.findById(channelId)
         .orElseThrow(() -> new RuntimeException("해당 채널을 찾을 수 없습니다. "));
-    if (readStatusRepository.existsByChannelIdAndUserId(readStatusCreate.channelId(),
-        readStatusCreate.userId())) {
+    if (readStatusRepository.existsByChannelIdAndUserId(channelId,
+        userId)) {
       throw new RuntimeException("해당 채널에 대한 유저의 읽음 상태가 이미 존재합니다.");
     }
-    ReadStatus newStatus = new ReadStatus(readStatusCreate.channelId(), readStatusCreate.userId(),
-        Instant.now());
-    return readStatusRepository.save(newStatus);
+    return readStatusRepository.findUserId(userId).stream()
+        .filter(readStatus -> readStatus.getChannelId().equals(channelId))
+        .findFirst()
+        .orElseGet(
+            () -> {
+              Instant lastReadAt = request.lastReadAt();
+              ReadStatus readStatus = new ReadStatus(userId, channelId, lastReadAt);
+              return readStatusRepository.save(readStatus);
+            }
+        );
   }
 
   @Override
   public List<ReadStatus> findAllByUserId(UUID userId) {
-    return readStatusRepository.findUserId(userId);
+    return readStatusRepository.findUserId(userId).stream().toList();
 
   }
 
   @Override
-  public ReadStatus find(UUID id) {
-    return readStatusRepository.findById(id)
+  public ReadStatus find(UUID readStatusId) {
+    return readStatusRepository.findById(readStatusId)
         .orElseThrow(() -> new RuntimeException("해당 읽음상태를 찾을 수 없습니다."));
   }
 
@@ -59,11 +69,11 @@ public class BasicReadStatusService implements ReadStatusService {
   }
 
   @Override
-  public boolean delete(UUID id) {
-    readStatusRepository.findById(id)
-        .orElseThrow(() -> new RuntimeException("해당 읽음 상태를 찾을 수 없습니다."));
-    readStatusRepository.deleteById(id);
-    return true;
+  public void delete(UUID readStatusId) {
+    if (!readStatusRepository.existsById(readStatusId)) {
+      throw new NoSuchElementException("해당 읽음 상태를 찾을 수 없습니다."));
+    }
+    readStatusRepository.deleteById(readStatusId);
 
   }
 }

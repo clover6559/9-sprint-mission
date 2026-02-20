@@ -42,10 +42,9 @@ public class BasicBinaryContentService implements BinaryContentService {
   }
 
   @Override
-  public boolean delete(UUID binaryContentId) {
+  public void delete(UUID binaryContentId) {
     binaryContentRepository.findById(binaryContentId)
         .orElseThrow(() -> new RuntimeException("해당 바이너리 데이터를 찾을 수 없습니다."));
     binaryContentRepository.deleteById(binaryContentId);
-    return true;
   }
 }

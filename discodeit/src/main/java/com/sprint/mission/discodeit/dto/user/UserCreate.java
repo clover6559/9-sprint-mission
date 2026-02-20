@@ -1,21 +1,7 @@
 package com.sprint.mission.discodeit.dto.user;
 
-import java.util.UUID;
 
-public record UserCreate(BasicUserInfo basicUserInfo, ProfileImageInfo profileImageInfo) {
-    public record BasicUserInfo(String username, String email, String password) {
-    }
+public record UserCreate(String username, String email, String password) {
 
-    public record ProfileImageInfo(UUID profileId, String fileName, Long size, String contentType, byte[] data) {
-
-        @Override
-        public String toString() {
-            return "ProfileImageInfo{" +
-                    "profileId=" + profileId +
-                    ", fileName='" + fileName + '\'' +
-                    ", data=" + (data == null ? "null" : "[bytes size: " + data.length + "]") +
-                    '}';
-        }
-
-    }
 }
+
