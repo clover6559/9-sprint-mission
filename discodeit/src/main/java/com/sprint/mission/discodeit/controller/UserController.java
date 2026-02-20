@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
-@Tag(name = "User API")
+@Tag(name = "User", description = "User API")
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
