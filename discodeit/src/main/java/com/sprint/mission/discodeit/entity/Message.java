@@ -12,7 +12,7 @@ import static com.sprint.mission.discodeit.entity.DateUtil.formatTime;
 @Getter
 public class Message implements Serializable {
 
-  private UUID authordId;
+  private UUID authorId;
   private String content;
   private Instant createdAt;
   private Instant updatedAt;
@@ -22,13 +22,12 @@ public class Message implements Serializable {
 
   public Message(String content, UUID channelId, UUID authorId, List<UUID> attachmentIds) {
     this.id = UUID.randomUUID();
-    this.authordId = authorId;
+    this.authorId = authorId;
     Instant now = Instant.now();
     this.createdAt = now;
     this.updatedAt = now;
     this.content = content;
     this.channelId = channelId;
-    this.id = UUID.randomUUID();
     this.attachmentIds = attachmentIds;
   }
 

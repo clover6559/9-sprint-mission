@@ -1,11 +1,8 @@
 package com.sprint.mission.discodeit.controller;
 
 import com.sprint.mission.discodeit.dto.channel.*;
-import com.sprint.mission.discodeit.dto.user.UserFind;
 import com.sprint.mission.discodeit.entity.Channel;
-import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.service.ChannelService;
-import com.sprint.mission.discodeit.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -23,17 +20,13 @@ import java.util.UUID;
 public class ChannelController {
 
   private final ChannelService channelService;
-  private final UserService userService;
 
   @Operation(summary = "공개 채널 생성")
   @PostMapping("/public")
   public ResponseEntity<Channel> createPublic(
-      @RequestBody CreatePublicRequest request
+      @RequestBody CreatePublic request
   ) {
-    UserFind user = userService.find(request.userId());
-    CreatePublic createPublic = new CreatePublic(request.name(), request.description(),
-        user);
-    Channel channel = channelService.create(createPublic);
+    Channel channel = channelService.create(request);
     return ResponseEntity.status(HttpStatus.CREATED)
         .body(channel);
   }
@@ -41,26 +34,23 @@ public class ChannelController {
   @Operation(summary = "비공개 채널 생성")
   @PostMapping("/private")
   public ResponseEntity<Channel> createPrivate(
-      @RequestBody CreatePrivateRequest request
+      @RequestBody CreatePrivate request
   ) {
-    UserFind user = userService.find(request.userId());
-    UUID creatorId = request.creatorId();
-
-    CreatePrivate createPrivate = new CreatePrivate(creatorId, user);
-    Channel channel = channelService.create(createPrivate);
+    Channel channel = channelService.create(request);
     return ResponseEntity.status(HttpStatus.CREATED)
         .body(channel);
   }
 
   @Operation(summary = "채널 정보 수정")
   @PatchMapping("/{channelId}")
-  public ResponseEntity<Void> update(
+  public ResponseEntity<Channel> update(
       @PathVariable UUID channelId,
-      @RequestBody ChannelUpdate.ChannelUpdateInfo channelUpdateInfo
+      @RequestBody ChannelUpdateRequest request
   ) {
-    ChannelUpdate channelUpdate = new ChannelUpdate(channelId, channelUpdateInfo);
-    channelService.update(channelUpdate);
-    return ResponseEntity.ok().build();
+    Channel channelUpdate = channelService.update(channelId, request);
+    return ResponseEntity
+        .status(HttpStatus.OK)
+        .body(channelUpdate);
   }
 
   @Operation(summary = "채널 삭제")

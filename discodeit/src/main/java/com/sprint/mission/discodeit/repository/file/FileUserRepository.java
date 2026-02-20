@@ -3,6 +3,7 @@ package com.sprint.mission.discodeit.repository.file;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Stream;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
@@ -27,7 +28,8 @@ public class FileUserRepository implements UserRepository {
 
   public FileUserRepository(
       @Value("${discodeit.repository.file-directory:file-data-map}") String fileDirectory,
-      FileLockProvider fileLockProvider) {
+      FileLockProvider fileLockProvider
+  ) {
     System.out.println("[시스템] File 모드가 활성화되었습니다. 저장 경로: " + fileDirectory);
     this.DIRECTORY = Paths.get(System.getProperty("user.dir"), fileDirectory,
         User.class.getSimpleName());
@@ -83,14 +85,20 @@ public class FileUserRepository implements UserRepository {
         lock.unlock();
       }
     }
-
     return Optional.ofNullable(userNullable);
   }
 
   @Override
+  public Optional<User> findByUsername(String username) {
+    return this.findAll().stream()
+        .filter(user -> user.getUsername().equals(username))
+        .findFirst();
+  }
+
+  @Override
   public List<User> findAll() {
-    try {
-      return Files.list(DIRECTORY)
+    try (Stream<Path> paths = Files.list(DIRECTORY)) {
+      return paths
           .filter(path -> path.toString().endsWith(EXTENSION))
           .map(path -> {
             ReentrantLock lock = fileLockProvider.getLock(path);
@@ -113,38 +121,30 @@ public class FileUserRepository implements UserRepository {
   }
 
   @Override
-  public boolean existsById(UUID userId) {
-    return Files.exists(resolvePath(userId));
+  public boolean existsById(UUID id) {
+    return Files.exists(resolvePath(id));
   }
 
   @Override
-  public void deleteById(UUID userId) {
-    Path path = resolvePath(userId);
-    if (Files.notExists(path)) {
-      throw new NoSuchElementException("User with id " + userId + " not found");
-    }
+  public void deleteById(UUID id) {
+    Path path = resolvePath(id);
     try {
       Files.delete(path);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
-
   }
 
   @Override
-  public boolean existsByUsername(String userName) {
-    return findAll().stream()
-        .filter(user -> user.getUsername().equals(userName))
-        .findFirst()
-        .orElse(null);
+  public boolean existsByUsername(String username) {
+    return this.findAll().stream()
+        .anyMatch(user -> user.getUsername().equals(username));
   }
 
 
   @Override
   public boolean existsByEmail(String email) {
-    return findAll().stream()
-        .filter(user -> user.getEmail().equals(email))
-        .findFirst()
-        .orElse(null);
+    return this.findAll().stream()
+        .anyMatch(user -> user.getEmail().equals(email));
   }
 }

@@ -26,7 +26,7 @@ public class BasicUserStatusService implements UserStatusService {
     UUID userId = request.userId();
     userRepository.findById(userId)
         .orElseThrow(() -> new RuntimeException("해당 유저를을 찾을 수 없습니다. "));
-    if (userStatusRepository.existsByUserId(userId)) {
+    if (userStatusRepository.existsById(userId)) {
       throw new RuntimeException("해당 유저에 대한 유저 상태가 이미 존재합니다.");
     }
     Instant lastActiveAt = request.lastActiveAt();

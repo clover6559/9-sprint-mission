@@ -31,10 +31,6 @@ public class BasicReadStatusService implements ReadStatusService {
         .orElseThrow(() -> new RuntimeException("해당 유저를을 찾을 수 없습니다. "));
     channelRepository.findById(channelId)
         .orElseThrow(() -> new RuntimeException("해당 채널을 찾을 수 없습니다. "));
-    if (readStatusRepository.existsByChannelIdAndUserId(channelId,
-        userId)) {
-      throw new RuntimeException("해당 채널에 대한 유저의 읽음 상태가 이미 존재합니다.");
-    }
     return readStatusRepository.findAllByUserId(userId).stream()
         .filter(readStatus -> readStatus.getChannelId().equals(channelId))
         .findFirst()
@@ -71,7 +67,7 @@ public class BasicReadStatusService implements ReadStatusService {
   @Override
   public void delete(UUID readStatusId) {
     if (!readStatusRepository.existsById(readStatusId)) {
-      throw new NoSuchElementException("해당 읽음 상태를 찾을 수 없습니다."));
+      throw new NoSuchElementException("해당 읽음 상태를 찾을 수 없습니다.");
     }
     readStatusRepository.deleteById(readStatusId);
 

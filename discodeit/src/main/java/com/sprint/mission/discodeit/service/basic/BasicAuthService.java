@@ -20,12 +20,12 @@ public class BasicAuthService implements AuthService {
   public User login(LoginDto loginRequest) {
     String username = loginRequest.username();
     String password = loginRequest.password();
-    User user = userRepository.existsByUsername(username);
-    if (user == null) {
-      throw new NoSuchElementException("해당 이름을 찾을 수 없습니다.");
-    }
+    User user = userRepository.findByUsername(username)
+        .orElseThrow(
+            () -> new NoSuchElementException("User with username " + username + " not found"));
+
     if (!user.getPassword().equals(password)) {
-      throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+      throw new IllegalArgumentException("Wrong password");
     }
 
     return user;

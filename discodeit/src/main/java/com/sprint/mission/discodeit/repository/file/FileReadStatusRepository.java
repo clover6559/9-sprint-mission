@@ -83,26 +83,6 @@ public class FileReadStatusRepository implements ReadStatusRepository {
     return Optional.ofNullable(readStatusNull);
   }
 
-  @Override
-  public List<ReadStatus> findAll() {
-    try {
-      return Files.list(DIRECTORY)
-          .filter(path -> path.toString().endsWith(EXTENSION))
-          .map(path -> {
-            try (
-                FileInputStream fis = new FileInputStream(path.toFile());
-                ObjectInputStream ois = new ObjectInputStream(fis)
-            ) {
-              return (ReadStatus) ois.readObject();
-            } catch (IOException | ClassNotFoundException e) {
-              throw new RuntimeException(e);
-            }
-          })
-          .toList();
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-  }
 
   @Override
   public List<ReadStatus> findAllByUserId(UUID userId) {
@@ -157,12 +137,11 @@ public class FileReadStatusRepository implements ReadStatusRepository {
   }
 
   @Override
-  public boolean existsByChannelIdAndUserId(UUID channelId, UUID userId) {
-    return findAll().stream()
-        .anyMatch(
-            readStatus -> readStatus.getChannelId().equals(channelId) && readStatus.getUserId()
-                .equals(userId));
+  public boolean existsById(UUID id) {
+    Path path = resolvePath(id);
+    return Files.exists(path);
   }
+
 
   @Override
   public void deleteById(UUID id) {
@@ -179,12 +158,7 @@ public class FileReadStatusRepository implements ReadStatusRepository {
 
   @Override
   public void deleteAllByChannelId(UUID channelId) {
-    findAllByChannelId(channelId).forEach(readStatus -> {
-      try {
-        Files.deleteIfExists(resolvePath(readStatus.getId()));
-      } catch (IOException e) {
-        throw new RuntimeException("삭제 실패: " + readStatus.getId(), e);
-      }
-    });
+    this.findAllByChannelId(channelId)
+        .forEach(readStatus -> this.deleteById(readStatus.getId()));
   }
 }

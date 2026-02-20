@@ -65,16 +65,6 @@ public class FileBinaryContentRepository implements BinaryContentRepository {
 
 
   @Override
-  public Optional<BinaryContent> findByRefId(UUID refId) {
-    Path path = resolvePath(refId);
-    ReentrantLock lock = fileLockProvider.getLock(path);
-    lock.lock();
-    return findAll().stream()
-        .filter(content -> content.getId().equals(refId))
-        .findFirst();
-  }
-
-  @Override
   public Optional<BinaryContent> findById(UUID id) {
     BinaryContent binaryContentNull = null;
     Path path = resolvePath(id);
@@ -95,33 +85,10 @@ public class FileBinaryContentRepository implements BinaryContentRepository {
     return Optional.ofNullable(binaryContentNull);
   }
 
-  @Override
-  public List<BinaryContent> findAll() {
-    try {
-      return Files.list(DIRECTORY)
-          .filter(path -> path.toString().endsWith(EXTENSION))
-          .map(path -> {
-            try (
-                FileInputStream fis = new FileInputStream(path.toFile());
-                ObjectInputStream ois = new ObjectInputStream(fis)
-            ) {
-              return (BinaryContent) ois.readObject();
-            } catch (IOException | ClassNotFoundException e) {
-              throw new RuntimeException(e);
-            }
-          })
-          .toList();
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-  }
 
   @Override
   public void deleteById(UUID id) {
     Path path = resolvePath(id);
-    if (Files.notExists(path)) {
-      throw new NoSuchElementException("binaryContent with id " + id + " not found");
-    }
     try {
       Files.delete(path);
     } catch (IOException e) {
@@ -129,10 +96,6 @@ public class FileBinaryContentRepository implements BinaryContentRepository {
     }
   }
 
-  @Override
-  public void deleteByRefId(UUID refId) {
-    findByRefId(refId).ifPresent(content -> deleteById(content.getId()));
-  }
 
   @Override
   public List<BinaryContent> findAllByIdIn(List<UUID> ids) {
@@ -158,5 +121,11 @@ public class FileBinaryContentRepository implements BinaryContentRepository {
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  @Override
+  public boolean existsById(UUID id) {
+    Path path = resolvePath(id);
+    return Files.exists(path);
   }
 }

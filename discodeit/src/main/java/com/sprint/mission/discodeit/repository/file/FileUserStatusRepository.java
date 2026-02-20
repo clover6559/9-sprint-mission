@@ -92,8 +92,9 @@ public class FileUserStatusRepository implements UserStatusRepository {
   }
 
   @Override
-  public boolean existsByUserId(UUID userId) {
-    return findByUserId(userId).isPresent();
+  public boolean existsById(UUID id) {
+    Path path = resolvePath(id);
+    return Files.exists(path);
   }
 
   @Override
@@ -123,11 +124,8 @@ public class FileUserStatusRepository implements UserStatusRepository {
 
   @Override
   public void deleteByUserId(UUID userId) {
-    UserStatus status = findAll().stream()
-        .filter(target -> target.getUserId().equals(userId))
-        .findFirst()
-        .orElseThrow(() -> new NoSuchElementException("해당 유저의 상태 정보가 없습니다: " + userId));
-    deleteById(status.getId());
+    this.findByUserId(userId)
+        .ifPresent(userStatus -> this.deleteById(userStatus.getId()));
   }
 
   @Override

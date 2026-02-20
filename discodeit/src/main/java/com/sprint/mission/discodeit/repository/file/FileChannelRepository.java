@@ -27,7 +27,8 @@ public class FileChannelRepository implements ChannelRepository {
 
   public FileChannelRepository(
       @Value("${discodeit.repository.file-directory:file-data-map}") String fileDirectory,
-      FileLockProvider fileLockProvider) {
+      FileLockProvider fileLockProvider
+  ) {
     this.DIRECTORY = Paths.get(System.getProperty("user.dir"), fileDirectory,
         Channel.class.getSimpleName());
     if (Files.notExists(DIRECTORY)) {
@@ -110,17 +111,15 @@ public class FileChannelRepository implements ChannelRepository {
   }
 
   @Override
-  public boolean existsById(UUID channelId) {
-    return Files.exists(resolvePath(channelId));
+  public boolean existsById(UUID id) {
+    Path path = resolvePath(id);
+    return Files.exists(resolvePath(id));
   }
 
 
   @Override
   public void deleteById(UUID id) {
     Path path = resolvePath(id);
-    if (Files.notExists(path)) {
-      throw new NoSuchElementException("Channel with id " + id + " not found");
-    }
     try {
       Files.delete(path);
     } catch (IOException e) {

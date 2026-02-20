@@ -27,7 +27,8 @@ public class FileMessageRepository implements MessageRepository {
 
   public FileMessageRepository(
       @Value("${discodeit.repository.file-directory:file-data-map}") String fileDirectory,
-      FileLockProvider fileLockProvider) {
+      FileLockProvider fileLockProvider
+  ) {
     this.DIRECTORY = Paths.get(System.getProperty("user.dir"), fileDirectory,
         Message.class.getSimpleName());
     if (Files.notExists(DIRECTORY)) {
@@ -84,30 +85,10 @@ public class FileMessageRepository implements MessageRepository {
     return Optional.ofNullable(messageNullable);
   }
 
-  @Override
-  public List<Message> findAll() {
-    try {
-      return Files.list(DIRECTORY)
-          .filter(path -> path.toString().endsWith(EXTENSION))
-          .map(path -> {
-            try (
-                FileInputStream fis = new FileInputStream(path.toFile());
-                ObjectInputStream ois = new ObjectInputStream(fis)
-            ) {
-              return (Message) ois.readObject();
-            } catch (IOException | ClassNotFoundException e) {
-              throw new RuntimeException(e);
-            }
-          })
-          .toList();
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-  }
 
   @Override
-  public boolean existsById(UUID messageId) {
-    return Files.exists(resolvePath(messageId));
+  public boolean existsById(UUID id) {
+    return Files.exists(resolvePath(id));
   }
 
   @Override

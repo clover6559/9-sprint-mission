@@ -7,6 +7,8 @@ import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.service.MessageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.ArrayList;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -31,19 +33,28 @@ public class MessageController {
       consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}
   )
   public ResponseEntity<Message> create(
-      @RequestPart("messageCreate") MessageCreate messageCreate,
-      @RequestPart(value = "file", required = false) MultipartFile file
+      @RequestPart("messageCreateRequest") MessageCreate messageCreate,
+      @RequestPart(value = "attachments", required = false) List<MultipartFile> attachments
   ) throws IOException {
-    BinaryContentCreate binaryCreate = null;
-    if (file != null && !file.isEmpty()) {
-      binaryCreate = new BinaryContentCreate(
-          file.getOriginalFilename(),
-          file.getContentType(),
-          file.getBytes()
-      );
-    }
-    Message message = messageService.create(messageCreate, binaryCreate);
-    return ResponseEntity.status(HttpStatus.CREATED).body(message);
+    List<BinaryContentCreate> attachmentRequests = Optional.ofNullable(attachments)
+        .map(files -> files.stream()
+            .map(file -> {
+              try {
+                return new BinaryContentCreate(
+                    file.getOriginalFilename(),
+                    file.getContentType(),
+                    file.getBytes()
+                );
+              } catch (IOException e) {
+                throw new RuntimeException(e);
+              }
+            })
+            .toList())
+        .orElse(new ArrayList<>());
+    Message createdMessage = messageService.create(messageCreate, attachmentRequests);
+    return ResponseEntity
+        .status(HttpStatus.CREATED)
+        .body(createdMessage);
   }
 
   @Operation(summary = "메세지 내용 수정")

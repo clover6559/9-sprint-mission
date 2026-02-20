@@ -1,15 +1,17 @@
 package com.sprint.mission.discodeit.controller;
 
+import com.sprint.mission.discodeit.dto.BinaryContentCreate;
 import com.sprint.mission.discodeit.dto.UserStatus.UserStatusUpdate;
 import com.sprint.mission.discodeit.dto.user.UserCreate;
 import com.sprint.mission.discodeit.dto.user.UserDto;
-import com.sprint.mission.discodeit.dto.user.UserUpdate;
+import com.sprint.mission.discodeit.dto.user.UserUpdateRequest;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.entity.UserStatus;
 import com.sprint.mission.discodeit.service.UserService;
 import com.sprint.mission.discodeit.service.UserStatusService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -35,19 +37,15 @@ public class UserController {
       consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}
   )
   public ResponseEntity<User> create(
-      @RequestPart("userCreateRequest") UserCreate.BasicUserInfo basicUserInfo,
+      @RequestPart("userCreateRequest") UserCreate userCreate,
       @RequestPart(value = "profile", required = false) MultipartFile profile
   ) throws IOException {
-    UserCreate.ProfileImageInfo profileImageInfo = null;
-    if (profile != null && !profile.isEmpty()) {
-      profileImageInfo = new UserCreate.ProfileImageInfo(
-          UUID.randomUUID(), profile.getOriginalFilename(), profile.getSize(),
-          profile.getContentType(), profile.getBytes()
-      );
-    }
-    UserCreate requestDto = new UserCreate(basicUserInfo, profileImageInfo);
-    User createdUser = userService.create(requestDto);
-    return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
+    Optional<BinaryContentCreate> profileRequest = Optional.ofNullable(profile)
+        .flatMap(this::resolveProfileRequest);
+    User createdUser = userService.create(userCreate, profileRequest);
+    return ResponseEntity
+        .status(HttpStatus.CREATED)
+        .body(createdUser);
   }
 
   @Operation(summary = "회원 정보 수정")
@@ -55,27 +53,17 @@ public class UserController {
       path = "/{userId}",
       consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}
   )
-  public ResponseEntity<Void> update(
+  public ResponseEntity<User> update(
       @PathVariable UUID userId,
-      @RequestPart("userUpdateRequest") UserUpdate.UserUpdateInfo userUpdateRequest,
+      @RequestPart("userUpdateRequest") UserUpdateRequest userUpdateRequest,
       @RequestPart(value = "profile", required = false) MultipartFile profile
   ) throws IOException {
-    UserCreate.ProfileImageInfo profileImageInfo = null;
-    if (profile != null && !profile.isEmpty()) {
-      profileImageInfo = new UserCreate.ProfileImageInfo(
-          null, profile.getOriginalFilename(), profile.getSize(), profile.getContentType(),
-          profile.getBytes()
-      );
-    }
-    UserUpdate.UserUpdateInfo finalUpdateInfo = new UserUpdate.UserUpdateInfo(
-        userUpdateRequest.newUsername(),
-        userUpdateRequest.newEmail(),
-        userUpdateRequest.newPassword(),
-        profileImageInfo
-    );
-    UserUpdate userUpdate = new UserUpdate(userId, finalUpdateInfo);
-    userService.update(userUpdate);
-    return ResponseEntity.ok().build();
+    Optional<BinaryContentCreate> profileRequest = Optional.ofNullable(profile)
+        .flatMap(this::resolveProfileRequest);
+    User updatedUser = userService.update(userId, userUpdateRequest, profileRequest);
+    return ResponseEntity
+        .status(HttpStatus.OK)
+        .body(updatedUser);
   }
 
   @Operation(summary = "회원 삭제")
@@ -102,5 +90,22 @@ public class UserController {
   ) throws IllegalArgumentException {
     UserStatus userStatus = userStatusService.update(userId, request);
     return ResponseEntity.ok(userStatus);
+  }
+
+  private Optional<BinaryContentCreate> resolveProfileRequest(MultipartFile profileFile) {
+    if (profileFile.isEmpty()) {
+      return Optional.empty();
+    } else {
+      try {
+        BinaryContentCreate binaryContentCreate = new BinaryContentCreate(
+            profileFile.getOriginalFilename(),
+            profileFile.getContentType(),
+            profileFile.getBytes()
+        );
+        return Optional.of(binaryContentCreate);
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    }
   }
 }
