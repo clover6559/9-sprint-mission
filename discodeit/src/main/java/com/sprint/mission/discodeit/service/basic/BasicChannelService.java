@@ -45,7 +45,7 @@ public class BasicChannelService implements ChannelService {
   }
 
   @Override
-  public ChannelResponse find(UUID channelId) {
+  public ChannelDto find(UUID channelId) {
     return channelRepository.findById(channelId)
         .map(this::toDto)
         .orElseThrow(() -> new RuntimeException("해당 채널을 찾을 수 없습니다. "));
@@ -53,7 +53,7 @@ public class BasicChannelService implements ChannelService {
 
 
   @Override
-  public List<ChannelResponse> findAllByUserId(UUID userId) {
+  public List<ChannelDto> findAllByUserId(UUID userId) {
     List<UUID> mySubscribedChannelIds = readStatusRepository.findAllByUserId(userId).stream()
         .map(ReadStatus::getChannelId)
         .toList();
@@ -91,7 +91,7 @@ public class BasicChannelService implements ChannelService {
     channelRepository.deleteById(channelId);
   }
 
-  private ChannelResponse toDto(Channel channel) {
+  private ChannelDto toDto(Channel channel) {
     Instant lastMessageAt = messageRepository.findAllByChannelId(channel.getId())
         .stream()
         .sorted(Comparator.comparing(Message::getCreatedAt).reversed())
@@ -108,7 +108,7 @@ public class BasicChannelService implements ChannelService {
           .forEach(participantIds::add);
     }
 
-    return new ChannelResponse(
+    return new ChannelDto(
         channel.getId(),
         channel.getType(),
         channel.getName(),

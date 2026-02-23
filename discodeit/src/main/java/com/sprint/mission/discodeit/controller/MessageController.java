@@ -1,5 +1,6 @@
 package com.sprint.mission.discodeit.controller;
 
+import com.sprint.mission.discodeit.controller.Api.MessageApi;
 import com.sprint.mission.discodeit.dto.BinaryContentCreate;
 import com.sprint.mission.discodeit.dto.message.MessageCreate;
 import com.sprint.mission.discodeit.dto.message.MessageUpdate;
@@ -20,22 +21,21 @@ import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
-@Tag(name = "Message API")
 @RestController
 @RequestMapping("/api/messages")
 @RequiredArgsConstructor
-public class MessageController {
+public class MessageController implements MessageApi {
 
   private final MessageService messageService;
 
-  @Operation(summary = "메세지 생성")
   @PostMapping(
       consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}
   )
+  @Override
   public ResponseEntity<Message> create(
       @RequestPart("messageCreateRequest") MessageCreate messageCreate,
       @RequestPart(value = "attachments", required = false) List<MultipartFile> attachments
-  ) throws IOException {
+  ) {
     List<BinaryContentCreate> attachmentRequests = Optional.ofNullable(attachments)
         .map(files -> files.stream()
             .map(file -> {
@@ -57,8 +57,8 @@ public class MessageController {
         .body(createdMessage);
   }
 
-  @Operation(summary = "메세지 내용 수정")
   @PatchMapping("/{messageId}")
+  @Override
   public ResponseEntity<Void> update(
       @PathVariable UUID messageId,
       @RequestBody MessageUpdate messageUpdate
@@ -67,8 +67,8 @@ public class MessageController {
     return ResponseEntity.ok().build();
   }
 
-  @Operation(summary = "메세지 삭제")
   @DeleteMapping("/{messageId}")
+  @Override
   public ResponseEntity<Void> delete(
       @PathVariable UUID messageId
   ) {
@@ -76,8 +76,8 @@ public class MessageController {
     return ResponseEntity.noContent().build();
   }
 
-  @Operation(summary = "채널 메세지 조회")
   @GetMapping
+  @Override
   public ResponseEntity<List<Message>> findByChannelId(
       @RequestParam UUID channelId
   ) {

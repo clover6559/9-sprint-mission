@@ -1,5 +1,6 @@
 package com.sprint.mission.discodeit.controller;
 
+import com.sprint.mission.discodeit.controller.Api.UserApi;
 import com.sprint.mission.discodeit.dto.BinaryContentCreate;
 import com.sprint.mission.discodeit.dto.UserStatus.UserStatusUpdate;
 import com.sprint.mission.discodeit.dto.user.UserCreate;
@@ -23,23 +24,22 @@ import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
-@Tag(name = "User", description = "User API")
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
-public class UserController {
+public class UserController implements UserApi {
 
   private final UserService userService;
   private final UserStatusService userStatusService;
 
-  @Operation(summary = "회원 등록")
   @PostMapping(
       consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}
   )
+  @Override
   public ResponseEntity<User> create(
       @RequestPart(value = "userCreateRequest") UserCreate userCreateRequest,
       @RequestPart(value = "profile", required = false) MultipartFile profile
-  ) throws IOException {
+  ) {
     Optional<BinaryContentCreate> profileRequest = Optional.ofNullable(profile)
         .flatMap(this::resolveProfileRequest);
     User createdUser = userService.create(userCreateRequest, profileRequest);
@@ -48,16 +48,16 @@ public class UserController {
         .body(createdUser);
   }
 
-  @Operation(summary = "회원 정보 수정")
   @PatchMapping(
       path = "/{userId}",
       consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}
   )
+  @Override
   public ResponseEntity<User> update(
       @PathVariable UUID userId,
       @RequestPart("userUpdateRequest") UserUpdateRequest userUpdateRequest,
       @RequestPart(value = "profile", required = false) MultipartFile profile
-  ) throws IOException {
+  ) {
     Optional<BinaryContentCreate> profileRequest = Optional.ofNullable(profile)
         .flatMap(this::resolveProfileRequest);
     User updatedUser = userService.update(userId, userUpdateRequest, profileRequest);
@@ -66,8 +66,8 @@ public class UserController {
         .body(updatedUser);
   }
 
-  @Operation(summary = "회원 삭제")
   @DeleteMapping("/{userId}")
+  @Override
   public ResponseEntity<Void> delete(
       @PathVariable UUID userId
   ) {
@@ -75,15 +75,15 @@ public class UserController {
     return ResponseEntity.noContent().build();
   }
 
-  @Operation(summary = "전체 회원 조회")
   @GetMapping
+  @Override
   public ResponseEntity<List<UserDto>> findAll() {
     List<UserDto> userList = userService.findAll();
     return ResponseEntity.ok(userList);
   }
 
-  @Operation(summary = "회원의 온라인 상태 업데이트")
   @PatchMapping("/{userId}/userStatus")
+  @Override
   public ResponseEntity<UserStatus> statusUpdate(
       @PathVariable UUID userId,
       @RequestBody UserStatusUpdate request

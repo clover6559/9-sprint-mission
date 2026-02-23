@@ -1,5 +1,6 @@
 package com.sprint.mission.discodeit.controller;
 
+import com.sprint.mission.discodeit.controller.Api.ReadStatusApi;
 import com.sprint.mission.discodeit.dto.ReadStatus.ReadStatusCreate;
 import com.sprint.mission.discodeit.dto.ReadStatus.ReadStatusUpdate;
 import com.sprint.mission.discodeit.entity.ReadStatus;
@@ -14,16 +15,17 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
-@Tag(name = "ReadStatus API")
+
 @RequestMapping("/api/readStatuses")
 @RestController
 @RequiredArgsConstructor
-public class ReadStatusController {
+public class ReadStatusController implements ReadStatusApi {
 
   private final ReadStatusService readStatusService;
 
   @Operation(summary = "읽음 상태 생성")
   @PostMapping
+  @Override
   public ResponseEntity<ReadStatus> create(
       @RequestBody ReadStatusCreate readStatusCreate
   ) {
@@ -33,6 +35,7 @@ public class ReadStatusController {
 
   @Operation(summary = "읽음 상태 수정")
   @PatchMapping("/{readStatusId}")
+  @Override
   public ResponseEntity<ReadStatus> update(
       @PathVariable UUID readStatusId,
       @RequestBody ReadStatusUpdate readStatusUpdate
@@ -43,6 +46,7 @@ public class ReadStatusController {
 
   @Operation(summary = "사용자의 메세지 읽음 상태 조회")
   @GetMapping
+  @Override
   public ResponseEntity<List<ReadStatus>> findByUserId(
       @RequestParam UUID userId
   ) {

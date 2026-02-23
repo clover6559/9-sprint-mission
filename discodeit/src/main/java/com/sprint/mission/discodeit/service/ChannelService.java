@@ -12,9 +12,9 @@ public interface ChannelService {
 
   Channel create(CreatePrivate request);
 
-  ChannelResponse find(UUID channelId);
+  ChannelDto find(UUID channelId);
 
-  List<ChannelResponse> findAllByUserId(UUID userId);
+  List<ChannelDto> findAllByUserId(UUID userId);
 
   Channel update(UUID channelId, ChannelUpdateRequest request);
 

@@ -1,10 +1,9 @@
 package com.sprint.mission.discodeit.controller;
 
+import com.sprint.mission.discodeit.controller.Api.ChannelApi;
 import com.sprint.mission.discodeit.dto.channel.*;
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.service.ChannelService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,16 +12,15 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
-@Tag(name = "Channel API")
 @RestController
 @RequestMapping("/api/channels")
 @RequiredArgsConstructor
-public class ChannelController {
+public class ChannelController implements ChannelApi {
 
   private final ChannelService channelService;
 
-  @Operation(summary = "공개 채널 생성")
   @PostMapping("/public")
+  @Override
   public ResponseEntity<Channel> createPublic(
       @RequestBody CreatePublic request
   ) {
@@ -31,8 +29,8 @@ public class ChannelController {
         .body(channel);
   }
 
-  @Operation(summary = "비공개 채널 생성")
   @PostMapping("/private")
+  @Override
   public ResponseEntity<Channel> createPrivate(
       @RequestBody CreatePrivate request
   ) {
@@ -41,8 +39,8 @@ public class ChannelController {
         .body(channel);
   }
 
-  @Operation(summary = "채널 정보 수정")
   @PatchMapping("/{channelId}")
+  @Override
   public ResponseEntity<Channel> update(
       @PathVariable UUID channelId,
       @RequestBody ChannelUpdateRequest request
@@ -53,8 +51,8 @@ public class ChannelController {
         .body(channelUpdate);
   }
 
-  @Operation(summary = "채널 삭제")
   @DeleteMapping("/{channelId}")
+  @Override
   public ResponseEntity<Void> delete(
       @PathVariable UUID channelId
   ) {
@@ -62,13 +60,13 @@ public class ChannelController {
     return ResponseEntity.noContent().build();
   }
 
-  @Operation(summary = "사용자가 참여 중인 채널 조회")
   @GetMapping
-  public ResponseEntity<List<ChannelResponse>> findAll(
+  @Override
+  public ResponseEntity<List<ChannelDto>> findAll(
       @RequestParam UUID userId
   ) {
-    List<ChannelResponse> channelResponse = channelService.findAllByUserId(userId);
-    return ResponseEntity.ok(channelResponse);
+    List<ChannelDto> channelDto = channelService.findAllByUserId(userId);
+    return ResponseEntity.ok(channelDto);
 
   }
 }
