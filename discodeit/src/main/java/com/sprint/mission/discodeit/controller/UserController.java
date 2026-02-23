@@ -37,7 +37,7 @@ public class UserController {
       consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}
   )
   public ResponseEntity<User> create(
-      @RequestParam(value = "userCreateRequest") UserCreate userCreateRequest,
+      @RequestPart(value = "userCreateRequest") UserCreate userCreateRequest,
       @RequestPart(value = "profile", required = false) MultipartFile profile
   ) throws IOException {
     Optional<BinaryContentCreate> profileRequest = Optional.ofNullable(profile)
