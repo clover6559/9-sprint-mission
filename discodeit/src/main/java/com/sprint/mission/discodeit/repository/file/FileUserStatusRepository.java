@@ -29,8 +29,9 @@ public class FileUserStatusRepository implements UserStatusRepository {
   public FileUserStatusRepository(
       @Value("${discodeit.repository.file-directory:file-data-map}") String fileDirectory,
       FileLockProvider fileLockProvider) {
-    this.DIRECTORY = Paths.get(System.getProperty("user.dir"), fileDirectory,
-        UserStatus.class.getSimpleName());
+    Path baseDir = fileDirectory.startsWith("/") ? Paths.get(fileDirectory)
+        : Paths.get(System.getProperty("user.dir"), fileDirectory);
+    this.DIRECTORY = baseDir.resolve(UserStatus.class.getSimpleName());
     if (Files.notExists(DIRECTORY)) {
       try {
         Files.createDirectories(DIRECTORY);
@@ -65,7 +66,7 @@ public class FileUserStatusRepository implements UserStatusRepository {
 
   @Override
   public Optional<UserStatus> findById(UUID id) {
-    UserStatus userStatusNull = null;
+    UserStatus userStatusNullable = null;
     Path path = resolvePath(id);
     ReentrantLock lock = fileLockProvider.getLock(path);
     lock.lock();
@@ -74,14 +75,14 @@ public class FileUserStatusRepository implements UserStatusRepository {
           FileInputStream fis = new FileInputStream(path.toFile());
           ObjectInputStream ois = new ObjectInputStream(fis)
       ) {
-        userStatusNull = (UserStatus) ois.readObject();
+        userStatusNullable = (UserStatus) ois.readObject();
       } catch (IOException | ClassNotFoundException e) {
         throw new RuntimeException(e);
       } finally {
         lock.unlock();
       }
     }
-    return Optional.ofNullable(userStatusNull);
+    return Optional.ofNullable(userStatusNullable);
   }
 
   @Override

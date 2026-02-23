@@ -37,12 +37,12 @@ public class UserController {
       consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}
   )
   public ResponseEntity<User> create(
-      @RequestPart("userCreateRequest") UserCreate userCreate,
+      @RequestParam(value = "userCreateRequest") UserCreate userCreateRequest,
       @RequestPart(value = "profile", required = false) MultipartFile profile
   ) throws IOException {
     Optional<BinaryContentCreate> profileRequest = Optional.ofNullable(profile)
         .flatMap(this::resolveProfileRequest);
-    User createdUser = userService.create(userCreate, profileRequest);
+    User createdUser = userService.create(userCreateRequest, profileRequest);
     return ResponseEntity
         .status(HttpStatus.CREATED)
         .body(createdUser);
