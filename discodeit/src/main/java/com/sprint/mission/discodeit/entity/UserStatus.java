@@ -1,31 +1,44 @@
 package com.sprint.mission.discodeit.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.sprint.mission.discodeit.entity.base.BaseUpdatableEntity;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import lombok.AccessLevel;
 import lombok.Getter;
 
 import java.io.Serializable;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.UUID;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Entity
+@Table(name = "user_statuses")
 @Getter
-public class UserStatus implements Serializable {
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class UserStatus extends BaseUpdatableEntity {
 
-  private static final long serialVersionUID = 1L;
-  private UUID id;
-  private UUID userId;
-  private final Instant createdAt;
-  private Instant updatedAt;
+  @JsonBackReference
+  @Setter(AccessLevel.PROTECTED)
+  @OneToOne
+  @JoinColumn(name = "user_id")
+  private User user;
+
+  @Column(name = "last_active_at", nullable = false)
   private Instant lastActiveAt;
 
 
-  public UserStatus(UUID userId, Instant lastActiveAt) {
-    this.id = UUID.randomUUID();
-    this.userId = userId;
-    Instant now = Instant.now();
-    this.updatedAt = now;
-    this.createdAt = now;
+  public UserStatus(User user, Instant lastActiveAt) {
+    this.user = user;
     this.lastActiveAt = lastActiveAt;
-
+    this.user.setStatus(this);
   }
 
   public Boolean isOnline() {
@@ -34,14 +47,8 @@ public class UserStatus implements Serializable {
   }
 
   public void update(Instant lastActiveAt) {
-    boolean anyValueUpdated = false;
     if (lastActiveAt != null && !lastActiveAt.equals(this.lastActiveAt)) {
       this.lastActiveAt = lastActiveAt;
-      anyValueUpdated = true;
-    }
-
-    if (anyValueUpdated) {
-      this.updatedAt = Instant.now();
     }
   }
 }

@@ -1,7 +1,7 @@
 package com.sprint.mission.discodeit.service;
 
-import com.sprint.mission.discodeit.dto.ReadStatus.ReadStatusCreate;
-import com.sprint.mission.discodeit.dto.ReadStatus.ReadStatusUpdate;
+import com.sprint.mission.discodeit.dto.request.ReadStatusCreate;
+import com.sprint.mission.discodeit.dto.request.ReadStatusUpdate;
 import com.sprint.mission.discodeit.entity.ReadStatus;
 
 import java.util.List;

@@ -1,12 +1,11 @@
 package com.sprint.mission.discodeit.controller;
 
-import com.sprint.mission.discodeit.controller.Api.ReadStatusApi;
-import com.sprint.mission.discodeit.dto.ReadStatus.ReadStatusCreate;
-import com.sprint.mission.discodeit.dto.ReadStatus.ReadStatusUpdate;
+import com.sprint.mission.discodeit.controller.api.ReadStatusApi;
+import com.sprint.mission.discodeit.dto.request.ReadStatusCreate;
+import com.sprint.mission.discodeit.dto.request.ReadStatusUpdate;
 import com.sprint.mission.discodeit.entity.ReadStatus;
 import com.sprint.mission.discodeit.service.ReadStatusService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,8 +15,8 @@ import java.util.List;
 import java.util.UUID;
 
 
-@RequestMapping("/api/readStatuses")
-@RestController
+//@RequestMapping("/api/readStatuses")
+//@RestController
 @RequiredArgsConstructor
 public class ReadStatusController implements ReadStatusApi {
 

@@ -1,13 +1,11 @@
 package com.sprint.mission.discodeit.controller;
 
-import com.sprint.mission.discodeit.controller.Api.MessageApi;
-import com.sprint.mission.discodeit.dto.BinaryContentCreate;
-import com.sprint.mission.discodeit.dto.message.MessageCreate;
-import com.sprint.mission.discodeit.dto.message.MessageUpdate;
+import com.sprint.mission.discodeit.controller.api.MessageApi;
+import com.sprint.mission.discodeit.dto.request.BinaryContentCreate;
+import com.sprint.mission.discodeit.dto.request.MessageCreate;
+import com.sprint.mission.discodeit.dto.request.MessageUpdate;
 import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.service.MessageService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.ArrayList;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -21,8 +19,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
-@RestController
-@RequestMapping("/api/messages")
+//@RestController
+//@RequestMapping("/api/messages")
 @RequiredArgsConstructor
 public class MessageController implements MessageApi {
 

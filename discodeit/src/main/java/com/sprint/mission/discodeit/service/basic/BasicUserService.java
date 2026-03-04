@@ -1,16 +1,18 @@
 package com.sprint.mission.discodeit.service.basic;
 
-import com.sprint.mission.discodeit.dto.BinaryContentCreate;
-import com.sprint.mission.discodeit.dto.user.UserCreate;
-import com.sprint.mission.discodeit.dto.user.UserDto;
-import com.sprint.mission.discodeit.dto.user.UserUpdateRequest;
+import com.sprint.mission.discodeit.dto.request.BinaryContentCreate;
+import com.sprint.mission.discodeit.dto.request.UserCreate;
+import com.sprint.mission.discodeit.dto.data.UserDto;
+import com.sprint.mission.discodeit.dto.request.UserUpdateRequest;
 import com.sprint.mission.discodeit.entity.BinaryContent;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.entity.UserStatus;
+import com.sprint.mission.discodeit.mapper.UserMapper;
 import com.sprint.mission.discodeit.repository.BinaryContentRepository;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.repository.UserStatusRepository;
 import com.sprint.mission.discodeit.service.UserService;
+import com.sprint.mission.discodeit.storage.BinaryContentStorage;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -27,10 +29,11 @@ public class BasicUserService implements UserService {
   private final UserRepository userRepository;
   private final UserStatusRepository userStatusRepository;
   private final BinaryContentRepository binaryContentRepository;
-
+  private final UserMapper userMapper;
+  private final BinaryContentStorage binaryContentStorage;
 
   @Override
-  public User create(UserCreate userCreate,
+  public UserDto create(UserCreate userCreate,
       Optional<BinaryContentCreate> optionalProfileCreateRequest) {
     String username = userCreate.username();
     String email = userCreate.email();
@@ -41,32 +44,31 @@ public class BasicUserService implements UserService {
       throw new IllegalArgumentException("User with username " + username + " already exists");
     }
 
-    UUID nullableProfileId = optionalProfileCreateRequest
+    BinaryContent nullableProfile = optionalProfileCreateRequest
         .map(profileRequest -> {
           String fileName = profileRequest.fileName();
           String contentType = profileRequest.contentType();
           byte[] bytes = profileRequest.bytes();
           BinaryContent binaryContent = new BinaryContent(fileName, (long) bytes.length,
-              contentType, bytes);
-          return binaryContentRepository.save(binaryContent).getId();
+              contentType);
+          binaryContentRepository.save(binaryContent);
+          binaryContentStorage.put(binaryContent.getId(), bytes);
+          return binaryContent;
         })
         .orElse(null);
     String password = userCreate.password();
 
-    User user = new User(username, email, password, nullableProfileId);
-    User createdUser = userRepository.save(user);
-
+    User user = new User(username, email, password, nullableProfile);
     Instant now = Instant.now();
-    UserStatus userStatus = new UserStatus(createdUser.getId(), now);
-    userStatusRepository.save(userStatus);
-
-    return createdUser;
+    UserStatus userStatus = new UserStatus(user, now);
+    userRepository.save(user);
+    return userMapper.toDto(user);
   }
 
   @Override
   public UserDto find(UUID userId) {
     return userRepository.findById(userId)
-        .map(this::toDto)
+        .map(userMapper::toDto)
         .orElseThrow(() -> new NoSuchElementException("User with id " + userId + " not found"));
   }
 
@@ -74,13 +76,13 @@ public class BasicUserService implements UserService {
   public List<UserDto> findAll() {
     return userRepository.findAll()
         .stream()
-        .map(this::toDto)
+        .map(userMapper::toDto)
         .toList();
   }
 
 
   @Override
-  public User update(UUID userId, UserUpdateRequest userUpdate,
+  public UserDto update(UUID userId, UserUpdateRequest userUpdate,
       Optional<BinaryContentCreate> optionalProfileCreateRequest) {
     User user = userRepository.findById(userId)
         .orElseThrow(() -> new NoSuchElementException("User with id " + userId + " not found"));
@@ -94,51 +96,32 @@ public class BasicUserService implements UserService {
       throw new IllegalArgumentException("User with username " + newUsername + " already exists");
     }
 
-    UUID nullableProfileId = optionalProfileCreateRequest
+    BinaryContent nullableProfile = optionalProfileCreateRequest
         .map(profileRequest -> {
-          Optional.ofNullable(user.getProfileId())
-              .ifPresent(binaryContentRepository::deleteById);
-
           String fileName = profileRequest.fileName();
           String contentType = profileRequest.contentType();
           byte[] bytes = profileRequest.bytes();
           BinaryContent binaryContent = new BinaryContent(fileName, (long) bytes.length,
-              contentType, bytes);
-          return binaryContentRepository.save(binaryContent).getId();
+              contentType);
+          binaryContentRepository.save(binaryContent);
+          binaryContentStorage.put(binaryContent.getId(), bytes);
+          return binaryContent;
         })
         .orElse(null);
 
     String newPassword = userUpdate.newPassword();
-    user.update(newUsername, newEmail, newPassword, nullableProfileId);
+    user.update(newUsername, newEmail, newPassword, nullableProfile);
 
-    return userRepository.save(user);
+    return userMapper.toDto(user);
   }
 
 
   @Override
   public void delete(UUID userId) {
-    User user = userRepository.findById(userId)
-        .orElseThrow(() -> new RuntimeException("해당 유저를 찾을 수 없습니다."));
-    Optional.ofNullable(user.getProfileId())
-        .ifPresent(binaryContentRepository::deleteById);
-    userStatusRepository.deleteByUserId(userId);
-
+    if (userRepository.existsById(userId)) {
+      throw new NoSuchElementException("User with id " + userId + " not found");
+    }
     userRepository.deleteById(userId);
-  }
 
-  private UserDto toDto(User user) {
-    Boolean online = userStatusRepository.findByUserId(user.getId())
-        .map(UserStatus::isOnline)
-        .orElse(null);
-
-    return new UserDto(
-        user.getId(),
-        user.getCreatedAt(),
-        user.getUpdatedAt(),
-        user.getUsername(),
-        user.getEmail(),
-        user.getProfileId(),
-        online
-    );
   }
 }

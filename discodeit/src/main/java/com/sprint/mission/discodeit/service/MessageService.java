@@ -1,8 +1,8 @@
 package com.sprint.mission.discodeit.service;
 
-import com.sprint.mission.discodeit.dto.BinaryContentCreate;
-import com.sprint.mission.discodeit.dto.message.MessageCreate;
-import com.sprint.mission.discodeit.dto.message.MessageUpdate;
+import com.sprint.mission.discodeit.dto.request.BinaryContentCreate;
+import com.sprint.mission.discodeit.dto.request.MessageCreate;
+import com.sprint.mission.discodeit.dto.request.MessageUpdate;
 import com.sprint.mission.discodeit.entity.Message;
 
 import java.util.List;

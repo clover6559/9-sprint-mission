@@ -1,10 +1,8 @@
 package com.sprint.mission.discodeit.controller;
 
-import com.sprint.mission.discodeit.controller.Api.BinaryContentApi;
+import com.sprint.mission.discodeit.controller.api.BinaryContentApi;
 import com.sprint.mission.discodeit.entity.BinaryContent;
 import com.sprint.mission.discodeit.service.BinaryContentService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,6 +33,17 @@ public class BinaryContentController implements BinaryContentApi {
   @Override
   public ResponseEntity<BinaryContent> find(
       @PathVariable UUID binaryContentId
+  ) throws RuntimeException {
+    BinaryContent binaryContent = binaryContentService.find(binaryContentId);
+    return ResponseEntity
+        .status(HttpStatus.OK)
+        .body(binaryContent);
+  }
+
+  @GetMapping("/{binaryContentId}/download")
+  @Override
+  public ResponseEntity<?> download(
+      @RequestParam UUID binaryContentId
   ) throws RuntimeException {
     BinaryContent binaryContent = binaryContentService.find(binaryContentId);
     return ResponseEntity

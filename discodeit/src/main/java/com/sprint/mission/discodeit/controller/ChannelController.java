@@ -1,7 +1,10 @@
 package com.sprint.mission.discodeit.controller;
 
-import com.sprint.mission.discodeit.controller.Api.ChannelApi;
-import com.sprint.mission.discodeit.dto.channel.*;
+import com.sprint.mission.discodeit.controller.api.ChannelApi;
+import com.sprint.mission.discodeit.dto.data.ChannelDto;
+import com.sprint.mission.discodeit.dto.request.ChannelUpdateRequest;
+import com.sprint.mission.discodeit.dto.request.CreatePrivate;
+import com.sprint.mission.discodeit.dto.request.CreatePublic;
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.service.ChannelService;
 import lombok.RequiredArgsConstructor;
@@ -12,8 +15,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
-@RestController
-@RequestMapping("/api/channels")
+//@RestController
+//@RequestMapping("/api/channels")
 @RequiredArgsConstructor
 public class ChannelController implements ChannelApi {
 
