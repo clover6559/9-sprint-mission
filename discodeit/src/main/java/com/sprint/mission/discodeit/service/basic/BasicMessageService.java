@@ -44,19 +44,17 @@ public class BasicMessageService implements MessageService {
     User user = userRepository.findById(messageCreate.authorId())
         .orElseThrow(() -> new NoSuchElementException("유저를 찾을 수 없습니다."));
 
-    List<BinaryContent> attachmentIds = binaryContentCreateRequests.stream()
+    List<BinaryContent> attachments = binaryContentCreateRequests.stream()
         .map(req -> {
-          BinaryContent binaryContent = new BinaryContent(req.fileName(), (long) req.bytes().length,
-              req.contentType());
-
-          BinaryContent savedContent = binaryContentRepository.save(binaryContent);
-          binaryContentStorage.put(savedContent.getId(), req.bytes());
-          return savedContent;
+          BinaryContent binaryContent = new BinaryContent(
+              req.fileName(), (long) req.bytes().length, req.contentType());
+          BinaryContent saved = binaryContentRepository.save(binaryContent);
+          binaryContentStorage.put(saved.getId(), req.bytes());
+          return saved;
         })
         .toList();
-
-    String content = messageCreate.content();
-    Message message = new Message(content, channel, user, attachmentIds);
+    Message message = new Message(
+        messageCreate.content(), channel, user, attachments);
     Message savedMessage = messageRepository.save(message);
     return messageMapper.toDto(savedMessage);
   }
