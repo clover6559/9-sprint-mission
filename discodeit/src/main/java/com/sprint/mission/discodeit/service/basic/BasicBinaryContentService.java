@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -16,17 +17,13 @@ public class BasicBinaryContentService implements BinaryContentService {
 
   private final BinaryContentRepository binaryContentRepository;
 
+  @Transactional
   @Override
   public BinaryContent create(BinaryContentCreate create) {
     String fileName = create.fileName();
     byte[] bytes = create.bytes();
     String contentType = create.contentType();
-    BinaryContent binaryContent = new BinaryContent(
-        fileName,
-        (long) bytes.length,
-        contentType,
-        bytes
-    );
+    BinaryContent binaryContent = new BinaryContent(fileName, (long) bytes.length, contentType);
     return binaryContentRepository.save(binaryContent);
   }
 
@@ -38,13 +35,14 @@ public class BasicBinaryContentService implements BinaryContentService {
 
   @Override
   public List<BinaryContent> findAllByIdIn(List<UUID> binaryContentIds) {
-    return binaryContentRepository.findAllByIdIn(binaryContentIds).stream().toList();
+    return binaryContentRepository.findAllByIdIn(binaryContentIds);
   }
 
+  @Transactional
   @Override
   public void delete(UUID binaryContentId) {
-    binaryContentRepository.findById(binaryContentId)
+    BinaryContent foundContent = binaryContentRepository.findById(binaryContentId)
         .orElseThrow(() -> new RuntimeException("해당 바이너리 데이터를 찾을 수 없습니다."));
-    binaryContentRepository.deleteById(binaryContentId);
+    binaryContentRepository.delete(foundContent);
   }
 }

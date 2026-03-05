@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +33,7 @@ public class BasicUserService implements UserService {
   private final UserMapper userMapper;
   private final BinaryContentStorage binaryContentStorage;
 
+  @Transactional
   @Override
   public UserDto create(UserCreate userCreate,
       Optional<BinaryContentCreate> optionalProfileCreateRequest) {
@@ -80,7 +82,7 @@ public class BasicUserService implements UserService {
         .toList();
   }
 
-
+  @Transactional
   @Override
   public UserDto update(UUID userId, UserUpdateRequest userUpdate,
       Optional<BinaryContentCreate> optionalProfileCreateRequest) {
@@ -115,7 +117,7 @@ public class BasicUserService implements UserService {
     return userMapper.toDto(user);
   }
 
-
+  @Transactional
   @Override
   public void delete(UUID userId) {
     if (userRepository.existsById(userId)) {

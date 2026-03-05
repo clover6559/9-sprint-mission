@@ -1,10 +1,14 @@
 package com.sprint.mission.discodeit.service.basic;
 
+import static java.util.stream.Collectors.toList;
+
 import com.sprint.mission.discodeit.dto.request.BinaryContentCreate;
 import com.sprint.mission.discodeit.dto.request.MessageCreate;
 import com.sprint.mission.discodeit.dto.request.MessageUpdate;
 import com.sprint.mission.discodeit.entity.BinaryContent;
+import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.Message;
+import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.repository.BinaryContentRepository;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
 import com.sprint.mission.discodeit.repository.MessageRepository;
@@ -16,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -26,39 +31,21 @@ public class BasicMessageService implements MessageService {
   private final UserRepository userRepository;
   private final BinaryContentRepository binaryContentRepository;
 
+  @Transactional
   @Override
   public Message create(MessageCreate messageCreate,
       List<BinaryContentCreate> binaryContentCreateRequests) {
-    UUID channelId = messageCreate.channelId();
-    UUID authorId = messageCreate.authorId();
+    Channel channel = channelRepository.findById(messageCreate.channelId())
+        .orElseThrow(() -> new NoSuchElementException("채널을 찾을 수 없습니다."));
+    User user = userRepository.findById(messageCreate.authorId())
+        .orElseThrow(() -> new NoSuchElementException("유저를 찾을 수 없습니다."));
 
-    if (!channelRepository.existsById(channelId)) {
-      throw new NoSuchElementException("Channel with id " + channelId + " does not exist");
-    }
-    if (!userRepository.existsById(authorId)) {
-      throw new NoSuchElementException("Author with id " + authorId + " does not exist");
-    }
-
-    List<UUID> attachmentIds = binaryContentCreateRequests.stream()
-        .map(attachmentRequest -> {
-          String fileName = attachmentRequest.fileName();
-          String contentType = attachmentRequest.contentType();
-          byte[] bytes = attachmentRequest.bytes();
-
-          BinaryContent binaryContent = new BinaryContent(fileName, (long) bytes.length,
-              contentType, bytes);
-          BinaryContent createdBinaryContent = binaryContentRepository.save(binaryContent);
-          return createdBinaryContent.getId();
-        })
+    List<BinaryContent> attachmentIds = binaryContentCreateRequests.stream()
+        .map(req -> new BinaryContent(req.fileName(), (long) req.bytes().length, req.contentType()))
         .toList();
 
     String content = messageCreate.content();
-    Message message = new Message(
-        content,
-        channelId,
-        authorId,
-        attachmentIds
-    );
+    Message message = new Message(content, channel, user, attachmentIds);
     return messageRepository.save(message);
   }
 
@@ -70,25 +57,25 @@ public class BasicMessageService implements MessageService {
 
   @Override
   public List<Message> findAllByChannelId(UUID channelId) {
-    return messageRepository.findAllByChannelId(channelId).stream().toList();
+    return messageRepository.findAllByChannelId(channelId);
   }
 
+  @Transactional
   @Override
   public Message update(UUID messageId, MessageUpdate request) {
     String newContent = request.newContent();
-    Message foundMessage = messageRepository.findById(messageId)
+    Message message = messageRepository.findById(messageId)
         .orElseThrow(() -> new RuntimeException("해당 메세지를 찾을 수 없습니다."));
-    foundMessage.update(newContent);
-    return messageRepository.save(foundMessage);
+    message.update(newContent);
+    return message;
   }
 
+  @Transactional
   @Override
   public void delete(UUID messageId) {
     Message findMessage = messageRepository.findById(messageId)
         .orElseThrow(() -> new RuntimeException("해당 메세지를 찾을 수 없습니다."));
-    findMessage.getAttachmentIds()
-        .forEach(binaryContentRepository::deleteById);
-    messageRepository.deleteById(messageId);
+    messageRepository.delete(findMessage);
 
   }
 

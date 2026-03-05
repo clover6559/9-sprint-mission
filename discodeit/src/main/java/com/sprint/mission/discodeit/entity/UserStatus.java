@@ -27,7 +27,7 @@ public class UserStatus extends BaseUpdatableEntity {
 
   @JsonBackReference
   @Setter(AccessLevel.PROTECTED)
-  @OneToOne
+  @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id")
   private User user;
 

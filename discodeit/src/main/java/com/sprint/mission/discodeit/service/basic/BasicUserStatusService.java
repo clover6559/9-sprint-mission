@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +22,7 @@ public class BasicUserStatusService implements UserStatusService {
   private final UserStatusRepository userStatusRepository;
   private final UserRepository userRepository;
 
+  @Transactional
   @Override
   public UserStatus create(UserStatusCreate request) {
     User user = userRepository.findById(request.userId())
@@ -42,24 +44,27 @@ public class BasicUserStatusService implements UserStatusService {
     return userStatusRepository.findAll();
   }
 
+  @Transactional
   @Override
   public UserStatus updateByUserId(UUID userId, UserStatusUpdate update) {
     Instant newLastActiveAt = update.newLastActiveAt();
     UserStatus userStatus = userStatusRepository.findByUserId(userId)
         .orElseThrow(() -> new RuntimeException("해당 유저의 읽음 상태를 찾을 수 없습니다. "));
     userStatus.update(newLastActiveAt);
-    return userStatusRepository.save(userStatus);
+    return userStatus;
   }
 
+  @Transactional
   @Override
   public UserStatus update(UUID userStatusId, UserStatusUpdate update) {
     Instant newLastActiveAt = update.newLastActiveAt();
-    UserStatus userStatus = userStatusRepository.findByUserId(userStatusId)
+    UserStatus userStatus = userStatusRepository.findById(userStatusId)
         .orElseThrow(() -> new RuntimeException("읽음 상태를 찾을 수 없습니다."));
     userStatus.update(newLastActiveAt);
-    return userStatusRepository.save(userStatus);
+    return userStatus;
   }
 
+  @Transactional
   @Override
   public void delete(UUID userStatusId) {
     userStatusRepository.findById(userStatusId)
