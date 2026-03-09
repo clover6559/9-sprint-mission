@@ -21,18 +21,10 @@ public class BinaryContent extends BaseUpdatableEntity {
   private String fileName;
   private Long size;
   private String contentType;
-  @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "user_id")
-  private User user;
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "message_id")
-  private Message message;
-
 
   public BinaryContent(String fileName, Long size, String contentType) {
     this.fileName = fileName;
     this.size = size;
     this.contentType = contentType;
   }
-
 }

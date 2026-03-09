@@ -11,7 +11,6 @@ import com.sprint.mission.discodeit.entity.User;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 
 public interface MessageService {
 
@@ -25,7 +24,8 @@ public interface MessageService {
 
   void delete(UUID messageId);
 
-  PageResponse<MessageDto> findSliceByMessage(MessageDto messageDto, Pageable pageable);
+  PageResponse<MessageDto> findSliceByContent(String content, Channel channel, User author,
+      Pageable pageable);
 
 
 }

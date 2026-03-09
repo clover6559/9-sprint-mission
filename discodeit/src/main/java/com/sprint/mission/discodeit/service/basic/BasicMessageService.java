@@ -11,6 +11,7 @@ import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.mapper.BinaryContentMapper;
 import com.sprint.mission.discodeit.mapper.MessageMapper;
+import com.sprint.mission.discodeit.mapper.PageResponseMapper;
 import com.sprint.mission.discodeit.mapper.UserMapper;
 import com.sprint.mission.discodeit.repository.BinaryContentRepository;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
@@ -21,6 +22,7 @@ import com.sprint.mission.discodeit.storage.BinaryContentStorage;
 import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -37,6 +39,7 @@ public class BasicMessageService implements MessageService {
   private final BinaryContentRepository binaryContentRepository;
   private final BinaryContentStorage binaryContentStorage;
   private final MessageMapper messageMapper;
+  private final PageResponseMapper pageResponseMapper;
   private final UserMapper userMapper;
   private final BinaryContentMapper binaryContentMapper;
 
@@ -99,8 +102,12 @@ public class BasicMessageService implements MessageService {
 
   @Transactional(readOnly = true)
   @Override
-  public PageResponse<MessageDto> findSliceByMessage(MessageDto messageDto, Pageable pageable) {
-    return messageRepository.findSliceByMessage(messageDto, pageable)
+  public PageResponse<MessageDto> findSliceByContent(String content, Channel channel, User author,
+      Pageable pageable) {
+    Slice<MessageDto> dtoSlice = messageRepository.findSliceByContentAndChannelAndAuthor(content,
+            channel, author,
+            pageable)
         .map(messageMapper::toDto);
+    return pageResponseMapper.fromSlice(dtoSlice);
   }
 }

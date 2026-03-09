@@ -6,14 +6,13 @@ import com.sprint.mission.discodeit.dto.request.BinaryContentCreate;
 import com.sprint.mission.discodeit.dto.request.MessageCreate;
 import com.sprint.mission.discodeit.dto.request.MessageUpdate;
 import com.sprint.mission.discodeit.dto.response.PageResponse;
-import com.sprint.mission.discodeit.entity.Message;
+import com.sprint.mission.discodeit.entity.Channel;
+import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.service.MessageService;
 import java.util.ArrayList;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
@@ -92,10 +91,12 @@ public class MessageController implements MessageApi {
 
   @GetMapping("/pages")
   public PageResponse<MessageDto> pages(
-      @RequestParam MessageDto messageDto,
+      @RequestParam String content,
+      @RequestParam Channel channel,
+      @RequestParam User author,
       @PageableDefault(size = 50, sort = "createdAt", direction = Direction.DESC) Pageable pageable
   ) {
-    return messageService.findSliceByMessage(messageDto, pageable);
+    return messageService.findSliceByContent(content, channel, author, pageable);
   }
 }
 
