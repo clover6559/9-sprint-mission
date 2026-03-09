@@ -5,9 +5,8 @@ DROP TABLE IF EXISTS user_statuses CASCADE;
 DROP TABLE IF EXISTS users CASCADE;
 DROP TABLE IF EXISTS channels CASCADE;
 DROP TABLE IF EXISTS binary_contents CASCADE;
-
--- 기존 타입이 있다면 지워줍니다
 DROP TYPE IF EXISTS channel_type;
+
 CREATE TABLE binary_contents (
      id UUID PRIMARY KEY,
      created_at TIMESTAMPTZ NOT NULL DEFAULT Now(),
@@ -28,7 +27,7 @@ CREATE TABLE user_statuses (
     id UUID PRIMARY KEY,
     created_at TIMESTAMPTZ  NOT NULL DEFAULT Now(),
     updated_at TIMESTAMPTZ,
-    user_id UUID NOT NULL UNIQUE,
+    user_id UUID NOT NULL UNIQUE NOT NULL DEFAULT Now(),
     last_active_at TIMESTAMPTZ,
     FOREIGN KEY (user_id) REFERENCES users (id)
         ON DELETE CASCADE
@@ -40,7 +39,7 @@ CREATE TABLE channels (
     updated_at TIMESTAMPTZ,
     name VARCHAR(100),
     description VARCHAR(500),
-    type VARCHAR(10) NOT NULL
+    type channel_type NOT NULL
 );
 CREATE TABLE messages (
     id UUID PRIMARY KEY,
@@ -50,7 +49,7 @@ CREATE TABLE messages (
     channel_id UUID NOT NULL,
     FOREIGN KEY (channel_id) REFERENCES channels (id)
         ON DELETE CASCADE,
-    author_id UUID NOT NULL,
+    author_id UUID,
     FOREIGN KEY (author_id) REFERENCES users (id)
         ON DELETE SET NULL
 );

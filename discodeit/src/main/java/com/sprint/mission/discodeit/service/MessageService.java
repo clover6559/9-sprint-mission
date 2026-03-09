@@ -8,6 +8,7 @@ import com.sprint.mission.discodeit.dto.request.MessageUpdate;
 import com.sprint.mission.discodeit.dto.response.PageResponse;
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.User;
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.data.domain.Pageable;
@@ -24,8 +25,6 @@ public interface MessageService {
 
   void delete(UUID messageId);
 
-  PageResponse<MessageDto> findSliceByContent(String content, Channel channel, User author,
-      Pageable pageable);
-
+  PageResponse<MessageDto> getMessages(Instant lastCreatedAt, int size);
 
 }

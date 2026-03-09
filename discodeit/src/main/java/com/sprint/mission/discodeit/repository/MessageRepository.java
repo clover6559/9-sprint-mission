@@ -4,7 +4,7 @@ package com.sprint.mission.discodeit.repository;
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.Message;
 
-import com.sprint.mission.discodeit.entity.User;
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.data.domain.Pageable;
@@ -19,7 +19,7 @@ public interface MessageRepository extends JpaRepository<Message, UUID> {
 
   List<Message> findByChannel(Channel channel);
 
-  Slice<Message> findSliceByContentAndChannelAndAuthor(String content, Channel channel, User author,
-      Pageable pageable);
+  Slice<Message> findSliceBy(Pageable pageable);
 
+  Slice<Message> findSliceByCreatedAtLessThan(Instant lastCreatedAt, Pageable pageable);
 }

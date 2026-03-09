@@ -19,10 +19,13 @@ import com.sprint.mission.discodeit.repository.MessageRepository;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.service.MessageService;
 import com.sprint.mission.discodeit.storage.BinaryContentStorage;
+import java.time.Instant;
 import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -100,14 +103,17 @@ public class BasicMessageService implements MessageService {
     messageRepository.delete(findMessage);
   }
 
-  @Transactional(readOnly = true)
   @Override
-  public PageResponse<MessageDto> findSliceByContent(String content, Channel channel, User author,
-      Pageable pageable) {
-    Slice<MessageDto> dtoSlice = messageRepository.findSliceByContentAndChannelAndAuthor(content,
-            channel, author,
-            pageable)
-        .map(messageMapper::toDto);
-    return pageResponseMapper.fromSlice(dtoSlice);
+  public PageResponse<MessageDto> getMessages(Instant lastCreatedAt, int size) {
+    Pageable pageable = PageRequest.of(0, size, Sort.by("createdAt").descending());
+    Slice<Message> slice;
+    if (lastCreatedAt == null) {
+      slice = messageRepository.findSliceBy(pageable);
+    } else {
+      slice = messageRepository.findSliceByCreatedAtLessThan(lastCreatedAt, pageable);
+    }
+    long totalElements = messageRepository.count();
+    return pageResponseMapper.fromSlice(
+        slice.map(messageMapper::toDto), MessageDto::createdAt, totalElements);
   }
 }

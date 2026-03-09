@@ -89,14 +89,14 @@ public class MessageController implements MessageApi {
     return ResponseEntity.ok(messageList);
   }
 
-  @GetMapping("/pages")
+  @GetMapping
   public PageResponse<MessageDto> pages(
       @RequestParam String content,
       @RequestParam Channel channel,
       @RequestParam User author,
       @PageableDefault(size = 50, sort = "createdAt", direction = Direction.DESC) Pageable pageable
   ) {
-    return messageService.findSliceByContent(content, channel, author, pageable);
+    return messageService.findSliceByAndIdLessThan(content, channel, author, pageable);
   }
 }
 
