@@ -33,7 +33,7 @@ public interface ChannelApi {
           content = @Content(examples = @ExampleObject(value = "Channel already exists"))
       ),
   })
-  ResponseEntity<Channel> createPublic(
+  ResponseEntity<ChannelDto> createPublic(
       @Parameter(
           description = "Channel 생성 정보",
           content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE)
@@ -51,7 +51,7 @@ public interface ChannelApi {
       ),
   })
   @Operation(summary = "비공개 채널 생성")
-  ResponseEntity<Channel> createPrivate(
+  ResponseEntity<ChannelDto> createPrivate(
       @Parameter(
           description = "Channel 생성 정보",
           content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE)
@@ -73,7 +73,7 @@ public interface ChannelApi {
           content = @Content(examples = @ExampleObject("channel을 with name {newname} already exists"))
       )
   })
-  ResponseEntity<Channel> update(
+  ResponseEntity<ChannelDto> update(
       @Parameter(description = "수정할 Channel ID") UUID channelId,
       @Parameter(description = "수정할 Channel 정보") ChannelUpdateRequest request
   );

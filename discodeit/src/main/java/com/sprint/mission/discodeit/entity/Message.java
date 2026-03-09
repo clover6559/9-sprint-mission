@@ -31,7 +31,6 @@ public class Message extends BaseUpdatableEntity {
   @JoinColumn(name = "user_id")
   private User author;
   @OneToMany(mappedBy = "message", cascade = CascadeType.ALL, orphanRemoval = true)
-  @JoinColumn(name = "message_id")
   private List<BinaryContent> attachmentIds;
 
   public Message(String content, Channel channel, User author, List<BinaryContent> attachmentIds) {

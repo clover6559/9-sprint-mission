@@ -1,6 +1,7 @@
 package com.sprint.mission.discodeit.controller;
 
 import com.sprint.mission.discodeit.controller.api.UserApi;
+import com.sprint.mission.discodeit.dto.data.UserStatusDto;
 import com.sprint.mission.discodeit.dto.request.BinaryContentCreate;
 import com.sprint.mission.discodeit.dto.request.UserStatusUpdate;
 import com.sprint.mission.discodeit.dto.request.UserCreate;
@@ -82,11 +83,11 @@ public class UserController implements UserApi {
 
   @PatchMapping("/{userId}/userStatus")
   @Override
-  public ResponseEntity<UserStatus> statusUpdate(
+  public ResponseEntity<UserStatusDto> statusUpdate(
       @PathVariable UUID userId,
       @RequestBody UserStatusUpdate request
   ) throws IllegalArgumentException {
-    UserStatus userStatus = userStatusService.updateByUserId(userId, request);
+    UserStatusDto userStatus = userStatusService.updateByUserId(userId, request);
     return ResponseEntity.ok(userStatus);
   }
 

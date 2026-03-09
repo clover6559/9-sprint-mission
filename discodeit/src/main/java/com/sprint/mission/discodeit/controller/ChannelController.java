@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
-//@RestController
-//@RequestMapping("/api/channels")
+@RestController
+@RequestMapping("/api/channels")
 @RequiredArgsConstructor
 public class ChannelController implements ChannelApi {
 
@@ -24,31 +24,31 @@ public class ChannelController implements ChannelApi {
 
   @PostMapping("/public")
   @Override
-  public ResponseEntity<Channel> createPublic(
+  public ResponseEntity<ChannelDto> createPublic(
       @RequestBody CreatePublic request
   ) {
-    Channel channel = channelService.create(request);
+    ChannelDto channel = channelService.create(request);
     return ResponseEntity.status(HttpStatus.CREATED)
         .body(channel);
   }
 
   @PostMapping("/private")
   @Override
-  public ResponseEntity<Channel> createPrivate(
+  public ResponseEntity<ChannelDto> createPrivate(
       @RequestBody CreatePrivate request
   ) {
-    Channel channel = channelService.create(request);
+    ChannelDto channel = channelService.create(request);
     return ResponseEntity.status(HttpStatus.CREATED)
         .body(channel);
   }
 
   @PatchMapping("/{channelId}")
   @Override
-  public ResponseEntity<Channel> update(
+  public ResponseEntity<ChannelDto> update(
       @PathVariable UUID channelId,
       @RequestBody ChannelUpdateRequest request
   ) {
-    Channel channelUpdate = channelService.update(channelId, request);
+    ChannelDto channelUpdate = channelService.update(channelId, request);
     return ResponseEntity
         .status(HttpStatus.OK)
         .body(channelUpdate);

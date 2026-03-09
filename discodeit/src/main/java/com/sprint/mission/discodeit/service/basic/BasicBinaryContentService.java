@@ -30,6 +30,7 @@ public class BasicBinaryContentService implements BinaryContentService {
     String contentType = create.contentType();
     BinaryContent binaryContent = new BinaryContent(fileName, (long) bytes.length, contentType);
     BinaryContent savedbinaryContent = binaryContentRepository.save(binaryContent);
+    binaryContentStorage.put(binaryContent.getId(), bytes);
     return binaryContentMapper.toDto(savedbinaryContent);
   }
 

@@ -1,5 +1,6 @@
 package com.sprint.mission.discodeit.controller.api;
 
+import com.sprint.mission.discodeit.dto.data.MessageDto;
 import com.sprint.mission.discodeit.dto.request.MessageCreate;
 import com.sprint.mission.discodeit.dto.request.MessageUpdate;
 import com.sprint.mission.discodeit.entity.Message;
@@ -32,7 +33,7 @@ public interface MessageApi {
           content = @Content(examples = @ExampleObject(value = "Message already exists"))
       ),
   })
-  ResponseEntity<Message> create(
+  ResponseEntity<MessageDto> create(
       @Parameter(
           description = "Message 생성 정보",
           content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE)
@@ -83,7 +84,8 @@ public interface MessageApi {
       )
   })
   @Operation(summary = "해당 채널의 메세지 조회")
-  ResponseEntity<List<Message>> findByChannelId(
+  ResponseEntity<List<MessageDto>> findByChannelId(
       @Parameter(description = "조회할 Channel ID") UUID channelId
   );
+  
 }

@@ -1,5 +1,6 @@
 package com.sprint.mission.discodeit.controller.api;
 
+import com.sprint.mission.discodeit.dto.data.BinaryContentDto;
 import com.sprint.mission.discodeit.entity.BinaryContent;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -23,7 +24,7 @@ public interface BinaryContentApi {
           content = @Content(array = @ArraySchema(schema = @Schema(implementation = BinaryContent.class)))
       )
   })
-  ResponseEntity<List<BinaryContent>> findAllByIdIn(
+  ResponseEntity<List<BinaryContentDto>> findAllByIdIn(
       @Parameter(description = "조회할 BinaryContent Ids") List<UUID> binaryContentIds
   );
 
@@ -35,7 +36,7 @@ public interface BinaryContentApi {
       ),
       @ApiResponse(responseCode = "404", description = "파일을 찾을 수 없음")
   })
-  ResponseEntity<BinaryContent> find(
+  ResponseEntity<BinaryContentDto> find(
       @Parameter(description = "조회할 BinaryContent ID") UUID binaryContentId
   );
 

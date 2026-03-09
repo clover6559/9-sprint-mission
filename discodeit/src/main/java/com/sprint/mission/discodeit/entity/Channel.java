@@ -39,8 +39,8 @@ public class Channel extends BaseUpdatableEntity {
   @Enumerated(EnumType.STRING)
   private ChannelType type;
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "owner_id")
-  private User owner;
+  @JoinColumn(name = "user_id")
+  private User user;
   @OneToMany(mappedBy = "channel", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Message> messages = new ArrayList<>();
 
