@@ -22,10 +22,8 @@ import com.sprint.mission.discodeit.storage.BinaryContentStorage;
 import java.time.Instant;
 import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -78,6 +76,7 @@ public class BasicMessageService implements MessageService {
         .orElseThrow(() -> new RuntimeException("해당 메시지를 찾을 수 없습니다."));
   }
 
+
   @Override
   public List<MessageDto> findAllByChannelId(UUID channelId) {
     return messageRepository.findAllByChannelId(channelId).stream()
@@ -104,16 +103,27 @@ public class BasicMessageService implements MessageService {
   }
 
   @Override
-  public PageResponse<MessageDto> getMessages(Instant lastCreatedAt, int size) {
-    Pageable pageable = PageRequest.of(0, size, Sort.by("createdAt").descending());
-    Slice<Message> slice;
-    if (lastCreatedAt == null) {
-      slice = messageRepository.findSliceBy(pageable);
+  public PageResponse<MessageDto> getMessages(UUID channelId, Instant cursor, Pageable pageable) {
+    Slice<Message> messageSlice;
+    if (cursor == null) {
+      messageSlice = messageRepository.findByChannelIdOrderByCreatedAtDesc(channelId, pageable);
     } else {
-      slice = messageRepository.findSliceByCreatedAtLessThan(lastCreatedAt, pageable);
+      messageSlice = messageRepository.findByChannelIdAndCreatedAtBeforeOrderByCreatedAtDesc(
+          channelId, cursor, pageable);
     }
-    long totalElements = messageRepository.count();
-    return pageResponseMapper.fromSlice(
-        slice.map(messageMapper::toDto), MessageDto::createdAt, totalElements);
+    List<MessageDto> content = messageSlice.getContent().stream()
+        .map(messageMapper::toDto)
+        .toList();
+    Instant nextCursor = null;
+    if (messageSlice.hasNext() && !content.isEmpty()) {
+      nextCursor = content.get(content.size() - 1).createdAt();
+    }
+    return new PageResponse<>(
+        content,
+        nextCursor,
+        messageSlice.getSize(),
+        messageSlice.hasNext(),
+        null);
   }
+
 }

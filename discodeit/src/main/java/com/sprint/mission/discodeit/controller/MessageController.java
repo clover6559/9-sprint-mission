@@ -6,15 +6,13 @@ import com.sprint.mission.discodeit.dto.request.BinaryContentCreate;
 import com.sprint.mission.discodeit.dto.request.MessageCreate;
 import com.sprint.mission.discodeit.dto.request.MessageUpdate;
 import com.sprint.mission.discodeit.dto.response.PageResponse;
-import com.sprint.mission.discodeit.entity.Channel;
-import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.service.MessageService;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort.Direction;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -80,24 +78,18 @@ public class MessageController implements MessageApi {
     return ResponseEntity.noContent().build();
   }
 
-  @GetMapping
-  @Override
-  public ResponseEntity<List<MessageDto>> findByChannelId(
-      @RequestParam UUID channelId
-  ) {
-    List<MessageDto> messageList = messageService.findAllByChannelId(channelId);
-    return ResponseEntity.ok(messageList);
-  }
 
   @GetMapping
-  public PageResponse<MessageDto> pages(
-      @RequestParam String content,
-      @RequestParam Channel channel,
-      @RequestParam User author,
-      @PageableDefault(size = 50, sort = "createdAt", direction = Direction.DESC) Pageable pageable
+  @Override
+  public ResponseEntity<PageResponse<MessageDto>> findByChannelId(
+      @RequestParam UUID channelId,
+      @RequestParam(required = false) Instant cursor,
+      @ParameterObject Pageable pageable
   ) {
-    return messageService.findSliceByAndIdLessThan(content, channel, author, pageable);
+    PageResponse<MessageDto> response = messageService.getMessages(channelId, cursor, pageable);
+    return ResponseEntity.ok(response);
   }
+
 }
 
 

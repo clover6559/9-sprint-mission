@@ -3,6 +3,7 @@ package com.sprint.mission.discodeit.controller.api;
 import com.sprint.mission.discodeit.dto.data.MessageDto;
 import com.sprint.mission.discodeit.dto.request.MessageCreate;
 import com.sprint.mission.discodeit.dto.request.MessageUpdate;
+import com.sprint.mission.discodeit.dto.response.PageResponse;
 import com.sprint.mission.discodeit.entity.Message;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -13,8 +14,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
@@ -84,8 +88,10 @@ public interface MessageApi {
       )
   })
   @Operation(summary = "해당 채널의 메세지 조회")
-  ResponseEntity<List<MessageDto>> findByChannelId(
-      @Parameter(description = "조회할 Channel ID") UUID channelId
+  ResponseEntity<PageResponse<MessageDto>> findByChannelId(
+      @Parameter(description = "조회할 Channel ID") UUID channelId,
+      @Parameter(description = "조회할 Channel ID", required = false) Instant cursor,
+      @ParameterObject Pageable pageable
   );
-  
+
 }

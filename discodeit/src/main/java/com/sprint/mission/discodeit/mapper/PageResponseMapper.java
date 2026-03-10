@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class PageResponseMapper {
 
-  public <T> PageResponse<T> fromSlice(Slice<T> slice, Function<T, Object> cursorExtractor,
+  public <T> PageResponse<T> from(Slice<T> slice, Function<T, Object> cursorExtractor,
       Long totalElements) {
     Object nextCursor = null;
     if (slice.hasNext() && !slice.getContent().isEmpty()) {

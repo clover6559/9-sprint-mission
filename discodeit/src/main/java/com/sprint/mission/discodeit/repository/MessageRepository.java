@@ -21,5 +21,9 @@ public interface MessageRepository extends JpaRepository<Message, UUID> {
 
   Slice<Message> findSliceBy(Pageable pageable);
 
-  Slice<Message> findSliceByCreatedAtLessThan(Instant lastCreatedAt, Pageable pageable);
+  Slice<Message> findByChannelIdAndCreatedAtBeforeOrderByCreatedAtDesc(UUID channelId,
+      Instant lastCreatedAt, Pageable pageable);
+
+  Slice<Message> findByChannelIdOrderByCreatedAtDesc(UUID channelId, Pageable pageable
+  );
 }

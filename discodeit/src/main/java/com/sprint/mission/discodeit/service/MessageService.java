@@ -6,8 +6,6 @@ import com.sprint.mission.discodeit.dto.request.MessageCreate;
 import com.sprint.mission.discodeit.dto.request.MessageUpdate;
 
 import com.sprint.mission.discodeit.dto.response.PageResponse;
-import com.sprint.mission.discodeit.entity.Channel;
-import com.sprint.mission.discodeit.entity.User;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
@@ -25,6 +23,8 @@ public interface MessageService {
 
   void delete(UUID messageId);
 
-  PageResponse<MessageDto> getMessages(Instant lastCreatedAt, int size);
+  PageResponse<MessageDto> getMessages(UUID channelId, Instant cursor, Pageable pageable);
 
+//  PageResponse<MessageDto> findSliceByAndIdLessThan(String content, Channel channel, User author,
+//      Pageable pageable);
 }
