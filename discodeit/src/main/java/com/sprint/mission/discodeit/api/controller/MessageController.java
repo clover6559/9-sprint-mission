@@ -1,10 +1,10 @@
-package com.sprint.mission.discodeit.controller;
+package com.sprint.mission.discodeit.api.controller;
 
-import com.sprint.mission.discodeit.controller.api.MessageApi;
+import com.sprint.mission.discodeit.api.MessageApi;
 import com.sprint.mission.discodeit.dto.data.MessageDto;
-import com.sprint.mission.discodeit.dto.request.BinaryContentCreate;
-import com.sprint.mission.discodeit.dto.request.MessageCreate;
-import com.sprint.mission.discodeit.dto.request.MessageUpdate;
+import com.sprint.mission.discodeit.dto.request.BinaryContentCreateRequest;
+import com.sprint.mission.discodeit.dto.request.MessageCreateRequest;
+import com.sprint.mission.discodeit.dto.request.MessageUpdateRequest;
 import com.sprint.mission.discodeit.dto.response.PageResponse;
 import com.sprint.mission.discodeit.service.MessageService;
 import java.time.Instant;
@@ -13,9 +13,7 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -34,15 +32,15 @@ public class MessageController implements MessageApi {
       consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}
   )
   @Override
-  public ResponseEntity<MessageDto> create(
-      @RequestPart("messageCreateRequest") MessageCreate messageCreate,
+  public MessageDto create(
+      @RequestPart("messageCreateRequest") MessageCreateRequest messageCreateRequest,
       @RequestPart(value = "attachments", required = false) List<MultipartFile> attachments
   ) {
-    List<BinaryContentCreate> attachmentRequests = Optional.ofNullable(attachments)
+    List<BinaryContentCreateRequest> attachmentRequests = Optional.ofNullable(attachments)
         .map(files -> files.stream()
             .map(file -> {
               try {
-                return new BinaryContentCreate(
+                return new BinaryContentCreateRequest(
                     file.getOriginalFilename(),
                     file.getContentType(),
                     file.getBytes()
@@ -53,41 +51,35 @@ public class MessageController implements MessageApi {
             })
             .toList())
         .orElse(new ArrayList<>());
-    MessageDto createdMessage = messageService.create(messageCreate, attachmentRequests);
-    return ResponseEntity
-        .status(HttpStatus.CREATED)
-        .body(createdMessage);
+    return messageService.create(messageCreateRequest, attachmentRequests);
   }
 
   @PatchMapping("/{messageId}")
   @Override
-  public ResponseEntity<Void> update(
+  public MessageDto update(
       @PathVariable UUID messageId,
-      @RequestBody MessageUpdate messageUpdate
+      @RequestBody MessageUpdateRequest messageUpdateRequest
   ) {
-    messageService.update(messageId, messageUpdate);
-    return ResponseEntity.ok().build();
+    return messageService.update(messageId, messageUpdateRequest);
   }
 
   @DeleteMapping("/{messageId}")
   @Override
-  public ResponseEntity<Void> delete(
+  public void delete(
       @PathVariable UUID messageId
   ) {
     messageService.delete(messageId);
-    return ResponseEntity.noContent().build();
   }
 
 
   @GetMapping
   @Override
-  public ResponseEntity<PageResponse<MessageDto>> findByChannelId(
+  public PageResponse<MessageDto> findByChannelId(
       @RequestParam UUID channelId,
       @RequestParam(required = false) Instant cursor,
       @ParameterObject Pageable pageable
   ) {
-    PageResponse<MessageDto> response = messageService.getMessages(channelId, cursor, pageable);
-    return ResponseEntity.ok(response);
+    return messageService.getMessages(channelId, cursor, pageable);
   }
 
 }

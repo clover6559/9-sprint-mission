@@ -2,11 +2,10 @@ package com.sprint.mission.discodeit.service.basic;
 
 import com.sprint.mission.discodeit.dto.data.ChannelDto;
 import com.sprint.mission.discodeit.dto.request.ChannelUpdateRequest;
-import com.sprint.mission.discodeit.dto.request.CreatePrivate;
-import com.sprint.mission.discodeit.dto.request.CreatePublic;
+import com.sprint.mission.discodeit.dto.request.CreatePrivateChannelRequest;
+import com.sprint.mission.discodeit.dto.request.CreatePublicChannelRequest;
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.Channel.ChannelType;
-import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.entity.ReadStatus;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.mapper.ChannelMapper;
@@ -34,7 +33,7 @@ public class BasicChannelService implements ChannelService {
 
   @Transactional
   @Override
-  public ChannelDto create(CreatePublic request) {
+  public ChannelDto create(CreatePublicChannelRequest request) {
     String name = request.name();
     String description = request.description();
     Channel channel = new Channel(ChannelType.PUBLIC, name, description);
@@ -44,7 +43,7 @@ public class BasicChannelService implements ChannelService {
 
   @Transactional
   @Override
-  public ChannelDto create(CreatePrivate request) {
+  public ChannelDto create(CreatePrivateChannelRequest request) {
     Channel channel = new Channel(ChannelType.PRIVATE, null, null);
     Channel createdChannel = channelRepository.save(channel);
     List<ReadStatus> readStatuses = request.participantIds().stream()

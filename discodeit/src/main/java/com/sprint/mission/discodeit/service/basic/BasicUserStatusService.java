@@ -1,11 +1,10 @@
 package com.sprint.mission.discodeit.service.basic;
 
 import com.sprint.mission.discodeit.dto.data.UserStatusDto;
-import com.sprint.mission.discodeit.dto.request.UserStatusCreate;
-import com.sprint.mission.discodeit.dto.request.UserStatusUpdate;
+import com.sprint.mission.discodeit.dto.request.UserStatusCreateRequest;
+import com.sprint.mission.discodeit.dto.request.UserStatusUpdateRequest;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.entity.UserStatus;
-import com.sprint.mission.discodeit.mapper.UserMapper;
 import com.sprint.mission.discodeit.mapper.UserStatusMapper;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.repository.UserStatusRepository;
@@ -28,7 +27,7 @@ public class BasicUserStatusService implements UserStatusService {
 
   @Transactional
   @Override
-  public UserStatusDto create(UserStatusCreate request) {
+  public UserStatusDto create(UserStatusCreateRequest request) {
     User user = userRepository.findById(request.userId())
         .orElseThrow(() -> new IllegalArgumentException("해당 유저를 찾을 수 없습니다."));
     Instant lastActiveAt = request.lastActiveAt();
@@ -53,7 +52,7 @@ public class BasicUserStatusService implements UserStatusService {
 
   @Transactional
   @Override
-  public UserStatusDto updateByUserId(UUID userId, UserStatusUpdate update) {
+  public UserStatusDto updateByUserId(UUID userId, UserStatusUpdateRequest update) {
     Instant newLastActiveAt = update.newLastActiveAt();
     UserStatus userStatus = userStatusRepository.findByUserId(userId)
         .orElseThrow(() -> new RuntimeException("해당 유저의 읽음 상태를 찾을 수 없습니다. "));
@@ -63,7 +62,7 @@ public class BasicUserStatusService implements UserStatusService {
 
   @Transactional
   @Override
-  public UserStatusDto update(UUID userStatusId, UserStatusUpdate update) {
+  public UserStatusDto update(UUID userStatusId, UserStatusUpdateRequest update) {
     Instant newLastActiveAt = update.newLastActiveAt();
     UserStatus userStatus = userStatusRepository.findById(userStatusId)
         .orElseThrow(() -> new RuntimeException("읽음 상태를 찾을 수 없습니다."));

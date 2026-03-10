@@ -5,6 +5,6 @@ import java.time.Instant;
 import java.util.UUID;
 
 
-public record UserStatusCreate(UUID userId, Instant lastActiveAt) {
+public record UserStatusCreateRequest(UUID userId, Instant lastActiveAt) {
 
 }

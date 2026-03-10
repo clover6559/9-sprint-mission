@@ -2,7 +2,7 @@ package com.sprint.mission.discodeit.dto.request;
 
 import java.util.UUID;
 
-public record UserFind(boolean userStatus, UUID userId, String userName, String email) {
+public record UserFindRequest(boolean userStatus, UUID userId, String userName, String email) {
 
   @Override
   public String toString() {

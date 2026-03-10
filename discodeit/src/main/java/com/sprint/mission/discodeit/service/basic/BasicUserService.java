@@ -1,7 +1,7 @@
 package com.sprint.mission.discodeit.service.basic;
 
-import com.sprint.mission.discodeit.dto.request.BinaryContentCreate;
-import com.sprint.mission.discodeit.dto.request.UserCreate;
+import com.sprint.mission.discodeit.dto.request.BinaryContentCreateRequest;
+import com.sprint.mission.discodeit.dto.request.UserCreateRequest;
 import com.sprint.mission.discodeit.dto.data.UserDto;
 import com.sprint.mission.discodeit.dto.request.UserUpdateRequest;
 import com.sprint.mission.discodeit.entity.BinaryContent;
@@ -35,10 +35,10 @@ public class BasicUserService implements UserService {
 
   @Transactional
   @Override
-  public UserDto create(UserCreate userCreate,
-      Optional<BinaryContentCreate> optionalProfileCreateRequest) {
-    String username = userCreate.username();
-    String email = userCreate.email();
+  public UserDto create(UserCreateRequest userCreateRequest,
+      Optional<BinaryContentCreateRequest> optionalProfileCreateRequest) {
+    String username = userCreateRequest.username();
+    String email = userCreateRequest.email();
     if (userRepository.existsByEmail(email)) {
       throw new IllegalArgumentException("User with email " + email + " already exists");
     }
@@ -58,7 +58,7 @@ public class BasicUserService implements UserService {
           return binaryContent;
         })
         .orElse(null);
-    String password = userCreate.password();
+    String password = userCreateRequest.password();
 
     User user = new User(username, email, password, nullableProfile);
     Instant now = Instant.now();
@@ -85,7 +85,7 @@ public class BasicUserService implements UserService {
   @Transactional
   @Override
   public UserDto update(UUID userId, UserUpdateRequest userUpdate,
-      Optional<BinaryContentCreate> optionalProfileCreateRequest) {
+      Optional<BinaryContentCreateRequest> optionalProfileCreateRequest) {
     User user = userRepository.findById(userId)
         .orElseThrow(() -> new NoSuchElementException("User with id " + userId + " not found"));
 

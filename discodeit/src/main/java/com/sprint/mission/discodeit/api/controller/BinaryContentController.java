@@ -1,8 +1,7 @@
-package com.sprint.mission.discodeit.controller;
+package com.sprint.mission.discodeit.api.controller;
 
-import com.sprint.mission.discodeit.controller.api.BinaryContentApi;
+import com.sprint.mission.discodeit.api.BinaryContentApi;
 import com.sprint.mission.discodeit.dto.data.BinaryContentDto;
-import com.sprint.mission.discodeit.entity.BinaryContent;
 import com.sprint.mission.discodeit.service.BinaryContentService;
 import com.sprint.mission.discodeit.storage.BinaryContentStorage;
 import lombok.RequiredArgsConstructor;
@@ -23,24 +22,18 @@ public class BinaryContentController implements BinaryContentApi {
 
   @GetMapping
   @Override
-  public ResponseEntity<List<BinaryContentDto>> findAllByIdIn(
+  public List<BinaryContentDto> findAllByIdIn(
       @RequestParam("binaryContentIds") List<UUID> binaryContentIds
   ) {
-    List<BinaryContentDto> binaryContents = binaryContentService.findAllByIdIn(binaryContentIds);
-    return ResponseEntity
-        .status(HttpStatus.OK)
-        .body(binaryContents);
+    return binaryContentService.findAllByIdIn(binaryContentIds);
   }
 
   @GetMapping("/{binaryContentId}")
   @Override
-  public ResponseEntity<BinaryContentDto> find(
+  public BinaryContentDto find(
       @PathVariable UUID binaryContentId
   ) throws RuntimeException {
-    BinaryContentDto binaryContent = binaryContentService.find(binaryContentId);
-    return ResponseEntity
-        .status(HttpStatus.OK)
-        .body(binaryContent);
+    return binaryContentService.find(binaryContentId);
   }
 
   @GetMapping("/{binaryContentId}/download")

@@ -1,7 +1,8 @@
 package com.sprint.mission.discodeit.dto.request;
 
+
 import java.time.Instant;
 
-public record ReadStatusUpdate(Instant newLastReadAt) {
+public record UserStatusUpdateRequest(Instant newLastActiveAt) {
 
 }

@@ -1,9 +1,9 @@
 package com.sprint.mission.discodeit.service.basic;
 
 import com.sprint.mission.discodeit.dto.data.MessageDto;
-import com.sprint.mission.discodeit.dto.request.BinaryContentCreate;
-import com.sprint.mission.discodeit.dto.request.MessageCreate;
-import com.sprint.mission.discodeit.dto.request.MessageUpdate;
+import com.sprint.mission.discodeit.dto.request.BinaryContentCreateRequest;
+import com.sprint.mission.discodeit.dto.request.MessageCreateRequest;
+import com.sprint.mission.discodeit.dto.request.MessageUpdateRequest;
 import com.sprint.mission.discodeit.dto.response.PageResponse;
 import com.sprint.mission.discodeit.entity.BinaryContent;
 import com.sprint.mission.discodeit.entity.Channel;
@@ -47,14 +47,14 @@ public class BasicMessageService implements MessageService {
 
   @Transactional
   @Override
-  public MessageDto create(MessageCreate messageCreate,
-      List<BinaryContentCreate> binaryContentCreateRequests) {
-    Channel channel = channelRepository.findById(messageCreate.channelId())
+  public MessageDto create(MessageCreateRequest messageCreateRequest,
+      List<BinaryContentCreateRequest> binaryContentCreateRequestRequests) {
+    Channel channel = channelRepository.findById(messageCreateRequest.channelId())
         .orElseThrow(() -> new NoSuchElementException("채널을 찾을 수 없습니다."));
-    User user = userRepository.findById(messageCreate.authorId())
+    User user = userRepository.findById(messageCreateRequest.authorId())
         .orElseThrow(() -> new NoSuchElementException("유저를 찾을 수 없습니다."));
 
-    List<BinaryContent> attachments = binaryContentCreateRequests.stream()
+    List<BinaryContent> attachments = binaryContentCreateRequestRequests.stream()
         .map(req -> {
           BinaryContent binaryContent = new BinaryContent(
               req.fileName(), (long) req.bytes().length, req.contentType());
@@ -64,7 +64,7 @@ public class BasicMessageService implements MessageService {
         })
         .toList();
     Message message = new Message(
-        messageCreate.content(), channel, user, attachments);
+        messageCreateRequest.content(), channel, user, attachments);
     Message savedMessage = messageRepository.save(message);
     return messageMapper.toDto(savedMessage);
   }
@@ -86,7 +86,7 @@ public class BasicMessageService implements MessageService {
 
   @Transactional
   @Override
-  public MessageDto update(UUID messageId, MessageUpdate request) {
+  public MessageDto update(UUID messageId, MessageUpdateRequest request) {
     String newContent = request.newContent();
     Message message = messageRepository.findById(messageId)
         .orElseThrow(() -> new RuntimeException("해당 메세지를 찾을 수 없습니다."));
