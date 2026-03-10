@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.UUID;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface MessageRepository extends JpaRepository<Message, UUID> {
@@ -21,9 +22,11 @@ public interface MessageRepository extends JpaRepository<Message, UUID> {
 
   Slice<Message> findSliceBy(Pageable pageable);
 
+  @EntityGraph(attributePaths = {"author", "attachment"})
   Slice<Message> findByChannelIdAndCreatedAtBeforeOrderByCreatedAtDesc(UUID channelId,
       Instant lastCreatedAt, Pageable pageable);
 
+  @EntityGraph(attributePaths = {"author", "attachment"})
   Slice<Message> findByChannelIdOrderByCreatedAtDesc(UUID channelId, Pageable pageable
   );
 }
