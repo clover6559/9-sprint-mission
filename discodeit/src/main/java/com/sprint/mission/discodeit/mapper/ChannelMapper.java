@@ -10,26 +10,33 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-@Component
-@RequiredArgsConstructor
-public class ChannelMapper {
+@Mapper(componentModel = "spring")
+public abstract class ChannelMapper {
 
-  private final MessageRepository messageRepository;
-  private final ReadStatusRepository readStatusRepository;
-  private final UserMapper userMapper;
+  @Autowired
+  protected MessageRepository messageRepository;
+  @Autowired
+  protected ReadStatusRepository readStatusRepository;
 
-  public ChannelDto toDto(Channel channel) {
-    List<UUID> participantIds = readStatusRepository.findAllByChannelId(channel.getId()).stream()
+  @Mapping(target = "participantIds", expression = "java(fetchParticipantIds(channel))")
+  @Mapping(target = "lastMessageAt", expression = "java(fetchLastMessageAt(channel))")
+  public abstract ChannelDto toDto(Channel channel);
+
+  protected List<UUID> fetchParticipantIds(Channel channel) {
+    return readStatusRepository.findAllByChannelId(channel.getId()).stream()
         .map(readStatus -> readStatus.getUser().getId())
         .toList();
-    Instant lastMessageAt = messageRepository.findByChannel(channel).stream()
+  }
+
+  protected Instant fetchLastMessageAt(Channel channel) {
+    return messageRepository.findByChannel(channel).stream()
         .map(Message::getCreatedAt)
         .max(Comparator.naturalOrder())
         .orElse(channel.getUpdatedAt());
-    return new ChannelDto(channel.getId(), channel.getType(), channel.getName(),
-        channel.getDescription(), participantIds, lastMessageAt);
   }
-
 }

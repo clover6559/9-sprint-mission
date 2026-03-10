@@ -4,15 +4,13 @@ import com.sprint.mission.discodeit.dto.data.BinaryContentDto;
 import com.sprint.mission.discodeit.entity.BinaryContent;
 import com.sprint.mission.discodeit.storage.BinaryContentStorage;
 import lombok.RequiredArgsConstructor;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.springframework.stereotype.Component;
 
-@Component
-@RequiredArgsConstructor
-public class BinaryContentMapper {
+@Mapper(componentModel = "spring")
+public interface BinaryContentMapper {
 
-  public BinaryContentDto toDto(BinaryContent binaryContent) {
-    return new BinaryContentDto(
-        binaryContent.getId(), binaryContent.getFileName(), binaryContent.getSize(),
-        binaryContent.getContentType());
-  }
+  BinaryContentDto toDto(BinaryContent binaryContent);
+
 }

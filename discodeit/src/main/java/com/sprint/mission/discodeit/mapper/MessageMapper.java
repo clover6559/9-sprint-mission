@@ -6,22 +6,15 @@ import com.sprint.mission.discodeit.dto.data.UserDto;
 import com.sprint.mission.discodeit.entity.Message;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.springframework.stereotype.Component;
 
-@Component
-@RequiredArgsConstructor
-public class MessageMapper {
+@Mapper(componentModel = "spring", uses = {BinaryContentMapper.class, UserMapper.class})
+public interface MessageMapper {
 
-  private final BinaryContentMapper binaryContentMapper;
-  private final UserMapper userMapper;
-
-  public MessageDto toDto(Message message) {
-    UserDto authorDto = userMapper.toDto(message.getAuthor());
-    List<BinaryContentDto> attachmentDto = message.getAttachmentIds().stream()
-        .map(binaryContentMapper::toDto)
-        .toList();
-    return new MessageDto(message.getId(), message.getCreatedAt(), message.getUpdatedAt(),
-        message.getContent(), message.getChannel().getId(), authorDto, attachmentDto);
-  }
+  @Mapping(target = "attachments", source = "attachmentIds")
+  @Mapping(target = "channelId", source = "channel.id")
+  MessageDto toDto(Message message);
 
 }

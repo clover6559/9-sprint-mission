@@ -7,7 +7,6 @@ import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Component;
 
 @Component
-@RequiredArgsConstructor
 public class PageResponseMapper {
 
   public <T> PageResponse<T> from(Slice<T> slice, Function<T, Object> cursorExtractor,
@@ -19,6 +18,6 @@ public class PageResponseMapper {
     }
 
     return new PageResponse<>(slice.getContent(), nextCursor, slice.getSize(), slice.hasNext(),
-        slice.stream().count());
+        (long) slice.getNumberOfElements());
   }
 }
