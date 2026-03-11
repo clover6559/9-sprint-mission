@@ -9,11 +9,9 @@ import java.time.Instant;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
-import lombok.RequiredArgsConstructor;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 @Mapper(componentModel = "spring")
 public abstract class ChannelMapper {
@@ -34,9 +32,8 @@ public abstract class ChannelMapper {
   }
 
   protected Instant fetchLastMessageAt(Channel channel) {
-    return messageRepository.findByChannel(channel).stream()
+    return messageRepository.findTopByChannelOrderByCreatedAtDesc(channel)
         .map(Message::getCreatedAt)
-        .max(Comparator.naturalOrder())
         .orElse(channel.getUpdatedAt());
   }
 }

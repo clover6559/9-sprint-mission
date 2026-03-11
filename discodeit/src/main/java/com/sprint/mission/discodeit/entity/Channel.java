@@ -16,9 +16,6 @@ import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 
-import java.io.Serializable;
-import java.time.Instant;
-import java.util.UUID;
 import lombok.NoArgsConstructor;
 
 @Entity
@@ -33,14 +30,18 @@ public class Channel extends BaseUpdatableEntity {
 
   @Column(length = 100)
   private String name;
+
   @Column(length = 500)
   private String description;
+
   @Column(length = 10)
   @Enumerated(EnumType.STRING)
   private ChannelType type;
+
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id")
   private User user;
+
   @OneToMany(mappedBy = "channel", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Message> messages = new ArrayList<>();
 

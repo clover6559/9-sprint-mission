@@ -51,7 +51,6 @@ public class BasicReadStatusService implements ReadStatusService {
     return readStatusRepository.findAllByUserId(userId)
         .stream().map(readStatusMapper::toDto)
         .toList();
-
   }
 
   @Override
@@ -78,6 +77,5 @@ public class BasicReadStatusService implements ReadStatusService {
       throw new NoSuchElementException("해당 읽음 상태를 찾을 수 없습니다.");
     }
     readStatusRepository.deleteById(readStatusId);
-
   }
 }

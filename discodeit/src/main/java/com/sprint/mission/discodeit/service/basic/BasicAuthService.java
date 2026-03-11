@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.NoSuchElementException;
 import java.util.UUID;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -16,6 +17,7 @@ public class BasicAuthService implements AuthService {
 
   private final UserRepository userRepository;
 
+  @Transactional
   @Override
   public User login(LoginDto loginRequest) {
     String username = loginRequest.username();
@@ -27,7 +29,6 @@ public class BasicAuthService implements AuthService {
     if (!user.getPassword().equals(password)) {
       throw new IllegalArgumentException("Wrong password");
     }
-
     return user;
   }
 

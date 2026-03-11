@@ -45,7 +45,6 @@ public class User extends BaseUpdatableEntity {
     this.email = email;
     this.password = password;
     this.profile = profile;
-
   }
 
   public void update(String newUsername, String newEmail, String newPassword,
@@ -61,7 +60,6 @@ public class User extends BaseUpdatableEntity {
     }
     if (newProfile != null && !newProfile.equals(this.profile)) {
       this.profile = newProfile;
-
     }
   }
 }

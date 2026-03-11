@@ -55,7 +55,7 @@ public class BasicUserStatusService implements UserStatusService {
   public UserStatusDto updateByUserId(UUID userId, UserStatusUpdateRequest update) {
     Instant newLastActiveAt = update.newLastActiveAt();
     UserStatus userStatus = userStatusRepository.findByUserId(userId)
-        .orElseThrow(() -> new RuntimeException("해당 유저의 읽음 상태를 찾을 수 없습니다. "));
+        .orElseThrow(() -> new RuntimeException("해당 유저의 읽음 상태를 찾을 수 없습니다."));
     userStatus.update(newLastActiveAt);
     return userStatusMapper.toDto(userStatus);
   }

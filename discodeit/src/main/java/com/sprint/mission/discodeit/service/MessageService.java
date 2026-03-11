@@ -26,6 +26,4 @@ public interface MessageService {
 
   PageResponse<MessageDto> getMessages(UUID channelId, Instant cursor, Pageable pageable);
 
-//  PageResponse<MessageDto> findSliceByAndIdLessThan(String content, Channel channel, User author,
-//      Pageable pageable);
 }

@@ -6,6 +6,7 @@ import com.sprint.mission.discodeit.entity.Message;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -16,11 +17,7 @@ public interface MessageRepository extends JpaRepository<Message, UUID> {
 
   List<Message> findAllByChannelId(UUID channelId);
 
-  void deleteAllByChannelId(UUID channelId);
-
-  List<Message> findByChannel(Channel channel);
-
-  Slice<Message> findSliceBy(Pageable pageable);
+  Optional<Message> findTopByChannelOrderByCreatedAtDesc(Channel channel);
 
   @EntityGraph(attributePaths = {"author", "attachment"})
   Slice<Message> findByChannelIdAndCreatedAtBeforeOrderByCreatedAtDesc(UUID channelId,

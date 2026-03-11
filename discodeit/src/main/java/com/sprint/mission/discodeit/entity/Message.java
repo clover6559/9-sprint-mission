@@ -25,14 +25,18 @@ public class Message extends BaseUpdatableEntity {
 
   @Column(columnDefinition = "TEXT")
   private String content;
+
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "channel_id")
   private Channel channel;
+
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "author_id")
   private User author;
+
   @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-  @JoinTable(name = "message_attachments", joinColumns = @JoinColumn(name = "message_id"), inverseJoinColumns = @JoinColumn(name = "attachment_id"))
+  @JoinTable(name = "message_attachments", joinColumns = @JoinColumn(name = "message_id"),
+      inverseJoinColumns = @JoinColumn(name = "attachment_id"))
   private List<BinaryContent> attachmentIds;
 
   public Message(String content, Channel channel, User author, List<BinaryContent> attachmentIds) {
@@ -46,6 +50,5 @@ public class Message extends BaseUpdatableEntity {
     if (newContent != null && !newContent.equals(this.content)) {
       this.content = newContent;
     }
-
   }
 }

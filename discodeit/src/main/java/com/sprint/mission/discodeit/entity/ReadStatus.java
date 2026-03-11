@@ -10,9 +10,7 @@ import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 
-import java.io.Serializable;
 import java.time.Instant;
-import java.util.UUID;
 import lombok.NoArgsConstructor;
 
 @Entity
@@ -24,9 +22,11 @@ public class ReadStatus extends BaseUpdatableEntity {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id")
   private User user;
+
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "channel_id")
   private Channel channel;
+
   @Column(name = "last_read_at", nullable = false)
   private Instant lastReadAt;
 

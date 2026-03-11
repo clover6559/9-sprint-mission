@@ -76,8 +76,7 @@ public class BasicUserService implements UserService {
 
   @Override
   public List<UserDto> findAll() {
-    return userRepository.findAll()
-        .stream()
+    return userRepository.findAll().stream()
         .map(userMapper::toDto)
         .toList();
   }
@@ -120,7 +119,7 @@ public class BasicUserService implements UserService {
   @Transactional
   @Override
   public void delete(UUID userId) {
-    if (userRepository.existsById(userId)) {
+    if (!userRepository.existsById(userId)) {
       throw new NoSuchElementException("User with id " + userId + " not found");
     }
     userRepository.deleteById(userId);

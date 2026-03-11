@@ -9,10 +9,7 @@ import com.sprint.mission.discodeit.entity.BinaryContent;
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.entity.User;
-import com.sprint.mission.discodeit.mapper.BinaryContentMapper;
 import com.sprint.mission.discodeit.mapper.MessageMapper;
-import com.sprint.mission.discodeit.mapper.PageResponseMapper;
-import com.sprint.mission.discodeit.mapper.UserMapper;
 import com.sprint.mission.discodeit.repository.BinaryContentRepository;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
 import com.sprint.mission.discodeit.repository.MessageRepository;
@@ -40,9 +37,6 @@ public class BasicMessageService implements MessageService {
   private final BinaryContentRepository binaryContentRepository;
   private final BinaryContentStorage binaryContentStorage;
   private final MessageMapper messageMapper;
-  private final PageResponseMapper pageResponseMapper;
-  private final UserMapper userMapper;
-  private final BinaryContentMapper binaryContentMapper;
 
 
   @Transactional
@@ -63,8 +57,7 @@ public class BasicMessageService implements MessageService {
           return saved;
         })
         .toList();
-    Message message = new Message(
-        messageCreateRequest.content(), channel, user, attachments);
+    Message message = new Message(messageCreateRequest.content(), channel, user, attachments);
     Message savedMessage = messageRepository.save(message);
     return messageMapper.toDto(savedMessage);
   }
