@@ -1,8 +1,11 @@
 package com.sprint.mission.discodeit.service.basic;
 
-import com.sprint.mission.discodeit.dto.UserStatus.UserStatusCreate;
-import com.sprint.mission.discodeit.dto.UserStatus.UserStatusUpdate;
+import com.sprint.mission.discodeit.dto.data.UserStatusDto;
+import com.sprint.mission.discodeit.dto.request.UserStatusCreateRequest;
+import com.sprint.mission.discodeit.dto.request.UserStatusUpdateRequest;
+import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.entity.UserStatus;
+import com.sprint.mission.discodeit.mapper.UserStatusMapper;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.repository.UserStatusRepository;
 import com.sprint.mission.discodeit.service.UserStatusService;
@@ -12,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -19,51 +23,54 @@ public class BasicUserStatusService implements UserStatusService {
 
   private final UserStatusRepository userStatusRepository;
   private final UserRepository userRepository;
+  private final UserStatusMapper userStatusMapper;
 
-
+  @Transactional
   @Override
-  public UserStatus create(UserStatusCreate request) {
-    UUID userId = request.userId();
-    userRepository.findById(userId)
-        .orElseThrow(() -> new RuntimeException("해당 유저를을 찾을 수 없습니다. "));
-    if (userStatusRepository.existsById(userId)) {
-      throw new RuntimeException("해당 유저에 대한 유저 상태가 이미 존재합니다.");
-    }
+  public UserStatusDto create(UserStatusCreateRequest request) {
+    User user = userRepository.findById(request.userId())
+        .orElseThrow(() -> new IllegalArgumentException("해당 유저를 찾을 수 없습니다."));
     Instant lastActiveAt = request.lastActiveAt();
-    UserStatus userStatus = new UserStatus(userId, lastActiveAt);
-    return userStatusRepository.save(userStatus);
+    UserStatus userStatus = new UserStatus(user, lastActiveAt);
+    UserStatus savedUserStatus = userStatusRepository.save(userStatus);
+    return userStatusMapper.toDto(savedUserStatus);
   }
 
   @Override
-  public UserStatus find(UUID userStatusId) {
+  public UserStatusDto find(UUID userStatusId) {
     return userStatusRepository.findById(userStatusId)
+        .map(userStatusMapper::toDto)
         .orElseThrow(() -> new RuntimeException("해당 유저 상태를 찾을 수 없습니다."));
 
   }
 
   @Override
-  public List<UserStatus> findAll() {
-    return userStatusRepository.findAll();
+  public List<UserStatusDto> findAll() {
+    return userStatusRepository.findAll().stream()
+        .map(userStatusMapper::toDto).toList();
   }
 
+  @Transactional
   @Override
-  public UserStatus updateByUserId(UUID userId, UserStatusUpdate update) {
+  public UserStatusDto updateByUserId(UUID userId, UserStatusUpdateRequest update) {
     Instant newLastActiveAt = update.newLastActiveAt();
     UserStatus userStatus = userStatusRepository.findByUserId(userId)
-        .orElseThrow(() -> new RuntimeException("해당 유저의 읽음 상태를 찾을 수 없습니다. "));
+        .orElseThrow(() -> new RuntimeException("해당 유저의 읽음 상태를 찾을 수 없습니다."));
     userStatus.update(newLastActiveAt);
-    return userStatusRepository.save(userStatus);
+    return userStatusMapper.toDto(userStatus);
   }
 
+  @Transactional
   @Override
-  public UserStatus update(UUID userStatusId, UserStatusUpdate update) {
+  public UserStatusDto update(UUID userStatusId, UserStatusUpdateRequest update) {
     Instant newLastActiveAt = update.newLastActiveAt();
-    UserStatus userStatus = userStatusRepository.findByUserId(userStatusId)
+    UserStatus userStatus = userStatusRepository.findById(userStatusId)
         .orElseThrow(() -> new RuntimeException("읽음 상태를 찾을 수 없습니다."));
     userStatus.update(newLastActiveAt);
-    return userStatusRepository.save(userStatus);
+    return userStatusMapper.toDto(userStatus);
   }
 
+  @Transactional
   @Override
   public void delete(UUID userStatusId) {
     userStatusRepository.findById(userStatusId)
