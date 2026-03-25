@@ -1,0 +1,30 @@
+server:
+  port: 80
+
+spring:
+  datasource:
+    url: jdbc:postgresql://실제서버아이피:5432/discodeit_prod
+    username: prod_user
+    password: prod_password_safe
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+logging:
+  level:
+    com.example: INFO
+    org.springframework: WARN
+    org.hibernate: WARN
+    org.apache.tomcat: WARN
+  pattern:
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} [%X{traceId:-}] - %msg%n"
+  file:
+    max-history: 30
+    max-size: 100MB
