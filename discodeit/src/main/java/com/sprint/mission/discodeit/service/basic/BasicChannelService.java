@@ -37,19 +37,33 @@ public class BasicChannelService implements ChannelService {
     String name = request.name();
     String description = request.description();
     Channel channel = new Channel(ChannelType.PUBLIC, name, description);
+    log.info("공개 채널 생성 요청 - 채널 타입: {}, 채널 ID: {}, 채널 이름:{}, 채널 설명: {}", channel.getType(),
+        channel.getId(), name, description);
+
     Channel savedChannel = channelRepository.save(channel);
+    log.info("채널 생성 성공 - 채널 타입: {}, 채널 ID: {}, 채널 이름: {}", channel.getType(), channel.getId(),
+        name);
     return channelMapper.toDto(savedChannel);
   }
 
   @Transactional
   @Override
   public ChannelDto create(CreatePrivateChannelRequest request) {
+    log.info("비공개 채널 생성 요청 - 참여자 수: {}", request.participantIds().size());
+    log.debug("채널 참여자 ID 목록: {}", request.participantIds());
     Channel channel = new Channel(ChannelType.PRIVATE, null, null);
+    log.info("채널 생성 요청 - 채널 타입: {}, 채널 ID: {}", channel.getType(), channel.getId());
+
     Channel createdChannel = channelRepository.save(channel);
+    log.info("채널 생성 성공 - 채널 타입: {}, 채널 ID: {}", channel.getType(), channel.getId());
     List<ReadStatus> readStatuses = request.participantIds().stream()
         .map(userId -> {
           User participant = userRepository.findById(userId)
-              .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
+              .orElseThrow(() -> {
+                log.warn("참여자 조회 실패 - 유저 ID: {}", userId);
+                return new RuntimeException("유저를 찾을 수 없습니다.");
+              });
+          log.info("읽음 상태 생성 - 참여자 ID: {}, 채널 ID: {}", participant.getId(), createdChannel.getId());
           return new ReadStatus(participant, createdChannel, Instant.MIN);
         })
         .toList();
@@ -85,20 +99,28 @@ public class BasicChannelService implements ChannelService {
   public ChannelDto update(UUID channelId, ChannelUpdateRequest request) {
     String newName = request.newName();
     String newDescription = request.newDescription();
+    log.info("채널 업데이트 요청 - 채널 ID: {}, 변경할 이름: {}, 변경할 내용: {}", channelId, newName, newDescription);
     Channel channel = channelRepository.findById(channelId)
-        .orElseThrow(
-            () -> new NoSuchElementException("Channel with id " + channelId + " not found"));
+        .orElseThrow(() -> {
+          log.warn("존재하지 않는 채널로 업데이트 실패 - 채널 ID: {}", channelId);
+          return new NoSuchElementException("Channel with id " + channelId + " not found");
+        });
     if (channel.getType().equals(ChannelType.PRIVATE)) {
+      log.warn("비공개 채널은 업데이트가 불가능합니다.");
       throw new IllegalArgumentException("Private channel cannot be updated");
     }
     channel.update(newName, newDescription);
+    log.info("채널 업데이트 성공 - 채널 ID: {}, 변경한 이름: {}, 변경한 내용: {}", channelId, newName, newDescription);
     return channelMapper.toDto(channel);
   }
 
   @Transactional
   @Override
   public void delete(UUID channelId) {
+    log.info("채널 삭제 요청 - 채널 ID: {}", channelId);
     channelRepository.deleteById(channelId);
+    log.info("채널 삭제 성공 - 채널 ID: {}", channelId);
+
   }
 
 }

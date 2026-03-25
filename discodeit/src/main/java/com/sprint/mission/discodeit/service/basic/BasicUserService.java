@@ -39,7 +39,7 @@ public class BasicUserService implements UserService {
   @Override
   public UserDto create(UserCreateRequest userCreateRequest,
       Optional<BinaryContentCreateRequest> optionalProfileCreateRequest) {
-    log.info("사용자 등록 시작 - 사용자 이름: {}, 사용자 이메일 : {}", userCreateRequest.username(),
+    log.info("사용자 등록 요청 - 사용자 이름: {}, 사용자 이메일 : {}", userCreateRequest.username(),
         userCreateRequest.email());
     String username = userCreateRequest.username();
     String email = userCreateRequest.email();
@@ -54,7 +54,7 @@ public class BasicUserService implements UserService {
 
     BinaryContent nullableProfile = optionalProfileCreateRequest
         .map(profileRequest -> {
-          log.info("프로필 이미지 등록 시작 - 파일 이름 : {}. 파일 타입 : {}, 파일 용량: {}", profileRequest.fileName(),
+          log.info("프로필 이미지 등록 요청 - 파일 이름 : {}. 파일 타입 : {}, 파일 용량: {}", profileRequest.fileName(),
               profileRequest.contentType(), profileRequest.bytes());
           String fileName = profileRequest.fileName();
           String contentType = profileRequest.contentType();
@@ -97,7 +97,7 @@ public class BasicUserService implements UserService {
   @Override
   public UserDto update(UUID userId, UserUpdateRequest userUpdate,
       Optional<BinaryContentCreateRequest> optionalProfileCreateRequest) {
-    log.info("사용자 정보 업데이트 시작 - 사용자 ID: {}", userId);
+    log.info("사용자 정보 업데이트 요청 - 사용자 ID: {}", userId);
     User user = userRepository.findById(userId)
         .orElseThrow(() -> {
           log.warn("존재하지 않는 ID로 업데이트 실패 - 사용자 ID: {}", userId);
@@ -123,7 +123,7 @@ public class BasicUserService implements UserService {
           String fileName = profileRequest.fileName();
           String contentType = profileRequest.contentType();
           byte[] bytes = profileRequest.bytes();
-          log.info("프로필 업데이트 시작 - 파일 이름: {}, 파일 타입: {}, 파일 용량: {}", profileRequest.fileName(),
+          log.info("프로필 업데이트 요청 - 파일 이름: {}, 파일 타입: {}, 파일 용량: {}", profileRequest.fileName(),
               profileRequest.contentType(), profileRequest.bytes());
           BinaryContent binaryContent = new BinaryContent(fileName, (long) bytes.length,
               contentType);
