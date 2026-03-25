@@ -7,6 +7,8 @@ import com.sprint.mission.discodeit.dto.request.ReadStatusUpdateRequest;
 import com.sprint.mission.discodeit.service.ReadStatusService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,28 +25,38 @@ public class ReadStatusController implements ReadStatusApi {
   @Operation(summary = "읽음 상태 생성")
   @PostMapping
   @Override
-  public ReadStatusDto create(
+  public ResponseEntity<ReadStatusDto> create(
       @RequestBody ReadStatusCreateRequest readStatusCreateRequest
   ) {
-    return readStatusService.create(readStatusCreateRequest);
+    ReadStatusDto createdReadStatus = readStatusService.create(readStatusCreateRequest);
+    return ResponseEntity
+        .status(HttpStatus.CREATED)
+        .body(createdReadStatus);
   }
 
   @Operation(summary = "읽음 상태 수정")
   @PatchMapping("/{readStatusId}")
   @Override
-  public ReadStatusDto update(
+  public ResponseEntity<ReadStatusDto> update(
       @PathVariable UUID readStatusId,
       @RequestBody ReadStatusUpdateRequest readStatusUpdateRequest
   ) {
-    return readStatusService.update(readStatusId, readStatusUpdateRequest);
+    ReadStatusDto updatedReadStatus = readStatusService.update(readStatusId,
+        readStatusUpdateRequest);
+    return ResponseEntity
+        .status(HttpStatus.OK)
+        .body(updatedReadStatus);
   }
 
   @Operation(summary = "사용자의 메세지 읽음 상태 조회")
   @GetMapping
   @Override
-  public List<ReadStatusDto> findByUserId(
+  public ResponseEntity<List<ReadStatusDto>> findByUserId(
       @RequestParam UUID userId
   ) {
-    return readStatusService.findAllByUserId(userId);
+    List<ReadStatusDto> readStatuses = readStatusService.findAllByUserId(userId);
+    return ResponseEntity
+        .status(HttpStatus.OK)
+        .body(readStatuses);
   }
 }

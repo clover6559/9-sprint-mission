@@ -35,7 +35,7 @@ public interface BinaryContentApi {
           content = @Content(examples = @ExampleObject(value = "BinaryContent with id {binaryContentId} not found"))
       )
   })
-  List<BinaryContentDto> findAllByIdIn(
+  ResponseEntity<List<BinaryContentDto>> findAllByIdIn(
       @Parameter(description = "조회할 BinaryContent Ids") List<UUID> binaryContentIds
   );
 
@@ -48,7 +48,7 @@ public interface BinaryContentApi {
       ),
       @ApiResponse(responseCode = NOT_FOUND_404, description = "파일을 찾을 수 없음")
   })
-  BinaryContentDto find(
+  ResponseEntity<BinaryContentDto> find(
       @Parameter(description = "조회할 BinaryContent ID") UUID binaryContentId
   );
 

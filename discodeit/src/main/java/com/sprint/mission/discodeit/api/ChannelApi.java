@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @Tag(name = "Channel", description = "Channel API")
@@ -41,7 +42,7 @@ public interface ChannelApi {
           content = @Content(examples = @ExampleObject(value = "Channel already exists"))
       ),
   })
-  ChannelDto createPublic(
+  ResponseEntity<ChannelDto> createPublic(
       @Parameter(
           description = "Channel 생성 정보",
           content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE)
@@ -60,7 +61,7 @@ public interface ChannelApi {
   })
   @Operation(summary = "비공개 채널 생성")
   @ResponseStatus(HttpStatus.CREATED)
-  ChannelDto createPrivate(
+  ResponseEntity<ChannelDto> createPrivate(
       @Parameter(
           description = "Channel 생성 정보",
           content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE)
@@ -83,7 +84,7 @@ public interface ChannelApi {
           content = @Content(examples = @ExampleObject("channel을 with name {newname} already exists"))
       )
   })
-  ChannelDto update(
+  ResponseEntity<ChannelDto> update(
       @Parameter(description = "수정할 Channel ID") UUID channelId,
       @Parameter(description = "수정할 Channel 정보") ChannelUpdateRequest request
   );
@@ -100,7 +101,7 @@ public interface ChannelApi {
           content = @Content(examples = @ExampleObject(value = "Channel with id {id} not found"))
       )
   })
-  void delete(
+  ResponseEntity<Void> delete(
       @Parameter(description = "삭제할 Channel ID") UUID channelId
   );
 
@@ -112,7 +113,7 @@ public interface ChannelApi {
           content = @Content(array = @ArraySchema(schema = @Schema(implementation = ChannelDto.class)))
       )
   })
-  List<ChannelDto> findAll(
+  ResponseEntity<List<ChannelDto>> findAll(
       @Parameter(description = "조회할 User ID") UUID userId
   );
 }

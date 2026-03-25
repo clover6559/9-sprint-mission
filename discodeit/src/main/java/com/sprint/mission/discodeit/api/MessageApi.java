@@ -27,6 +27,7 @@ import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -45,7 +46,7 @@ public interface MessageApi {
           content = @Content(examples = @ExampleObject(value = "Message already exists"))
       ),
   })
-  MessageDto create(
+  ResponseEntity<MessageDto> create(
       @Parameter(
           description = "Message 생성 정보",
           content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE)
@@ -68,7 +69,7 @@ public interface MessageApi {
           content = @Content(examples = @ExampleObject("Message with id {messageId} not found"))
       )
   })
-  MessageDto update(
+  ResponseEntity<MessageDto> update(
       @Parameter(description = "수정할 Message ID") UUID messageId,
       @Parameter(description = "수정할 Message 정보") MessageUpdateRequest messageUpdateRequest
   );
@@ -85,7 +86,7 @@ public interface MessageApi {
           content = @Content(examples = @ExampleObject(value = "Message with id {id} not found"))
       )
   })
-  void delete(
+  ResponseEntity<Void> delete(
       @Parameter(description = "삭제할 Message ID") UUID messageId
   );
 
@@ -97,7 +98,7 @@ public interface MessageApi {
   })
   @Operation(summary = "해당 채널의 메세지 조회")
   @ResponseStatus(HttpStatus.OK)
-  PageResponse<MessageDto> findByChannelId(
+  ResponseEntity<PageResponse<MessageDto>> findByChannelId(
       @Parameter(description = "조회할 Channel ID") UUID channelId,
       @Parameter(description = "조회할 Channel ID") Instant cursor,
       @ParameterObject Pageable pageable

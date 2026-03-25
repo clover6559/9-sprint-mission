@@ -21,6 +21,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @Tag(name = "ReadStatus", description = "ReadStatus API")
@@ -39,7 +40,7 @@ public interface ReadStatusApi {
           content = @Content(examples = @ExampleObject(value = "ReadStatus already exists"))
       ),
   })
-  ReadStatusDto create(
+  ResponseEntity<ReadStatusDto> create(
       @Parameter(description = "ReadStatus 생성 정보") ReadStatusCreateRequest readStatusCreateRequest
   );
 
@@ -55,7 +56,7 @@ public interface ReadStatusApi {
           content = @Content(examples = @ExampleObject("ReadStatus with id {readStatusId} not found"))
       )
   })
-  ReadStatusDto update(
+  ResponseEntity<ReadStatusDto> update(
       @Parameter(description = "수정할 ReadStatus ID") UUID readStatusId,
       @Parameter(description = "수정할 ReadStatus 정보") ReadStatusUpdateRequest readStatusUpdateRequest
   );
@@ -68,7 +69,7 @@ public interface ReadStatusApi {
           content = @Content(array = @ArraySchema(schema = @Schema(implementation = ReadStatus.class)))
       )
   })
-  List<ReadStatusDto> findByUserId(
+  ResponseEntity<List<ReadStatusDto>> findByUserId(
       @Parameter(description = "조회할 ReadStatus ID") UUID readStatusId
   );
 }

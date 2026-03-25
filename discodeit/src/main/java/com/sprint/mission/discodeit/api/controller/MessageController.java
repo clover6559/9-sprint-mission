@@ -11,9 +11,14 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,6 +26,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/messages")
 @RequiredArgsConstructor
@@ -32,7 +38,7 @@ public class MessageController implements MessageApi {
       consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}
   )
   @Override
-  public MessageDto create(
+  public ResponseEntity<MessageDto> create(
       @RequestPart("messageCreateRequest") MessageCreateRequest messageCreateRequest,
       @RequestPart(value = "attachments", required = false) List<MultipartFile> attachments
   ) {
@@ -51,35 +57,52 @@ public class MessageController implements MessageApi {
             })
             .toList())
         .orElse(new ArrayList<>());
-    return messageService.create(messageCreateRequest, attachmentRequests);
+    MessageDto createdMessage = messageService.create(messageCreateRequest, attachmentRequests);
+    return ResponseEntity
+        .status(HttpStatus.CREATED)
+        .body(createdMessage);
   }
 
   @PatchMapping("/{messageId}")
   @Override
-  public MessageDto update(
+  public ResponseEntity<MessageDto> update(
       @PathVariable UUID messageId,
       @RequestBody MessageUpdateRequest messageUpdateRequest
   ) {
-    return messageService.update(messageId, messageUpdateRequest);
+    MessageDto updatedMessage = messageService.update(messageId, messageUpdateRequest);
+    return ResponseEntity
+        .status(HttpStatus.OK)
+        .body(updatedMessage);
   }
 
   @DeleteMapping("/{messageId}")
   @Override
-  public void delete(
+  public ResponseEntity<Void> delete(
       @PathVariable UUID messageId
   ) {
     messageService.delete(messageId);
+    return ResponseEntity
+        .status(HttpStatus.NO_CONTENT)
+        .build();
   }
 
 
   @GetMapping
   @Override
-  public PageResponse<MessageDto> findByChannelId(
+  public ResponseEntity<PageResponse<MessageDto>> findByChannelId(
       @RequestParam UUID channelId,
       @RequestParam(required = false) Instant cursor,
-      @ParameterObject Pageable pageable
-  ) {
-    return messageService.getMessages(channelId, cursor, pageable);
+      @PageableDefault(
+          size = 50,
+          page = 0,
+          sort = "createdAt",
+          direction = Direction.DESC
+      ) Pageable pageable) {
+    PageResponse<MessageDto> messages = messageService.getMessages(channelId, cursor,
+        pageable);
+    return ResponseEntity
+        .status(HttpStatus.OK)
+        .body(messages);
   }
 
 }

@@ -5,6 +5,7 @@ import static com.sprint.mission.discodeit.api.ApiDocsUtils.NOT_FOUND_404;
 import static com.sprint.mission.discodeit.api.ApiDocsUtils.SUCCESS_200;
 
 import com.sprint.mission.discodeit.dto.data.LoginDto;
+import com.sprint.mission.discodeit.dto.data.UserDto;
 import com.sprint.mission.discodeit.entity.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -15,6 +16,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @Tag(name = "Auth", description = "Auth API")
@@ -37,7 +39,7 @@ public interface AuthApi {
           content = @Content(examples = @ExampleObject(value = "Wrong password"))
       )
   })
-  User login(
+  ResponseEntity<UserDto> login(
       @Parameter(description = "로그인") LoginDto loginDto
   );
 
