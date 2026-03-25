@@ -54,8 +54,9 @@ public class BasicUserService implements UserService {
 
     BinaryContent nullableProfile = optionalProfileCreateRequest
         .map(profileRequest -> {
-          log.info("프로필 이미지 등록 요청 - 파일 이름 : {}. 파일 타입 : {}, 파일 용량: {}", profileRequest.fileName(),
-              profileRequest.contentType(), profileRequest.bytes());
+          log.info("프로필 이미지 등록 요청 - 파일 이름 : {}. 파일 타입 : {}, 파일 용량: {} bytes",
+              profileRequest.fileName(),
+              profileRequest.contentType(), profileRequest.bytes().length);
           String fileName = profileRequest.fileName();
           String contentType = profileRequest.contentType();
           byte[] bytes = profileRequest.bytes();

@@ -62,8 +62,8 @@ public class BasicMessageService implements MessageService {
         .map(req -> {
           BinaryContent binaryContent = new BinaryContent(
               req.fileName(), (long) req.bytes().length, req.contentType());
-          log.info("첨부파일 등록 요청 - 파일 이름 : {}. 파일 타입 : {}, 파일 용량: {}", req.fileName(),
-              req.contentType(), req.bytes());
+          log.info("첨부파일 등록 요청 - 파일 이름 : {}. 파일 타입 : {}, 파일 용량: {} bytes", req.fileName(),
+              req.contentType(), req.bytes().length);
           BinaryContent saved = binaryContentRepository.save(binaryContent);
           log.info("첨부파일 등록 성공 - 파일 ID: {}, 파일 이름: {}", saved.getId(), binaryContent.getFileName());
           binaryContentStorage.put(saved.getId(), req.bytes());

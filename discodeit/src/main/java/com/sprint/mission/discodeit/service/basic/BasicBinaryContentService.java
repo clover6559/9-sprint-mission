@@ -30,21 +30,29 @@ public class BasicBinaryContentService implements BinaryContentService {
     String fileName = create.fileName();
     byte[] bytes = create.bytes();
     String contentType = create.contentType();
+    log.info("첨부파일 생성 요청 - 파일 이름: {}, 파일 타입: {}, 파일 용량: {} bytes", fileName, contentType,
+        bytes.length);
     BinaryContent binaryContent = new BinaryContent(fileName, (long) bytes.length, contentType);
     BinaryContent savedbinaryContent = binaryContentRepository.save(binaryContent);
-    binaryContentStorage.put(binaryContent.getId(), bytes);
+    log.info("첨부파일 생성 성공 - 파일 ID: {}, 파일 이름: {}", savedbinaryContent.getId(), fileName);
+    binaryContentStorage.put(savedbinaryContent.getId(), bytes);
     return binaryContentMapper.toDto(savedbinaryContent);
   }
 
   @Override
   public BinaryContentDto find(UUID binaryContentId) {
+    log.info("첨부파일 조회 - 파일 ID: {}", binaryContentId);
     return binaryContentRepository.findById(binaryContentId)
         .map(binaryContentMapper::toDto)
-        .orElseThrow(() -> new RuntimeException("해당 바이너리 데이터를 찾을 수 없습니다."));
+        .orElseThrow(() -> {
+          log.warn("존재하지 않는 첨부파일로 조회 실패 - 파일 ID: {}", binaryContentId);
+          return new RuntimeException("해당 바이너리 데이터를 찾을 수 없습니다.");
+        });
   }
 
   @Override
   public List<BinaryContentDto> findAllByIdIn(List<UUID> binaryContentIds) {
+    log.debug("조회할 파일 ID 목록: {}", binaryContentIds);
     return binaryContentRepository.findAllByIdIn(binaryContentIds).stream()
         .map(binaryContentMapper::toDto).toList();
   }
@@ -52,8 +60,14 @@ public class BasicBinaryContentService implements BinaryContentService {
   @Transactional
   @Override
   public void delete(UUID binaryContentId) {
+    log.info("첨부파일 삭제 요청 - 첨부파일 ID: {}", binaryContentId);
     BinaryContent foundContent = binaryContentRepository.findById(binaryContentId)
-        .orElseThrow(() -> new RuntimeException("해당 바이너리 데이터를 찾을 수 없습니다."));
+        .orElseThrow(() -> {
+          log.warn("존재하지 않는 첨부파일로 삭제 실패 - 첨부파일 ID: {}", binaryContentId);
+          return new RuntimeException("해당 첨부파일을 찾을 수 없습니다.");
+        });
     binaryContentRepository.delete(foundContent);
+    log.info("첨부파일 삭제 성공 - 첨부파일 ID: {}", binaryContentId);
+
   }
 }
