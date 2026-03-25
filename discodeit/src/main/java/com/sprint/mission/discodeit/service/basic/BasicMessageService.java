@@ -45,22 +45,34 @@ public class BasicMessageService implements MessageService {
   @Override
   public MessageDto create(MessageCreateRequest messageCreateRequest,
       List<BinaryContentCreateRequest> binaryContentCreateRequestRequests) {
+    log.info("메세지 생성 요청 - 채널 ID: {}, 유저 ID: {}, 내용: {}", messageCreateRequest.channelId(),
+        messageCreateRequest.authorId(), messageCreateRequest.content());
     Channel channel = channelRepository.findById(messageCreateRequest.channelId())
-        .orElseThrow(() -> new NoSuchElementException("채널을 찾을 수 없습니다."));
+        .orElseThrow(() -> {
+          log.warn("없는 채널 ID로 메세지 생성 실페 - 채널 ID: {}", messageCreateRequest.channelId());
+          return new NoSuchElementException("채널을 찾을 수 없습니다.");
+        });
     User user = userRepository.findById(messageCreateRequest.authorId())
-        .orElseThrow(() -> new NoSuchElementException("유저를 찾을 수 없습니다."));
+        .orElseThrow(() -> {
+          log.warn("없는 유저 ID로 메세지 생성 실페 - 유저 ID: {}", messageCreateRequest.authorId());
+          return new NoSuchElementException("유저를 찾을 수 없습니다.");
+        });
 
     List<BinaryContent> attachments = binaryContentCreateRequestRequests.stream()
         .map(req -> {
           BinaryContent binaryContent = new BinaryContent(
               req.fileName(), (long) req.bytes().length, req.contentType());
+          log.info("첨부파일 등록 요청 - 파일 이름 : {}. 파일 타입 : {}, 파일 용량: {}", req.fileName(),
+              req.contentType(), req.bytes());
           BinaryContent saved = binaryContentRepository.save(binaryContent);
+          log.info("첨부파일 등록 성공 - 파일 ID: {}, 파일 이름: {}", saved.getId(), binaryContent.getFileName());
           binaryContentStorage.put(saved.getId(), req.bytes());
           return saved;
         })
         .toList();
     Message message = new Message(messageCreateRequest.content(), channel, user, attachments);
     Message savedMessage = messageRepository.save(message);
+    log.info("메세지 생성 성공 - 메세지 ID: {}", message.getId());
     return messageMapper.toDto(savedMessage);
   }
 
@@ -83,18 +95,29 @@ public class BasicMessageService implements MessageService {
   @Override
   public MessageDto update(UUID messageId, MessageUpdateRequest request) {
     String newContent = request.newContent();
+    log.info("메세지 업데이트 요청 - 메세지 ID: {}, 변경할 내용: {}", messageId, request.newContent());
     Message message = messageRepository.findById(messageId)
-        .orElseThrow(() -> new RuntimeException("해당 메세지를 찾을 수 없습니다."));
+        .orElseThrow(() -> {
+          log.warn("없는 메세지 ID로 업데이트 실패 - 메세지 ID: {}", messageId);
+          return new RuntimeException("해당 메세지를 찾을 수 없습니다.");
+        });
     message.update(newContent);
+    log.info("메세지 업데이트 성공 - 메세지 ID: {}", messageId);
     return messageMapper.toDto(message);
   }
 
   @Transactional
   @Override
   public void delete(UUID messageId) {
+    log.info("메세지 삭제 요청 - 메세지 ID: {}", messageId);
     Message findMessage = messageRepository.findById(messageId)
-        .orElseThrow(() -> new RuntimeException("해당 메세지를 찾을 수 없습니다."));
+        .orElseThrow(() -> {
+          log.warn("존재하지 않는 메세지로 삭제 실패 - 사용자 ID: {}", messageId);
+          return new RuntimeException("해당 메세지를 찾을 수 없습니다.");
+        });
     messageRepository.delete(findMessage);
+    log.info("메세지 삭제 성공 - 메세지 ID: {}", messageId);
+
   }
 
   @Override
