@@ -28,7 +28,9 @@ public class ChannelController implements ChannelApi {
   public ResponseEntity<ChannelDto> createPublic(
       @RequestBody CreatePublicChannelRequest request
   ) {
+    log.info("공개 채널 생성 요청 수신 - 채널 이름:{}, 채널 설명: {}", request.name(), request.description());
     ChannelDto createdChannel = channelService.create(request);
+    log.info("채널 생성 요청 처리 완료 - 채널 ID: {}, 채널 이름: {}", createdChannel.id(), createdChannel.name());
     return ResponseEntity
         .status(HttpStatus.CREATED)
         .body(createdChannel);
@@ -39,7 +41,11 @@ public class ChannelController implements ChannelApi {
   public ResponseEntity<ChannelDto> createPrivate(
       @RequestBody CreatePrivateChannelRequest request
   ) {
+    log.info("비공개 채널 생성 요청 수신 - 참여자 수: {}", request.participantIds().size());
+    log.debug("채널 참여자 ID 목록: {}", request.participantIds());
     ChannelDto createdChannel = channelService.create(request);
+    log.info("채널 생성 요청 처리 완료 - 채널 ID: {}", createdChannel.id());
+
     return ResponseEntity
         .status(HttpStatus.CREATED)
         .body(createdChannel);
@@ -51,7 +57,11 @@ public class ChannelController implements ChannelApi {
       @PathVariable UUID channelId,
       @RequestBody ChannelUpdateRequest request
   ) {
+    log.info("채널 업데이트 요청 수신 - 채널 ID: {}, 변경할 이름: {}, 변경할 내용: {}", channelId, request.newName(),
+        request.newDescription());
     ChannelDto updatedChannel = channelService.update(channelId, request);
+    log.info("채널 업데이트 요청 처리 완료 - 채널 ID: {}", updatedChannel.id());
+
     return ResponseEntity
         .status(HttpStatus.OK)
         .body(updatedChannel);
@@ -62,7 +72,10 @@ public class ChannelController implements ChannelApi {
   public ResponseEntity<Void> delete(
       @PathVariable UUID channelId
   ) {
+    log.info("채널 삭제 요청 수신 - 채널 ID: {}", channelId);
     channelService.delete(channelId);
+    log.info("채널 삭제 요청 처리 완료 - 채널 ID: {}", channelId);
+
     return ResponseEntity
         .status(HttpStatus.NO_CONTENT)
         .build();
