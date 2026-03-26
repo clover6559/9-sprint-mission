@@ -23,8 +23,8 @@ public enum ErrorCode {
 
   UNAUTHORIZED("권한이 없습니다."),
   INVALID_CREDENTIALS("로그인에 실패했습니다."),
-  FILE_UPLOAD_ERROR("파일 업로드 중 오류가 발생했습니다.");
-
+  FILE_UPLOAD_ERROR("파일 업로드 중 오류가 발생했습니다."),
+  INTERNAL_SERVER_ERROR("알 수 없는 서버 오류가 발생했습니다.");
   private final String message;
 
   ErrorCode(String message) {
