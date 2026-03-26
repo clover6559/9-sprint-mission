@@ -3,6 +3,7 @@ package com.sprint.mission.discodeit.service.basic;
 import com.sprint.mission.discodeit.dto.data.BinaryContentDto;
 import com.sprint.mission.discodeit.dto.request.BinaryContentCreateRequest;
 import com.sprint.mission.discodeit.entity.BinaryContent;
+import com.sprint.mission.discodeit.exception.BinaryContent.BinaryContentNotFoundException;
 import com.sprint.mission.discodeit.mapper.BinaryContentMapper;
 import com.sprint.mission.discodeit.repository.BinaryContentRepository;
 import com.sprint.mission.discodeit.service.BinaryContentService;
@@ -46,7 +47,7 @@ public class BasicBinaryContentService implements BinaryContentService {
         .map(binaryContentMapper::toDto)
         .orElseThrow(() -> {
           log.warn("존재하지 않는 첨부파일로 조회 실패 - 파일 ID: {}", binaryContentId);
-          return new RuntimeException("해당 바이너리 데이터를 찾을 수 없습니다.");
+          return new BinaryContentNotFoundException(binaryContentId);
         });
   }
 
@@ -64,7 +65,7 @@ public class BasicBinaryContentService implements BinaryContentService {
     BinaryContent foundContent = binaryContentRepository.findById(binaryContentId)
         .orElseThrow(() -> {
           log.warn("존재하지 않는 첨부파일로 삭제 실패 - 첨부파일 ID: {}", binaryContentId);
-          return new RuntimeException("해당 첨부파일을 찾을 수 없습니다.");
+          return new BinaryContentNotFoundException(binaryContentId);
         });
     binaryContentRepository.delete(foundContent);
     log.info("첨부파일 삭제 성공 - 첨부파일 ID: {}", binaryContentId);

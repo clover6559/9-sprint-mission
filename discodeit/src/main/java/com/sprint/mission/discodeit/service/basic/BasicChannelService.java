@@ -8,6 +8,9 @@ import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.Channel.ChannelType;
 import com.sprint.mission.discodeit.entity.ReadStatus;
 import com.sprint.mission.discodeit.entity.User;
+import com.sprint.mission.discodeit.exception.Channel.ChannelNotFoundException;
+import com.sprint.mission.discodeit.exception.Channel.PrivateChannelUpdateException;
+import com.sprint.mission.discodeit.exception.User.UserNotFoundException;
 import com.sprint.mission.discodeit.mapper.ChannelMapper;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
 import com.sprint.mission.discodeit.repository.ReadStatusRepository;
@@ -61,7 +64,7 @@ public class BasicChannelService implements ChannelService {
           User participant = userRepository.findById(userId)
               .orElseThrow(() -> {
                 log.warn("참여자 조회 실패 - 유저 ID: {}", userId);
-                return new RuntimeException("유저를 찾을 수 없습니다.");
+                return new UserNotFoundException(userId);
               });
           log.info("읽음 상태 생성 - 참여자 ID: {}, 채널 ID: {}", participant.getId(), createdChannel.getId());
           return new ReadStatus(participant, createdChannel, Instant.MIN);
@@ -76,7 +79,7 @@ public class BasicChannelService implements ChannelService {
   public ChannelDto find(UUID channelId) {
     return channelRepository.findById(channelId)
         .map(channelMapper::toDto)
-        .orElseThrow(() -> new RuntimeException("해당 채널을 찾을 수 없습니다. "));
+        .orElseThrow(() -> new ChannelNotFoundException(channelId));
   }
 
 
@@ -103,11 +106,11 @@ public class BasicChannelService implements ChannelService {
     Channel channel = channelRepository.findById(channelId)
         .orElseThrow(() -> {
           log.warn("존재하지 않는 채널로 업데이트 실패 - 채널 ID: {}", channelId);
-          return new NoSuchElementException("Channel with id " + channelId + " not found");
+          return new ChannelNotFoundException(channelId);
         });
     if (channel.getType().equals(ChannelType.PRIVATE)) {
       log.warn("비공개 채널은 업데이트가 불가능합니다.");
-      throw new IllegalArgumentException("Private channel cannot be updated");
+      throw new PrivateChannelUpdateException(ChannelType.PRIVATE);
     }
     channel.update(newName, newDescription);
     log.info("채널 업데이트 성공 - 채널 ID: {}, 변경한 이름: {}, 변경한 내용: {}", channelId, newName, newDescription);

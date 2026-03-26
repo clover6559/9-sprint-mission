@@ -5,6 +5,8 @@ import com.sprint.mission.discodeit.dto.request.UserStatusCreateRequest;
 import com.sprint.mission.discodeit.dto.request.UserStatusUpdateRequest;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.entity.UserStatus;
+import com.sprint.mission.discodeit.exception.User.UserNotFoundException;
+import com.sprint.mission.discodeit.exception.UserStatus.UserStatusNotFoundException;
 import com.sprint.mission.discodeit.mapper.UserStatusMapper;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.repository.UserStatusRepository;
@@ -31,7 +33,7 @@ public class BasicUserStatusService implements UserStatusService {
   @Override
   public UserStatusDto create(UserStatusCreateRequest request) {
     User user = userRepository.findById(request.userId())
-        .orElseThrow(() -> new IllegalArgumentException("해당 유저를 찾을 수 없습니다."));
+        .orElseThrow(() -> new UserNotFoundException(request.userId()));
     Instant lastActiveAt = request.lastActiveAt();
     UserStatus userStatus = new UserStatus(user, lastActiveAt);
     UserStatus savedUserStatus = userStatusRepository.save(userStatus);
@@ -42,7 +44,7 @@ public class BasicUserStatusService implements UserStatusService {
   public UserStatusDto find(UUID userStatusId) {
     return userStatusRepository.findById(userStatusId)
         .map(userStatusMapper::toDto)
-        .orElseThrow(() -> new RuntimeException("해당 유저 상태를 찾을 수 없습니다."));
+        .orElseThrow(() -> new UserStatusNotFoundException(userStatusId));
 
   }
 
@@ -57,7 +59,7 @@ public class BasicUserStatusService implements UserStatusService {
   public UserStatusDto updateByUserId(UUID userId, UserStatusUpdateRequest update) {
     Instant newLastActiveAt = update.newLastActiveAt();
     UserStatus userStatus = userStatusRepository.findByUserId(userId)
-        .orElseThrow(() -> new RuntimeException("해당 유저의 읽음 상태를 찾을 수 없습니다."));
+        .orElseThrow(() -> new UserStatusNotFoundException(userId));
     userStatus.update(newLastActiveAt);
     return userStatusMapper.toDto(userStatus);
   }
@@ -67,7 +69,7 @@ public class BasicUserStatusService implements UserStatusService {
   public UserStatusDto update(UUID userStatusId, UserStatusUpdateRequest update) {
     Instant newLastActiveAt = update.newLastActiveAt();
     UserStatus userStatus = userStatusRepository.findById(userStatusId)
-        .orElseThrow(() -> new RuntimeException("읽음 상태를 찾을 수 없습니다."));
+        .orElseThrow(() -> new UserStatusNotFoundException(userStatusId));
     userStatus.update(newLastActiveAt);
     return userStatusMapper.toDto(userStatus);
   }
@@ -76,7 +78,7 @@ public class BasicUserStatusService implements UserStatusService {
   @Override
   public void delete(UUID userStatusId) {
     userStatusRepository.findById(userStatusId)
-        .orElseThrow(() -> new RuntimeException("해당 유저 상태를 찾을 수 없습니다."));
+        .orElseThrow(() -> new UserStatusNotFoundException(userStatusId));
     userStatusRepository.deleteById(userStatusId);
 
   }

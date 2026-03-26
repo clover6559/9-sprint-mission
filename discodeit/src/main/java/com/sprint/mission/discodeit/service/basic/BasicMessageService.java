@@ -9,6 +9,9 @@ import com.sprint.mission.discodeit.entity.BinaryContent;
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.entity.User;
+import com.sprint.mission.discodeit.exception.Channel.ChannelNotFoundException;
+import com.sprint.mission.discodeit.exception.Message.MessageNotFoundException;
+import com.sprint.mission.discodeit.exception.User.UserNotFoundException;
 import com.sprint.mission.discodeit.mapper.MessageMapper;
 import com.sprint.mission.discodeit.repository.BinaryContentRepository;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
@@ -50,12 +53,12 @@ public class BasicMessageService implements MessageService {
     Channel channel = channelRepository.findById(messageCreateRequest.channelId())
         .orElseThrow(() -> {
           log.warn("없는 채널 ID로 메세지 생성 실페 - 채널 ID: {}", messageCreateRequest.channelId());
-          return new NoSuchElementException("채널을 찾을 수 없습니다.");
+          return new ChannelNotFoundException(messageCreateRequest.channelId());
         });
     User user = userRepository.findById(messageCreateRequest.authorId())
         .orElseThrow(() -> {
           log.warn("없는 유저 ID로 메세지 생성 실페 - 유저 ID: {}", messageCreateRequest.authorId());
-          return new NoSuchElementException("유저를 찾을 수 없습니다.");
+          return new UserNotFoundException(messageCreateRequest.authorId());
         });
 
     List<BinaryContent> attachments = binaryContentCreateRequestRequests.stream()
@@ -80,7 +83,7 @@ public class BasicMessageService implements MessageService {
   public MessageDto findById(UUID messageId) {
     return messageRepository.findById(messageId)
         .map(messageMapper::toDto)
-        .orElseThrow(() -> new RuntimeException("해당 메시지를 찾을 수 없습니다."));
+        .orElseThrow(() -> new MessageNotFoundException(messageId));
   }
 
 
@@ -99,7 +102,7 @@ public class BasicMessageService implements MessageService {
     Message message = messageRepository.findById(messageId)
         .orElseThrow(() -> {
           log.warn("없는 메세지 ID로 업데이트 실패 - 메세지 ID: {}", messageId);
-          return new RuntimeException("해당 메세지를 찾을 수 없습니다.");
+          return new MessageNotFoundException(messageId);
         });
     message.update(newContent);
     log.info("메세지 업데이트 성공 - 메세지 ID: {}", messageId);
@@ -113,7 +116,7 @@ public class BasicMessageService implements MessageService {
     Message findMessage = messageRepository.findById(messageId)
         .orElseThrow(() -> {
           log.warn("존재하지 않는 메세지로 삭제 실패 - 사용자 ID: {}", messageId);
-          return new RuntimeException("해당 메세지를 찾을 수 없습니다.");
+          return new MessageNotFoundException(messageId);
         });
     messageRepository.delete(findMessage);
     log.info("메세지 삭제 성공 - 메세지 ID: {}", messageId);
