@@ -7,6 +7,7 @@ import com.sprint.mission.discodeit.dto.request.MessageCreateRequest;
 import com.sprint.mission.discodeit.dto.request.MessageUpdateRequest;
 import com.sprint.mission.discodeit.dto.response.PageResponse;
 import com.sprint.mission.discodeit.service.MessageService;
+import jakarta.validation.Valid;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Optional;
@@ -38,7 +39,7 @@ public class MessageController implements MessageApi {
   )
   @Override
   public ResponseEntity<MessageDto> create(
-      @RequestPart("messageCreateRequest") MessageCreateRequest messageCreateRequest,
+      @Valid @RequestPart("messageCreateRequest") MessageCreateRequest messageCreateRequest,
       @RequestPart(value = "attachments", required = false) List<MultipartFile> attachments
   ) {
     log.info("메세지 생성 요청 수신 - 채널 ID: {}, 유저 ID: {}, 내용: {}", messageCreateRequest.channelId(),
@@ -71,7 +72,7 @@ public class MessageController implements MessageApi {
   @Override
   public ResponseEntity<MessageDto> update(
       @PathVariable UUID messageId,
-      @RequestBody MessageUpdateRequest messageUpdateRequest
+      @Valid @RequestBody MessageUpdateRequest messageUpdateRequest
   ) {
     log.info("메세지 업데이트 요청 수신 - 메세지 ID: {}, 변경할 내용: {}", messageId,
         messageUpdateRequest.newContent());

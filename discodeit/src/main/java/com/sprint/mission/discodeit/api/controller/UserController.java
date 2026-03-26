@@ -9,6 +9,7 @@ import com.sprint.mission.discodeit.dto.data.UserDto;
 import com.sprint.mission.discodeit.dto.request.UserUpdateRequest;
 import com.sprint.mission.discodeit.service.UserService;
 import com.sprint.mission.discodeit.service.UserStatusService;
+import jakarta.validation.Valid;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,7 +37,7 @@ public class UserController implements UserApi {
   )
   @Override
   public ResponseEntity<UserDto> create(
-      @RequestPart(value = "userCreateRequest") UserCreateRequest userCreateRequest,
+      @Valid @RequestPart(value = "userCreateRequest") UserCreateRequest userCreateRequest,
       @RequestPart(value = "profile", required = false) MultipartFile profile
   ) {
     log.info("유저 생성 요청 수신 - 유저 이름: {}", userCreateRequest.username());
@@ -56,7 +57,7 @@ public class UserController implements UserApi {
   @Override
   public ResponseEntity<UserDto> update(
       @PathVariable UUID userId,
-      @RequestPart("userUpdateRequest") UserUpdateRequest userUpdateRequest,
+      @Valid @RequestPart("userUpdateRequest") UserUpdateRequest userUpdateRequest,
       @RequestPart(value = "profile", required = false) MultipartFile profile
   ) {
     log.info("유저 정보 업데이트 요청 수신 - 유저 ID: {}, 변경할 이름: {}, 변경할 이메일: {}, 비밀번호 변경 여부: {}",
@@ -98,7 +99,7 @@ public class UserController implements UserApi {
   @Override
   public ResponseEntity<UserStatusDto> statusUpdate(
       @PathVariable UUID userId,
-      @RequestBody UserStatusUpdateRequest request
+      @Valid @RequestBody UserStatusUpdateRequest request
   ) {
     log.info("유저 상태 업데이트 요청 수신 - 유저 ID: {}", userId);
     UserStatusDto updatedUserStatus = userStatusService.updateByUserId(userId, request);

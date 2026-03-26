@@ -6,6 +6,7 @@ import com.sprint.mission.discodeit.dto.request.ChannelUpdateRequest;
 import com.sprint.mission.discodeit.dto.request.CreatePrivateChannelRequest;
 import com.sprint.mission.discodeit.dto.request.CreatePublicChannelRequest;
 import com.sprint.mission.discodeit.service.ChannelService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -26,7 +27,7 @@ public class ChannelController implements ChannelApi {
   @PostMapping("/public")
   @Override
   public ResponseEntity<ChannelDto> createPublic(
-      @RequestBody CreatePublicChannelRequest request
+      @Valid @RequestBody CreatePublicChannelRequest request
   ) {
     log.info("공개 채널 생성 요청 수신 - 채널 이름:{}, 채널 설명: {}", request.name(), request.description());
     ChannelDto createdChannel = channelService.create(request);
@@ -39,7 +40,7 @@ public class ChannelController implements ChannelApi {
   @PostMapping("/private")
   @Override
   public ResponseEntity<ChannelDto> createPrivate(
-      @RequestBody CreatePrivateChannelRequest request
+      @Valid @RequestBody CreatePrivateChannelRequest request
   ) {
     log.info("비공개 채널 생성 요청 수신 - 참여자 수: {}", request.participantIds().size());
     log.debug("채널 참여자 ID 목록: {}", request.participantIds());
@@ -55,7 +56,7 @@ public class ChannelController implements ChannelApi {
   @Override
   public ResponseEntity<ChannelDto> update(
       @PathVariable UUID channelId,
-      @RequestBody ChannelUpdateRequest request
+      @Valid @RequestBody ChannelUpdateRequest request
   ) {
     log.info("채널 업데이트 요청 수신 - 채널 ID: {}, 변경할 이름: {}, 변경할 내용: {}", channelId, request.newName(),
         request.newDescription());
