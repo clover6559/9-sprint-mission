@@ -59,9 +59,14 @@ public class UserController implements UserApi {
       @RequestPart("userUpdateRequest") UserUpdateRequest userUpdateRequest,
       @RequestPart(value = "profile", required = false) MultipartFile profile
   ) {
+    log.info("유저 정보 업데이트 요청 수신 - 유저 ID: {}, 변경할 이름: {}, 변경할 이메일: {}, 비밀번호 변경 여부: {}",
+        userId, userUpdateRequest.newUsername(), userUpdateRequest.newEmail(),
+        userUpdateRequest.newPassword().isEmpty());
     Optional<BinaryContentCreateRequest> profileRequest = Optional.ofNullable(profile)
         .flatMap(this::resolveProfileRequest);
     UserDto updatedUser = userService.update(userId, userUpdateRequest, profileRequest);
+    log.info("유저 정보 업데이트 처리 완료 - 유저 ID: {}, 변경한 이름: {}, 변경한 이메일: {}",
+        updatedUser.id(), updatedUser.username(), updatedUser.email());
     return ResponseEntity
         .status(HttpStatus.OK)
         .body(updatedUser);
@@ -72,7 +77,9 @@ public class UserController implements UserApi {
   public ResponseEntity<Void> delete(
       @PathVariable UUID userId
   ) {
+    log.info("유저 삭제 요청 수신 - 유저 ID: {}", userId);
     userService.delete(userId);
+    log.info("유저 삭제 처리 완료 - 유저 ID: {}", userId);
     return ResponseEntity
         .status(HttpStatus.NO_CONTENT)
         .build();
@@ -93,7 +100,9 @@ public class UserController implements UserApi {
       @PathVariable UUID userId,
       @RequestBody UserStatusUpdateRequest request
   ) {
+    log.info("유저 상태 업데이트 요청 수신 - 유저 ID: {}", userId);
     UserStatusDto updatedUserStatus = userStatusService.updateByUserId(userId, request);
+    log.info("유저 상태 업데이트 처리 완료 - 유저 ID: {}", userId);
     return ResponseEntity
         .status(HttpStatus.OK)
         .body(updatedUserStatus);
