@@ -79,7 +79,7 @@ public class UserController implements UserApi {
   ) {
     log.info("유저 삭제 요청 수신 - 유저 ID: {}", userId);
     userService.delete(userId);
-    log.info("유저 삭제 처리 완료 - 유저 ID: {}", userId);
+    log.info("유저 삭제 요청 처리 완료 - 유저 ID: {}", userId);
     return ResponseEntity
         .status(HttpStatus.NO_CONTENT)
         .build();
