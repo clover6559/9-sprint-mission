@@ -3,7 +3,7 @@ server:
 
 spring:
   datasource:
-    url: jdbc:postgresql://실제서버아이피:5432/discodeit_prod
+    url: jdbc:postgresql://localhost:5432/discodeit_prod
     username: prod_user
     password: prod_password_safe
     driver-class-name: org.postgresql.Driver
@@ -16,10 +16,16 @@ spring:
       hibernate:
         format_sql: false
         dialect: org.hibernate.dialect.PostgreSQLDialect
-
+discodeit:
+  repository:
+    type: jpa
+  storage:
+    type: local
+    local:
+      root-path: /var/lib/discodeit/upload
 logging:
   level:
-    com.example: INFO
+    com.sprint.mission.discodeit: INFO
     org.springframework: WARN
     org.hibernate: WARN
     org.apache.tomcat: WARN
