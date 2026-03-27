@@ -8,6 +8,7 @@ import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.Channel.ChannelType;
 import com.sprint.mission.discodeit.entity.ReadStatus;
 import com.sprint.mission.discodeit.entity.User;
+import com.sprint.mission.discodeit.exception.Channel.ChannelAlreadyExistException;
 import com.sprint.mission.discodeit.exception.Channel.ChannelNotFoundException;
 import com.sprint.mission.discodeit.exception.Channel.PrivateChannelUpdateException;
 import com.sprint.mission.discodeit.exception.User.UserNotFoundException;
@@ -39,6 +40,9 @@ public class BasicChannelService implements ChannelService {
   public ChannelDto create(CreatePublicChannelRequest request) {
     String name = request.name();
     String description = request.description();
+    if (channelRepository.existsByName(request.name())) {
+      throw new ChannelAlreadyExistException("이미 존재하는 채널 이름입니다: ");
+    }
     Channel channel = new Channel(ChannelType.PUBLIC, name, description);
     log.info("공개 채널 생성 요청 - 채널 타입: {}, 채널 ID: {}, 채널 이름:{}, 채널 설명: {}", channel.getType(),
         channel.getId(), name, description);
@@ -54,6 +58,9 @@ public class BasicChannelService implements ChannelService {
   public ChannelDto create(CreatePrivateChannelRequest request) {
     log.info("비공개 채널 생성 요청 - 참여자 수: {}", request.participantIds().size());
     log.debug("채널 참여자 ID 목록: {}", request.participantIds());
+    if (request.participantIds() == null || request.participantIds().isEmpty()) {
+      throw new IllegalArgumentException("비공개 채널은 최소 1명 이상의 참여자가 필요합니다.");
+    }
     Channel channel = new Channel(ChannelType.PRIVATE, null, null);
     log.info("채널 생성 요청 - 채널 타입: {}, 채널 ID: {}", channel.getType(), channel.getId());
 
@@ -113,6 +120,7 @@ public class BasicChannelService implements ChannelService {
       throw new PrivateChannelUpdateException(ChannelType.PRIVATE);
     }
     channel.update(newName, newDescription);
+    channelRepository.save(channel);
     log.info("채널 업데이트 성공 - 채널 ID: {}, 변경한 이름: {}, 변경한 내용: {}", channelId, newName, newDescription);
     return channelMapper.toDto(channel);
   }
@@ -121,6 +129,9 @@ public class BasicChannelService implements ChannelService {
   @Override
   public void delete(UUID channelId) {
     log.info("채널 삭제 요청 - 채널 ID: {}", channelId);
+    if (!channelRepository.existsById(channelId)) {
+      throw new ChannelNotFoundException(channelId);
+    }
     channelRepository.deleteById(channelId);
     log.info("채널 삭제 성공 - 채널 ID: {}", channelId);
 

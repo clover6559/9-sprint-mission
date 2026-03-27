@@ -8,9 +8,6 @@ public record CreatePublicChannelRequest(
     String name,
 
     @NotNull(message = "설명은 필수 입력 항목입니다.")
-    String description,
-
-    @NotNull(message = "유저는 필수 입력 항목입니다.")
-    UserFindRequest user) {
+    String description) {
 
 }

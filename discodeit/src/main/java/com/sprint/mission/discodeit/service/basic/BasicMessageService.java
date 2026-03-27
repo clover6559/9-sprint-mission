@@ -89,6 +89,9 @@ public class BasicMessageService implements MessageService {
 
   @Override
   public List<MessageDto> findAllByChannelId(UUID channelId) {
+    if (!channelRepository.existsById(channelId)) {
+      throw new ChannelNotFoundException(channelId);
+    }
     return messageRepository.findAllByChannelId(channelId).stream()
         .map(messageMapper::toDto)
         .toList();
@@ -113,12 +116,10 @@ public class BasicMessageService implements MessageService {
   @Override
   public void delete(UUID messageId) {
     log.info("메세지 삭제 요청 - 메세지 ID: {}", messageId);
-    Message findMessage = messageRepository.findById(messageId)
-        .orElseThrow(() -> {
-          log.warn("존재하지 않는 메세지로 삭제 실패 - 사용자 ID: {}", messageId);
-          return new MessageNotFoundException(messageId);
-        });
-    messageRepository.delete(findMessage);
+    if (!messageRepository.existsById(messageId)) {
+      throw new MessageNotFoundException(messageId);
+    }
+    messageRepository.deleteById(messageId);
     log.info("메세지 삭제 성공 - 메세지 ID: {}", messageId);
 
   }
