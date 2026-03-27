@@ -14,6 +14,7 @@ import com.sprint.mission.discodeit.exception.Channel.PrivateChannelUpdateExcept
 import com.sprint.mission.discodeit.exception.User.UserNotFoundException;
 import com.sprint.mission.discodeit.mapper.ChannelMapper;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
+import com.sprint.mission.discodeit.repository.MessageRepository;
 import com.sprint.mission.discodeit.repository.ReadStatusRepository;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.service.ChannelService;
@@ -32,6 +33,7 @@ public class BasicChannelService implements ChannelService {
 
   private final ChannelRepository channelRepository;
   private final ReadStatusRepository readStatusRepository;
+  private final MessageRepository messageRepository;
   private final UserRepository userRepository;
   private final ChannelMapper channelMapper;
 
@@ -95,11 +97,8 @@ public class BasicChannelService implements ChannelService {
     List<UUID> mySubscribedChannelIds = readStatusRepository.findAllByUserId(userId).stream()
         .map(readStatus -> readStatus.getChannel().getId())
         .toList();
-    return channelRepository.findAll().stream()
-        .filter(channel ->
-            channel.getType().equals(ChannelType.PUBLIC)
-                || mySubscribedChannelIds.contains(channel.getId())
-        )
+    return channelRepository.findAllByTypeOrIdIn(ChannelType.PUBLIC, mySubscribedChannelIds)
+        .stream()
         .map(channelMapper::toDto)
         .toList();
   }
@@ -132,6 +131,8 @@ public class BasicChannelService implements ChannelService {
     if (!channelRepository.existsById(channelId)) {
       throw new ChannelNotFoundException(channelId);
     }
+    messageRepository.deleteAllByChannelId(channelId);
+    readStatusRepository.deleteAllByChannelId(channelId);
     channelRepository.deleteById(channelId);
     log.info("채널 삭제 성공 - 채널 ID: {}", channelId);
 

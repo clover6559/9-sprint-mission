@@ -13,6 +13,7 @@ import com.sprint.mission.discodeit.exception.Channel.ChannelNotFoundException;
 import com.sprint.mission.discodeit.exception.Message.MessageNotFoundException;
 import com.sprint.mission.discodeit.exception.User.UserNotFoundException;
 import com.sprint.mission.discodeit.mapper.MessageMapper;
+import com.sprint.mission.discodeit.mapper.PageResponseMapper;
 import com.sprint.mission.discodeit.repository.BinaryContentRepository;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
 import com.sprint.mission.discodeit.repository.MessageRepository;
@@ -21,6 +22,7 @@ import com.sprint.mission.discodeit.service.MessageService;
 import com.sprint.mission.discodeit.storage.BinaryContentStorage;
 import java.time.Instant;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -41,6 +43,7 @@ public class BasicMessageService implements MessageService {
   private final UserRepository userRepository;
   private final BinaryContentRepository binaryContentRepository;
   private final BinaryContentStorage binaryContentStorage;
+  private final PageResponseMapper pageResponseMapper;
   private final MessageMapper messageMapper;
 
 
@@ -86,12 +89,8 @@ public class BasicMessageService implements MessageService {
         .orElseThrow(() -> new MessageNotFoundException(messageId));
   }
 
-
   @Override
-  public List<MessageDto> findAllByChannelId(UUID channelId) {
-    if (!channelRepository.existsById(channelId)) {
-      throw new ChannelNotFoundException(channelId);
-    }
+  public List<MessageDto> findByChannelId(UUID channelId) {
     return messageRepository.findAllByChannelId(channelId).stream()
         .map(messageMapper::toDto)
         .toList();
@@ -124,28 +123,21 @@ public class BasicMessageService implements MessageService {
 
   }
 
+  @Transactional(readOnly = true)
   @Override
-  public PageResponse<MessageDto> getMessages(UUID channelId, Instant cursor, Pageable pageable) {
-    Slice<Message> messageSlice;
-    if (cursor == null) {
-      messageSlice = messageRepository.findByChannelIdOrderByCreatedAtDesc(channelId, pageable);
-    } else {
-      messageSlice = messageRepository.findByChannelIdAndCreatedAtBeforeOrderByCreatedAtDesc(
-          channelId, cursor, pageable);
-    }
-    List<MessageDto> content = messageSlice.getContent().stream()
-        .map(messageMapper::toDto)
-        .toList();
-    Instant nextCursor = null;
-    if (messageSlice.hasNext() && !content.isEmpty()) {
-      nextCursor = content.get(content.size() - 1).createdAt();
-    }
-    return new PageResponse<>(
-        content,
-        nextCursor,
-        messageSlice.getSize(),
-        messageSlice.hasNext(),
-        null);
-  }
+  public PageResponse<MessageDto> findAllByChannelId(UUID channelId, Instant createAt,
+      Pageable pageable) {
+    Slice<MessageDto> slice = messageRepository.findAllByChannelIdWithAuthor(channelId,
+            Optional.ofNullable(createAt).orElse(Instant.now()),
+            pageable)
+        .map(messageMapper::toDto);
 
+    Instant nextCursor = null;
+    if (!slice.getContent().isEmpty()) {
+      nextCursor = slice.getContent().get(slice.getContent().size() - 1)
+          .createdAt();
+    }
+
+    return pageResponseMapper.fromSlice(slice, nextCursor);
+  }
 }

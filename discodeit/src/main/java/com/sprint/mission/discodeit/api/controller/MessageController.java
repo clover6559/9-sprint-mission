@@ -108,7 +108,7 @@ public class MessageController implements MessageApi {
           sort = "createdAt",
           direction = Direction.DESC
       ) Pageable pageable) {
-    PageResponse<MessageDto> messages = messageService.getMessages(channelId, cursor,
+    PageResponse<MessageDto> messages = messageService.findAllByChannelId(channelId, cursor,
         pageable);
     return ResponseEntity
         .status(HttpStatus.OK)

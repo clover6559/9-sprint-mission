@@ -135,7 +135,7 @@ class BasicMessageServiceTest {
     List<Message> messages = List.of(msg1, msg2);
 
     given(messageRepository.findAllByChannelId(channelId)).willReturn(messages);
-    List<MessageDto> result = messageService.findAllByChannelId(channelId);
+    List<MessageDto> result = messageService.findByChannelId(channelId);
     assertEquals(2, result.size());
   }
 
@@ -145,7 +145,7 @@ class BasicMessageServiceTest {
     UUID channelId = UUID.randomUUID();
     given(channelRepository.existsById(channelId)).willReturn(false);
     assertThrows(ChannelNotFoundException.class,
-        () -> messageService.findAllByChannelId(channelId));
+        () -> messageService.findById(channelId));
     then(messageRepository).should(never()).findAllByChannelId(channelId);
 
 

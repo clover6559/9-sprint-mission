@@ -18,12 +18,12 @@ public interface MessageService {
 
   MessageDto findById(UUID messageId);
 
-  List<MessageDto> findAllByChannelId(UUID channelId);
+  List<MessageDto> findByChannelId(UUID channelId);
 
   MessageDto update(UUID messageId, MessageUpdateRequest request);
 
   void delete(UUID messageId);
 
-  PageResponse<MessageDto> getMessages(UUID channelId, Instant cursor, Pageable pageable);
+  PageResponse<MessageDto> findAllByChannelId(UUID channelId, Instant cursor, Pageable pageable);
 
 }
