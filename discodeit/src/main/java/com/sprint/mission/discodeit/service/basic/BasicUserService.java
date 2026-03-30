@@ -77,6 +77,7 @@ public class BasicUserService implements UserService {
     log.info("유저 상태 생성 - 유저 이름 : {}", username);
     UserStatus userStatus = new UserStatus(user, now);
     userRepository.save(user);
+    userStatusRepository.save(userStatus);
     log.info("유저 등록 성공 - 유저 이름 : {}, 유저 이메일 : {}, 유저 ID : {}", username, email, user.getId());
     return userMapper.toDto(user);
   }

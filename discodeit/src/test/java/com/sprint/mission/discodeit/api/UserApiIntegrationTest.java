@@ -3,18 +3,16 @@ package com.sprint.mission.discodeit.api;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sprint.mission.discodeit.dto.data.UserDto;
 import com.sprint.mission.discodeit.dto.request.UserCreateRequest;
 import com.sprint.mission.discodeit.dto.request.UserUpdateRequest;
-import com.sprint.mission.discodeit.entity.User;
-import com.sprint.mission.discodeit.repository.UserRepository;
+import com.sprint.mission.discodeit.service.UserService;
 import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,6 +25,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
@@ -38,8 +37,9 @@ public class UserApiIntegrationTest {
 
   @Autowired
   protected ObjectMapper objectMapper;
+
   @Autowired
-  private UserRepository userRepository;
+  private UserService userService;
 
   @Test
   @DisplayName("새로운 사용자를 생성한다.")
@@ -73,45 +73,42 @@ public class UserApiIntegrationTest {
   @Test
   @DisplayName("사용자 정보를 수정한다.")
   void updateUser() throws Exception {
-    // given (먼저 사용자 하나를 저장해둬야겠지?)
-    // saveUser() 같은 헬퍼 메서드나 Repository를 직접 써서 미리 데이터를 넣어둬.
-    User user = userRepository.save(User.builder()
-        .username("oldUser")
-        .email("old-update@test.com") // 절대 안 겹치게!
-        .password("password123")
-        .build());
-    UUID userId = user.getId();
-    UserUpdateRequest request = new UserUpdateRequest("수정된이름", "", "");
+    // 1. Given: 이 테스트 전용 유니크 유저
+    UserDto created = userService.create(
+        new UserCreateRequest("updateUser", "update-test@example.com", "password123"),
+        Optional.empty()  // profile 없음
+    );
+    UUID userId = created.id();
+
+    UserUpdateRequest request = new UserUpdateRequest("fixedLuda", "fixed@example.com",
+        "newpassword123");
     MockMultipartFile updatePart = new MockMultipartFile(
-        "userUpdateRequest", // 컨트롤러의 @RequestPart 이름과 일치!
-        "",
+        "userUpdateRequest", "",
         MediaType.APPLICATION_JSON_VALUE,
         objectMapper.writeValueAsString(request).getBytes(StandardCharsets.UTF_8)
     );
-    // when & then
+
     mockMvc.perform(multipart("/api/users/{userId}", userId)
             .file(updatePart)
-            .with(requestProcessor -> {
-              requestProcessor.setMethod("PATCH"); // PATCH로 변경하는 핵심 포인트!
-              return requestProcessor;
+            .with(processor -> {
+              processor.setMethod("PATCH");
+              return processor;
             }))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.newUsername").value("수정된이름"));
+        .andExpect(jsonPath("$.username").value("fixedLuda"));
   }
+
 
   @Test
   @DisplayName("사용자 목록을 조회한다.")
   void findAllUsers() throws Exception {
-    // given (테스트용 데이터 2명 정도 생성)
-    userRepository.save(
-        User.builder().username("list-user-1").email("list1@test.com").password("password123")
-            .build());
-    userRepository.save(
-        User.builder().username("list-user-2").email("list2@test.com").password("password123")
-            .build());
-    // when & then
-    mockMvc.perform(get("/api/users")
-            .contentType(MediaType.APPLICATION_JSON))
+    // Given: 다른 테스트와 절대 안 겹치는 데이터
+    userService.create(new UserCreateRequest("listUser1", "list1@example.com", "password123"),
+        Optional.empty());
+    userService.create(new UserCreateRequest("listUser2", "list2@example.com", "password123"),
+        Optional.empty());
+
+    mockMvc.perform(get("/api/users"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.length()").value(2));
   }
@@ -119,14 +116,13 @@ public class UserApiIntegrationTest {
   @Test
   @DisplayName("사용자를 삭제한다.")
   void deleteUser() throws Exception {
-    // given
-    User user = userRepository.save(User.builder()
-        .username("delete-user")
-        .email("delete-target@test.com")
-        .password("password123")
-        .build());
-    UUID userId = user.getId();
-    // when & then
+    // Given: 삭제만을 위해 태어난 유저
+    UserDto created = userService.create(
+        new UserCreateRequest("deleteUser", "delete-target@example.com", "password123"),
+        Optional.empty()
+    );
+    UUID userId = created.id();
+
     mockMvc.perform(delete("/api/users/{userId}", userId))
         .andExpect(status().isNoContent());
   }

@@ -76,7 +76,7 @@ public class BasicChannelService implements ChannelService {
                 return new UserNotFoundException(userId);
               });
           log.info("읽음 상태 생성 - 참여자 ID: {}, 채널 ID: {}", participant.getId(), createdChannel.getId());
-          return new ReadStatus(participant, createdChannel, Instant.MIN);
+          return new ReadStatus(participant, createdChannel, Instant.now());
         })
         .toList();
     readStatusRepository.saveAll(readStatuses);
