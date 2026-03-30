@@ -12,6 +12,7 @@ import com.sprint.mission.discodeit.exception.User.UserNotFoundException;
 import com.sprint.mission.discodeit.mapper.UserMapper;
 import com.sprint.mission.discodeit.repository.BinaryContentRepository;
 import com.sprint.mission.discodeit.repository.UserRepository;
+import com.sprint.mission.discodeit.repository.UserStatusRepository;
 import com.sprint.mission.discodeit.storage.BinaryContentStorage;
 import java.util.Optional;
 import java.util.UUID;
@@ -33,7 +34,8 @@ class BasicUserServiceTest {
   private UserMapper userMapper;
   @Mock
   private BinaryContentStorage binaryContentStorage;
-
+  @Mock
+  private UserStatusRepository userStatusRepository;
   @InjectMocks
   private BasicUserService userService;
 
@@ -44,9 +46,10 @@ class BasicUserServiceTest {
     UserCreateRequest request = new UserCreateRequest("testUser", "test@test.com", "password123");
     given(userRepository.existsByEmail(anyString())).willReturn(false);
     given(userRepository.existsByUsername(anyString())).willReturn(false);
-
+    given(userRepository.save(any())).willAnswer(invocation -> invocation.getArgument(0));
     userService.create(request, Optional.empty());
     then(userRepository).should(times(1)).save(any(User.class));
+    then(userStatusRepository).should().save(any());
   }
 
   @Test

@@ -144,6 +144,7 @@ public class BasicUserService implements UserService {
     user.update(newUsername, newEmail, newPassword, nullableProfile);
     log.info("유저 정보 업데이트 성공 - 유저 ID: {}, 유저 이름: {}, 유저 이메일: {}, 유저 비밀번호: {}", userId,
         newUsername, newEmail, hashFirstChars(newPassword));
+    userRepository.save(user);
     return userMapper.toDto(user);
   }
 

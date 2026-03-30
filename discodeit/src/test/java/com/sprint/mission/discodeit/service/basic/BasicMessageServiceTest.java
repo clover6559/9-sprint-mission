@@ -2,7 +2,6 @@ package com.sprint.mission.discodeit.service.basic;
 
 import static org.mockito.BDDMockito.*;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.times;
 
 import com.sprint.mission.discodeit.dto.data.MessageDto;
 import com.sprint.mission.discodeit.dto.request.BinaryContentCreateRequest;
@@ -130,6 +129,7 @@ class BasicMessageServiceTest {
   @DisplayName("채널에 있는 메세지 조회 성공")
   void findByChannel_success() {
     UUID channelId = UUID.randomUUID();
+    given(channelRepository.existsById(channelId)).willReturn(true);
     Message msg1 = new Message("내용1", null, null, null);
     Message msg2 = new Message("내용2", null, null, null);
     List<Message> messages = List.of(msg1, msg2);
@@ -145,8 +145,8 @@ class BasicMessageServiceTest {
     UUID channelId = UUID.randomUUID();
     given(channelRepository.existsById(channelId)).willReturn(false);
     assertThrows(ChannelNotFoundException.class,
-        () -> messageService.findById(channelId));
-    then(messageRepository).should(never()).findAllByChannelId(channelId);
+        () -> messageService.findByChannelId(channelId));
+    then(messageRepository).should(never()).findAllByChannelId(any());
 
 
   }

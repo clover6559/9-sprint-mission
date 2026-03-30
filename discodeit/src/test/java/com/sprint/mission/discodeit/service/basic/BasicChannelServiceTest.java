@@ -13,9 +13,10 @@ import com.sprint.mission.discodeit.entity.ReadStatus;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.exception.Channel.ChannelAlreadyExistException;
 import com.sprint.mission.discodeit.exception.Channel.ChannelNotFoundException;
-import com.sprint.mission.discodeit.exception.User.UserNotFoundException;
+import com.sprint.mission.discodeit.exception.Channel.PrivateChannelUpdateException;
 import com.sprint.mission.discodeit.mapper.ChannelMapper;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
+import com.sprint.mission.discodeit.repository.MessageRepository;
 import com.sprint.mission.discodeit.repository.ReadStatusRepository;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import java.time.Instant;
@@ -38,6 +39,8 @@ class BasicChannelServiceTest {
   private ChannelRepository channelRepository;
   @Mock
   private ReadStatusRepository readStatusRepository;
+  @Mock
+  private MessageRepository messageRepository;
   @Mock
   private UserRepository userRepository;
   @Mock
@@ -81,9 +84,8 @@ class BasicChannelServiceTest {
   @Test
   @DisplayName("유저가 없어서 비공개 채널 생성 실패")
   void create_private_fail() {
-    List<UUID> emptyUsers = new ArrayList<>();
-    CreatePrivateChannelRequest request = new CreatePrivateChannelRequest(emptyUsers);
-    assertThrows(UserNotFoundException.class, () -> {
+    CreatePrivateChannelRequest request = new CreatePrivateChannelRequest(new ArrayList<>());
+    assertThrows(PrivateChannelUpdateException.class, () -> {
       channelService.create(request);
     });
   }
@@ -119,6 +121,8 @@ class BasicChannelServiceTest {
     UUID channelId = UUID.randomUUID();
     given(channelRepository.existsById(channelId)).willReturn(true);
     channelService.delete(channelId);
+    then(messageRepository).should().deleteAllByChannelId(channelId);
+    then(readStatusRepository).should().deleteAllByChannelId(channelId);
     then(channelRepository).should().deleteById(channelId);
   }
 
@@ -137,21 +141,22 @@ class BasicChannelServiceTest {
     UUID userId = UUID.randomUUID();
     Channel publicChannel = new Channel(ChannelType.PUBLIC, "공개", "설명");
     Channel joinedPrivate = new Channel(ChannelType.PRIVATE, "참여비공개", "설명");
-    Channel notJoinedPrivate = new Channel(ChannelType.PRIVATE, "미참여비공개", "설명");
+
     ReflectionTestUtils.setField(publicChannel, "id", UUID.randomUUID());
     ReflectionTestUtils.setField(joinedPrivate, "id", UUID.randomUUID());
-    ReflectionTestUtils.setField(notJoinedPrivate, "id", UUID.randomUUID());
 
-    List<Channel> allChannels = List.of(publicChannel, joinedPrivate, notJoinedPrivate);
+    ReadStatus status = new ReadStatus(new User("test", "a@a.com", "123", null), joinedPrivate,
+        Instant.now());
 
-    ReadStatus status = new ReadStatus(new User("testUser", "test@test.com", "password123", null),
-        joinedPrivate, Instant.now());
+    given(readStatusRepository.findAllByUserId(any(UUID.class))).willReturn(List.of(status));
 
-    given(readStatusRepository.findAllByUserId(userId)).willReturn(List.of(status));
-    given(channelRepository.findAll()).willReturn(allChannels);
+    given(channelRepository.findAllByTypeOrIdIn(any(), any()))
+        .willReturn(List.of(publicChannel, joinedPrivate));
+
+    given(channelMapper.toDto(any(Channel.class))).willReturn(
+        new ChannelDto(null, null, "명칭", null, null, null));
 
     List<ChannelDto> result = channelService.findAllByUserId(userId);
-
     assertEquals(2, result.size());
   }
 
@@ -162,9 +167,8 @@ class BasicChannelServiceTest {
     UUID userId = UUID.randomUUID();
     given(readStatusRepository.findAllByUserId(userId)).willReturn(List.of());
 
-    Channel secret1 = new Channel(ChannelType.PRIVATE, "비밀1", "설명");
-    given(channelRepository.findAll()).willReturn(List.of(secret1));
-
+    given(channelRepository.findAllByTypeOrIdIn(eq(ChannelType.PUBLIC), anyList()))
+        .willReturn(List.of());
     List<ChannelDto> result = channelService.findAllByUserId(userId);
 
     assertTrue(result.isEmpty());

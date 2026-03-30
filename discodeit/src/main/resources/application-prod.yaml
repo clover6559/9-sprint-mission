@@ -7,6 +7,12 @@ spring:
     username: prod_user
     password: prod_password_safe
     driver-class-name: org.postgresql.Driver
+  application:
+    name: discodeit
+  boot:
+    admin:
+      client:
+        url: ${SPRING_BOOT_ADMIN_CLIENT_URL}
 
   jpa:
     hibernate:

@@ -91,6 +91,9 @@ public class BasicMessageService implements MessageService {
 
   @Override
   public List<MessageDto> findByChannelId(UUID channelId) {
+    if (!channelRepository.existsById(channelId)) {
+      throw new ChannelNotFoundException(channelId);
+    }
     return messageRepository.findAllByChannelId(channelId).stream()
         .map(messageMapper::toDto)
         .toList();

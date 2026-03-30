@@ -61,7 +61,7 @@ public class BasicChannelService implements ChannelService {
     log.info("비공개 채널 생성 요청 - 참여자 수: {}", request.participantIds().size());
     log.debug("채널 참여자 ID 목록: {}", request.participantIds());
     if (request.participantIds() == null || request.participantIds().isEmpty()) {
-      throw new IllegalArgumentException("비공개 채널은 최소 1명 이상의 참여자가 필요합니다.");
+      throw new PrivateChannelUpdateException(ChannelType.PRIVATE);
     }
     Channel channel = new Channel(ChannelType.PRIVATE, null, null);
     log.info("채널 생성 요청 - 채널 타입: {}, 채널 ID: {}", channel.getType(), channel.getId());
