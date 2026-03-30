@@ -10,14 +10,11 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.util.List;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-
-import java.util.List;
 import lombok.NoArgsConstructor;
-
 
 @Entity
 @Table(name = "messages")
@@ -26,32 +23,35 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Message extends BaseUpdatableEntity {
 
-  @Column(columnDefinition = "TEXT")
-  private String content;
+    @Column(columnDefinition = "TEXT")
+    private String content;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "channel_id")
-  private Channel channel;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "channel_id")
+    private Channel channel;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "author_id")
-  private User author;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "author_id")
+    private User author;
 
-  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-  @JoinTable(name = "message_attachments", joinColumns = @JoinColumn(name = "message_id"),
-      inverseJoinColumns = @JoinColumn(name = "attachment_id"))
-  private List<BinaryContent> attachmentIds;
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinTable(
+            name = "message_attachments",
+            joinColumns = @JoinColumn(name = "message_id"),
+            inverseJoinColumns = @JoinColumn(name = "attachment_id"))
+    private List<BinaryContent> attachmentIds;
 
-  public Message(String content, Channel channel, User author, List<BinaryContent> attachmentIds) {
-    this.author = author;
-    this.content = content;
-    this.channel = channel;
-    this.attachmentIds = attachmentIds;
-  }
-
-  public void update(String newContent) {
-    if (newContent != null && !newContent.equals(this.content)) {
-      this.content = newContent;
+    public Message(
+            String content, Channel channel, User author, List<BinaryContent> attachmentIds) {
+        this.author = author;
+        this.content = content;
+        this.channel = channel;
+        this.attachmentIds = attachmentIds;
     }
-  }
+
+    public void update(String newContent) {
+        if (newContent != null && !newContent.equals(this.content)) {
+            this.content = newContent;
+        }
+    }
 }

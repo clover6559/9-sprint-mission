@@ -7,12 +7,10 @@ import com.sprint.mission.discodeit.exception.Auth.LoginFailedException;
 import com.sprint.mission.discodeit.mapper.UserMapper;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.service.AuthService;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
-import java.util.NoSuchElementException;
-import java.util.UUID;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -20,25 +18,23 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class BasicAuthService implements AuthService {
 
-  private final UserRepository userRepository;
-  private final UserMapper userMapper;
+    private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
+    @Transactional
+    @Override
+    public UserDto login(LoginDto loginRequest) {
+        String username = loginRequest.username();
+        String password = loginRequest.password();
 
-  @Transactional
-  @Override
-  public UserDto login(LoginDto loginRequest) {
-    String username = loginRequest.username();
-    String password = loginRequest.password();
+        User user =
+                userRepository
+                        .findByUsername(username)
+                        .filter(u -> u.getPassword().equals(password))
+                        .orElseThrow(() -> new LoginFailedException(username));
+        return userMapper.toDto(user);
+    }
 
-    User user = userRepository.findByUsername(username)
-        .filter(u -> u.getPassword().equals(password))
-        .orElseThrow(() -> new LoginFailedException(username));
-    return userMapper.toDto(user);
-  }
-
-  @Override
-  public void logout(UUID userId) {
-
-  }
+    @Override
+    public void logout(UUID userId) {}
 }
-

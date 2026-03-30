@@ -18,41 +18,40 @@ import org.springframework.test.context.ActiveProfiles;
 @EnableJpaAuditing
 class UserRepositoryTest {
 
-  @Autowired
-  private UserRepository userRepository;
+    @Autowired private UserRepository userRepository;
 
+    @Test
+    @DisplayName("전체 사용자 Fetch Join 조회 성공")
+    void findAllWithProfileAndStatus_Success() {
+        User user =
+                User.builder()
+                        .username("user1")
+                        .email("u1@test.com")
+                        .password("password123")
+                        .profile(null)
+                        .build();
+        UserStatus status = UserStatus.builder().user(user).lastActiveAt(Instant.now()).build();
+        userRepository.save(user);
 
-  @Test
-  @DisplayName("전체 사용자 Fetch Join 조회 성공")
-  void findAllWithProfileAndStatus_Success() {
-    User user = User.builder().username("user1").email("u1@test.com").password("password123")
-        .profile(null)
-        .build();
-    UserStatus status = UserStatus.builder()
-        .user(user)
-        .lastActiveAt(Instant.now())
-        .build();
-    userRepository.save(user);
+        // when
+        List<User> users = userRepository.findAllWithProfileAndStatus();
 
-    // when
-    List<User> users = userRepository.findAllWithProfileAndStatus();
+        // then
+        assertThat(users).isNotEmpty();
+        assertThat(users.get(0).getUsername()).isEqualTo("user1");
+    }
 
-    // then
-    assertThat(users).isNotEmpty();
-    assertThat(users.get(0).getUsername()).isEqualTo("user1");
-  }
+    @Test
+    @DisplayName("저장된 사용자가 없어서 전체 사용자 조회 실패")
+    void findAllWithProfileAndStatus_Fail_Empty() {
 
-  @Test
-  @DisplayName("저장된 사용자가 없어서 전체 사용자 조회 실패")
-  void findAllWithProfileAndStatus_Fail_Empty() {
+        userRepository.deleteAll();
 
-    userRepository.deleteAll();
+        // [When]
+        List<User> users = userRepository.findAllWithProfileAndStatus();
 
-    // [When]
-    List<User> users = userRepository.findAllWithProfileAndStatus();
-
-    // [Then]
-    assertThat(users).isEmpty();
-    assertThat(users.size()).isEqualTo(0);
-  }
+        // [Then]
+        assertThat(users).isEmpty();
+        assertThat(users.size()).isEqualTo(0);
+    }
 }

@@ -5,11 +5,11 @@ import com.sprint.mission.discodeit.exception.ErrorCode;
 
 public class AuthException extends DiscodeitException {
 
-  protected AuthException(ErrorCode errorCode) {
-    super(errorCode);
-  }
+    protected AuthException(ErrorCode errorCode) {
+        super(errorCode);
+    }
 
-  protected AuthException(ErrorCode errorCode, String customMessage) {
-    super(errorCode, customMessage);
-  }
+    protected AuthException(ErrorCode errorCode, String customMessage) {
+        super(errorCode, customMessage);
+    }
 }

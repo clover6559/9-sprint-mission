@@ -17,7 +17,6 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-
 import lombok.NoArgsConstructor;
 
 @Entity
@@ -28,41 +27,40 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Channel extends BaseUpdatableEntity {
 
-  public enum ChannelType {
-    PUBLIC, PRIVATE
-  }
-
-  @Column(length = 100)
-  private String name;
-
-  @Column(length = 500)
-  private String description;
-
-  @Column(length = 10)
-  @Enumerated(EnumType.STRING)
-  private ChannelType type;
-
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "user_id")
-  private User user;
-
-  @OneToMany(mappedBy = "channel", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<Message> messages = new ArrayList<>();
-
-  public Channel(ChannelType type, String name, String description) {
-    this.name = name;
-    this.description = description;
-    this.type = type;
-  }
-
-  public void update(String newName, String newDescription) {
-    if (newName != null && !newName.equals(this.name)) {
-      this.name = newName;
+    public enum ChannelType {
+        PUBLIC,
+        PRIVATE
     }
-    if (newDescription != null && !newDescription.equals(this.description)) {
-      this.description = newDescription;
-    }
-  }
 
+    @Column(length = 100)
+    private String name;
+
+    @Column(length = 500)
+    private String description;
+
+    @Column(length = 10)
+    @Enumerated(EnumType.STRING)
+    private ChannelType type;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @OneToMany(mappedBy = "channel", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Message> messages = new ArrayList<>();
+
+    public Channel(ChannelType type, String name, String description) {
+        this.name = name;
+        this.description = description;
+        this.type = type;
+    }
+
+    public void update(String newName, String newDescription) {
+        if (newName != null && !newName.equals(this.name)) {
+            this.name = newName;
+        }
+        if (newDescription != null && !newDescription.equals(this.description)) {
+            this.description = newDescription;
+        }
+    }
 }
-

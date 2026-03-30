@@ -5,10 +5,9 @@ import java.util.UUID;
 
 public class ChannelNotFoundException extends ChannelException {
 
-  public ChannelNotFoundException(UUID channelId) {
-    super(ErrorCode.CHANNEL_NOT_FOUND,
-        String.format("채널을 찾을 수 없습니다: ID=%s", channelId));
-    addDetails("channelId", channelId);
-    addDetails("searchType", "byId");
-  }
+    public ChannelNotFoundException(UUID channelId) {
+        super(ErrorCode.CHANNEL_NOT_FOUND, String.format("채널을 찾을 수 없습니다: ID=%s", channelId));
+        addDetails("channelId", channelId);
+        addDetails("searchType", "byId");
+    }
 }

@@ -9,11 +9,10 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @RequiredArgsConstructor
 public class WebMvcConfig implements WebMvcConfigurer {
 
-  private final MDCLoggingInterceptor mdcLoggingInterceptor;
+    private final MDCLoggingInterceptor mdcLoggingInterceptor;
 
-  @Override
-  public void addInterceptors(InterceptorRegistry registry) {
-    registry.addInterceptor(mdcLoggingInterceptor)
-        .addPathPatterns("/**"); // 모든 요청에 대해 적용
-  }
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(mdcLoggingInterceptor).addPathPatterns("/**"); // 모든 요청에 대해 적용
+    }
 }
