@@ -13,6 +13,7 @@ import com.sprint.mission.discodeit.entity.ReadStatus;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.exception.Channel.ChannelAlreadyExistException;
 import com.sprint.mission.discodeit.exception.Channel.ChannelNotFoundException;
+import com.sprint.mission.discodeit.exception.Channel.EmptyParticipantListException;
 import com.sprint.mission.discodeit.exception.Channel.PrivateChannelUpdateException;
 import com.sprint.mission.discodeit.mapper.ChannelMapper;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
@@ -89,7 +90,7 @@ class BasicChannelServiceTest {
   @DisplayName("유저가 없어서 비공개 채널 생성 실패")
   void create_private_fail() {
     CreatePrivateChannelRequest request = new CreatePrivateChannelRequest(new ArrayList<>());
-    assertThrows(PrivateChannelUpdateException.class, () -> {
+    assertThrows(EmptyParticipantListException.class, () -> {
       channelService.create(request);
     });
   }
