@@ -30,90 +30,73 @@ import org.springframework.test.web.servlet.MockMvc;
 @WebMvcTest(ChannelController.class)
 class ChannelControllerTest {
 
-    @Autowired private MockMvc mockMvc;
+  @Autowired
+  private MockMvc mockMvc;
 
-    @Autowired private ObjectMapper objectMapper;
-    @MockitoBean private ChannelService channelService;
+  @Autowired
+  private ObjectMapper objectMapper;
 
-    @Test
-    @DisplayName("공개 채널 생성 성공")
-    void createPublic_success() throws Exception {
-        // given
-        CreatePublicChannelRequest request = new CreatePublicChannelRequest("General", "공개 채널 설명");
-        ChannelDto responseDto =
-                new ChannelDto(
-                        UUID.randomUUID(),
-                        ChannelType.PUBLIC,
-                        "General",
-                        "공개 채널 설명",
-                        Collections.emptyList(),
-                        Instant.now());
+  @MockitoBean
+  private ChannelService channelService;
 
-        given(channelService.create(any(CreatePublicChannelRequest.class))).willReturn(responseDto);
+  @Test
+  @DisplayName("공개 채널 생성 성공")
+  void createPublic_success() throws Exception {
+    CreatePublicChannelRequest request = new CreatePublicChannelRequest("General", "공개 채널 설명");
+    ChannelDto responseDto = new ChannelDto(
+        UUID.randomUUID(), ChannelType.PUBLIC, "General", "공개 채널 설명", Collections.emptyList(),
+        Instant.now());
 
-        // when & then
-        mockMvc.perform(
-                        post("/api/channels/public")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(request)))
-                .andDo(print())
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.name").value("General"))
-                .andExpect(jsonPath("$.description").value("공개 채널 설명"));
-    }
+    given(channelService.create(any(CreatePublicChannelRequest.class))).willReturn(responseDto);
 
-    @Test
-    @DisplayName("유저 ID 기반 채널 목록 조회 성공")
-    void findAll_success() throws Exception {
-        // given
-        UUID userId = UUID.randomUUID();
-        ChannelDto channel1 =
-                new ChannelDto(
-                        UUID.randomUUID(),
-                        ChannelType.PUBLIC,
-                        "Channel 1",
-                        "Desc 1",
-                        Collections.emptyList(),
-                        Instant.now());
-        given(channelService.findAllByUserId(userId)).willReturn(List.of(channel1));
+    mockMvc.perform(post("/api/channels/public")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request)))
+        .andDo(print())
+        .andExpect(status().isCreated())
+        .andExpect(jsonPath("$.name").value("General"))
+        .andExpect(jsonPath("$.description").value("공개 채널 설명"));
+  }
 
-        // when & then
-        mockMvc.perform(
-                        get("/api/channels")
-                                .param("userId", userId.toString())
-                                .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()").value(1))
-                .andExpect(jsonPath("$[0].name").value("Channel 1"));
-    }
+  @Test
+  @DisplayName("유저 ID 기반 채널 목록 조회 성공")
+  void findAll_success() throws Exception {
+    UUID userId = UUID.randomUUID();
+    ChannelDto channel1 = new ChannelDto(
+        UUID.randomUUID(), ChannelType.PUBLIC, "Channel 1", "Desc 1", Collections.emptyList(),
+        Instant.now());
+    given(channelService.findAllByUserId(userId)).willReturn(List.of(channel1));
 
-    @Test
-    @DisplayName("채널 업데이트 실패 - 존재하지 않는 채널 ID")
-    void update_fail_ChannelNotFound() throws Exception {
-        // given
-        UUID channelId = UUID.randomUUID();
-        ChannelUpdateRequest request = new ChannelUpdateRequest("New Name", "New Description");
-        given(channelService.update(eq(channelId), any(ChannelUpdateRequest.class)))
-                .willThrow(new ChannelNotFoundException(channelId));
-        // when & then
-        mockMvc.perform(
-                        patch("/api/channels/{channelId}", channelId)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(request)))
-                .andDo(print())
-                .andExpect(status().isNotFound());
-    }
+    mockMvc.perform(
+            get("/api/channels").param("userId", userId.toString()).accept(MediaType.APPLICATION_JSON))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.size()").value(1))
+        .andExpect(jsonPath("$[0].name").value("Channel 1"));
+  }
 
-    @Test
-    @DisplayName("채널 삭제 성공")
-    void delete_success() throws Exception {
-        // given
-        UUID channelId = UUID.randomUUID();
+  @Test
+  @DisplayName("채널 업데이트 실패 - 존재하지 않는 채널 ID")
+  void update_fail_ChannelNotFound() throws Exception {
+    UUID channelId = UUID.randomUUID();
+    ChannelUpdateRequest request = new ChannelUpdateRequest("New Name", "New Description");
+    given(channelService.update(eq(channelId), any(ChannelUpdateRequest.class)))
+        .willThrow(new ChannelNotFoundException(channelId));
 
-        // when & then
-        mockMvc.perform(delete("/api/channels/{channelId}", channelId))
-                .andDo(print())
-                .andExpect(status().isNoContent());
-    }
+    mockMvc.perform(patch("/api/channels/{channelId}", channelId)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request)))
+        .andDo(print())
+        .andExpect(status().isNotFound());
+  }
+
+  @Test
+  @DisplayName("채널 삭제 성공")
+  void delete_success() throws Exception {
+    UUID channelId = UUID.randomUUID();
+
+    mockMvc.perform(delete("/api/channels/{channelId}", channelId))
+        .andDo(print())
+        .andExpect(status().isNoContent());
+  }
 }

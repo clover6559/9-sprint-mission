@@ -53,11 +53,7 @@ public class BasicChannelService implements ChannelService {
                 description);
 
         Channel savedChannel = channelRepository.save(channel);
-        log.info(
-                "채널 생성 성공 - 채널 타입: {}, 채널 ID: {}, 채널 이름: {}",
-                channel.getType(),
-                channel.getId(),
-                name);
+        log.info("채널 생성 성공 - 채널 타입: {}, 채널 ID: {}, 채널 이름: {}", channel.getType(), channel.getId(), name);
         return channelMapper.toDto(savedChannel);
     }
 
@@ -74,29 +70,16 @@ public class BasicChannelService implements ChannelService {
 
         Channel createdChannel = channelRepository.save(channel);
         log.info("채널 생성 성공 - 채널 타입: {}, 채널 ID: {}", channel.getType(), channel.getId());
-        List<ReadStatus> readStatuses =
-                request.participantIds().stream()
-                        .map(
-                                userId -> {
-                                    User participant =
-                                            userRepository
-                                                    .findById(userId)
-                                                    .orElseThrow(
-                                                            () -> {
-                                                                log.warn(
-                                                                        "참여자 조회 실패 - 유저 ID: {}",
-                                                                        userId);
-                                                                return new UserNotFoundException(
-                                                                        userId);
-                                                            });
-                                    log.info(
-                                            "읽음 상태 생성 - 참여자 ID: {}, 채널 ID: {}",
-                                            participant.getId(),
-                                            createdChannel.getId());
-                                    return new ReadStatus(
-                                            participant, createdChannel, Instant.now());
-                                })
-                        .toList();
+        List<ReadStatus> readStatuses = request.participantIds().stream()
+                .map(userId -> {
+                    User participant = userRepository.findById(userId).orElseThrow(() -> {
+                        log.warn("참여자 조회 실패 - 유저 ID: {}", userId);
+                        return new UserNotFoundException(userId);
+                    });
+                    log.info("읽음 상태 생성 - 참여자 ID: {}, 채널 ID: {}", participant.getId(), createdChannel.getId());
+                    return new ReadStatus(participant, createdChannel, Instant.now());
+                })
+                .toList();
         readStatusRepository.saveAll(readStatuses);
         return channelMapper.toDto(createdChannel);
     }
@@ -111,13 +94,10 @@ public class BasicChannelService implements ChannelService {
 
     @Override
     public List<ChannelDto> findAllByUserId(UUID userId) {
-        List<UUID> mySubscribedChannelIds =
-                readStatusRepository.findAllByUserId(userId).stream()
-                        .map(readStatus -> readStatus.getChannel().getId())
-                        .toList();
-        return channelRepository
-                .findAllByTypeOrIdIn(ChannelType.PUBLIC, mySubscribedChannelIds)
-                .stream()
+        List<UUID> mySubscribedChannelIds = readStatusRepository.findAllByUserId(userId).stream()
+                .map(readStatus -> readStatus.getChannel().getId())
+                .toList();
+        return channelRepository.findAllByTypeOrIdIn(ChannelType.PUBLIC, mySubscribedChannelIds).stream()
                 .map(channelMapper::toDto)
                 .toList();
     }
@@ -127,30 +107,18 @@ public class BasicChannelService implements ChannelService {
     public ChannelDto update(UUID channelId, ChannelUpdateRequest request) {
         String newName = request.newName();
         String newDescription = request.newDescription();
-        log.info(
-                "채널 업데이트 요청 - 채널 ID: {}, 변경할 이름: {}, 변경할 내용: {}",
-                channelId,
-                newName,
-                newDescription);
-        Channel channel =
-                channelRepository
-                        .findById(channelId)
-                        .orElseThrow(
-                                () -> {
-                                    log.warn("존재하지 않는 채널로 업데이트 실패 - 채널 ID: {}", channelId);
-                                    return new ChannelNotFoundException(channelId);
-                                });
+        log.info("채널 업데이트 요청 - 채널 ID: {}, 변경할 이름: {}, 변경할 내용: {}", channelId, newName, newDescription);
+        Channel channel = channelRepository.findById(channelId).orElseThrow(() -> {
+            log.warn("존재하지 않는 채널로 업데이트 실패 - 채널 ID: {}", channelId);
+            return new ChannelNotFoundException(channelId);
+        });
         if (channel.getType().equals(ChannelType.PRIVATE)) {
             log.warn("비공개 채널은 업데이트가 불가능합니다.");
             throw new PrivateChannelUpdateException(ChannelType.PRIVATE);
         }
         channel.update(newName, newDescription);
         channelRepository.save(channel);
-        log.info(
-                "채널 업데이트 성공 - 채널 ID: {}, 변경한 이름: {}, 변경한 내용: {}",
-                channelId,
-                newName,
-                newDescription);
+        log.info("채널 업데이트 성공 - 채널 ID: {}, 변경한 이름: {}, 변경한 내용: {}", channelId, newName, newDescription);
         return channelMapper.toDto(channel);
     }
 

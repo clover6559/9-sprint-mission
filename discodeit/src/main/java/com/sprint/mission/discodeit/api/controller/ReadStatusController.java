@@ -24,8 +24,7 @@ public class ReadStatusController implements ReadStatusApi {
     @Operation(summary = "읽음 상태 생성")
     @PostMapping
     @Override
-    public ResponseEntity<ReadStatusDto> create(
-            @Valid @RequestBody ReadStatusCreateRequest readStatusCreateRequest) {
+    public ResponseEntity<ReadStatusDto> create(@Valid @RequestBody ReadStatusCreateRequest readStatusCreateRequest) {
         ReadStatusDto createdReadStatus = readStatusService.create(readStatusCreateRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdReadStatus);
     }
@@ -34,10 +33,8 @@ public class ReadStatusController implements ReadStatusApi {
     @PatchMapping("/{readStatusId}")
     @Override
     public ResponseEntity<ReadStatusDto> update(
-            @PathVariable UUID readStatusId,
-            @Valid @RequestBody ReadStatusUpdateRequest readStatusUpdateRequest) {
-        ReadStatusDto updatedReadStatus =
-                readStatusService.update(readStatusId, readStatusUpdateRequest);
+            @PathVariable UUID readStatusId, @Valid @RequestBody ReadStatusUpdateRequest readStatusUpdateRequest) {
+        ReadStatusDto updatedReadStatus = readStatusService.update(readStatusId, readStatusUpdateRequest);
         return ResponseEntity.status(HttpStatus.OK).body(updatedReadStatus);
     }
 

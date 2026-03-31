@@ -35,24 +35,19 @@ public class BasicReadStatusService implements ReadStatusService {
     @Transactional
     @Override
     public ReadStatusDto create(ReadStatusCreateRequest request) {
-        User user =
-                userRepository
-                        .findById(request.userId())
-                        .orElseThrow(() -> new UserNotFoundException(request.userId()));
-        Channel channel =
-                channelRepository
-                        .findById(request.channelId())
-                        .orElseThrow(() -> new ChannelNotFoundException(request.channelId()));
-        ReadStatus readStatus =
-                readStatusRepository
-                        .findByUserIdAndChannelId(request.userId(), request.channelId())
-                        .orElseGet(
-                                () -> {
-                                    Instant lastReadAt = request.lastReadAt();
-                                    ReadStatus newReadStatus =
-                                            new ReadStatus(user, channel, lastReadAt);
-                                    return readStatusRepository.save(newReadStatus);
-                                });
+        User user = userRepository
+                .findById(request.userId())
+                .orElseThrow(() -> new UserNotFoundException(request.userId()));
+        Channel channel = channelRepository
+                .findById(request.channelId())
+                .orElseThrow(() -> new ChannelNotFoundException(request.channelId()));
+        ReadStatus readStatus = readStatusRepository
+                .findByUserIdAndChannelId(request.userId(), request.channelId())
+                .orElseGet(() -> {
+                    Instant lastReadAt = request.lastReadAt();
+                    ReadStatus newReadStatus = new ReadStatus(user, channel, lastReadAt);
+                    return readStatusRepository.save(newReadStatus);
+                });
         return readStatusMapper.toDto(readStatus);
     }
 
@@ -75,10 +70,9 @@ public class BasicReadStatusService implements ReadStatusService {
     @Override
     public ReadStatusDto update(UUID readStatusId, ReadStatusUpdateRequest request) {
         Instant newLastReadAt = request.newLastReadAt();
-        ReadStatus foundStatus =
-                readStatusRepository
-                        .findById(readStatusId)
-                        .orElseThrow(() -> new ReadStatusNotFoundException(readStatusId));
+        ReadStatus foundStatus = readStatusRepository
+                .findById(readStatusId)
+                .orElseThrow(() -> new ReadStatusNotFoundException(readStatusId));
         foundStatus.update(newLastReadAt);
         return readStatusMapper.toDto(foundStatus);
     }

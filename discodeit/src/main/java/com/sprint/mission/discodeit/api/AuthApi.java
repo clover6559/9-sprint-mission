@@ -34,11 +34,7 @@ public interface AuthApi {
                         responseCode = NOT_FOUND_404,
                         description = "사용자를 찾을 수 없음",
                         content =
-                                @Content(
-                                        examples =
-                                                @ExampleObject(
-                                                        value =
-                                                                "User with username {username} not found"))),
+                                @Content(examples = @ExampleObject(value = "User with username {username} not found"))),
                 @ApiResponse(
                         responseCode = BAD_REQUEST_400,
                         description = "비밀번호가 일치하지 않음",

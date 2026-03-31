@@ -41,8 +41,7 @@ public class Message extends BaseUpdatableEntity {
             inverseJoinColumns = @JoinColumn(name = "attachment_id"))
     private List<BinaryContent> attachmentIds;
 
-    public Message(
-            String content, Channel channel, User author, List<BinaryContent> attachmentIds) {
+    public Message(String content, Channel channel, User author, List<BinaryContent> attachmentIds) {
         this.author = author;
         this.content = content;
         this.channel = channel;

@@ -27,8 +27,7 @@ public class BinaryContentController implements BinaryContentApi {
     public ResponseEntity<List<BinaryContentDto>> findAllByIdIn(
             @Valid @RequestParam("binaryContentIds") List<UUID> binaryContentIds) {
         log.info("첨부파일 목록 조회 요청 수신 - 개수: {}", binaryContentIds.size());
-        List<BinaryContentDto> binaryContents =
-                binaryContentService.findAllByIdIn(binaryContentIds);
+        List<BinaryContentDto> binaryContents = binaryContentService.findAllByIdIn(binaryContentIds);
         log.info("첨부파일 목록 조회 요청 처리 완료 - 조회된 개수: {}", binaryContents.size());
         return ResponseEntity.status(HttpStatus.OK).body(binaryContents);
     }
@@ -46,10 +45,7 @@ public class BinaryContentController implements BinaryContentApi {
     public ResponseEntity<?> download(@PathVariable UUID binaryContentId) {
         log.info("첨부파일 다운로드 요청 수신 - 파일 ID: {}", binaryContentId);
         BinaryContentDto binaryContent = binaryContentService.find(binaryContentId);
-        log.info(
-                "첨부파일 다운로드 시작 - 파일 이름: {}, 크기: {} bytes",
-                binaryContent.fileName(),
-                binaryContent.size());
+        log.info("첨부파일 다운로드 시작 - 파일 이름: {}, 크기: {} bytes", binaryContent.fileName(), binaryContent.size());
         return binaryContentStorage.download(binaryContent);
     }
 }

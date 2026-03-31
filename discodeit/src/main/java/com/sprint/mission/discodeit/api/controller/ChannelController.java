@@ -25,21 +25,16 @@ public class ChannelController implements ChannelApi {
 
     @PostMapping("/public")
     @Override
-    public ResponseEntity<ChannelDto> createPublic(
-            @Valid @RequestBody CreatePublicChannelRequest request) {
+    public ResponseEntity<ChannelDto> createPublic(@Valid @RequestBody CreatePublicChannelRequest request) {
         log.info("공개 채널 생성 요청 수신 - 채널 이름:{}, 채널 설명: {}", request.name(), request.description());
         ChannelDto createdChannel = channelService.create(request);
-        log.info(
-                "채널 생성 요청 처리 완료 - 채널 ID: {}, 채널 이름: {}",
-                createdChannel.id(),
-                createdChannel.name());
+        log.info("채널 생성 요청 처리 완료 - 채널 ID: {}, 채널 이름: {}", createdChannel.id(), createdChannel.name());
         return ResponseEntity.status(HttpStatus.CREATED).body(createdChannel);
     }
 
     @PostMapping("/private")
     @Override
-    public ResponseEntity<ChannelDto> createPrivate(
-            @Valid @RequestBody CreatePrivateChannelRequest request) {
+    public ResponseEntity<ChannelDto> createPrivate(@Valid @RequestBody CreatePrivateChannelRequest request) {
         log.info("비공개 채널 생성 요청 수신 - 참여자 수: {}", request.participantIds().size());
         log.debug("채널 참여자 ID 목록: {}", request.participantIds());
         ChannelDto createdChannel = channelService.create(request);

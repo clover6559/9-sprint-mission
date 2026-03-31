@@ -30,11 +30,7 @@ public class BasicBinaryContentService implements BinaryContentService {
         String fileName = create.fileName();
         byte[] bytes = create.bytes();
         String contentType = create.contentType();
-        log.info(
-                "첨부파일 생성 요청 - 파일 이름: {}, 파일 타입: {}, 파일 용량: {} bytes",
-                fileName,
-                contentType,
-                bytes.length);
+        log.info("첨부파일 생성 요청 - 파일 이름: {}, 파일 타입: {}, 파일 용량: {} bytes", fileName, contentType, bytes.length);
         BinaryContent binaryContent = new BinaryContent(fileName, (long) bytes.length, contentType);
         BinaryContent savedbinaryContent = binaryContentRepository.save(binaryContent);
         log.info("첨부파일 생성 성공 - 파일 ID: {}, 파일 이름: {}", savedbinaryContent.getId(), fileName);
@@ -48,11 +44,10 @@ public class BasicBinaryContentService implements BinaryContentService {
         return binaryContentRepository
                 .findById(binaryContentId)
                 .map(binaryContentMapper::toDto)
-                .orElseThrow(
-                        () -> {
-                            log.warn("존재하지 않는 첨부파일로 조회 실패 - 파일 ID: {}", binaryContentId);
-                            return new BinaryContentNotFoundException(binaryContentId);
-                        });
+                .orElseThrow(() -> {
+                    log.warn("존재하지 않는 첨부파일로 조회 실패 - 파일 ID: {}", binaryContentId);
+                    return new BinaryContentNotFoundException(binaryContentId);
+                });
     }
 
     @Override
@@ -67,14 +62,12 @@ public class BasicBinaryContentService implements BinaryContentService {
     @Override
     public void delete(UUID binaryContentId) {
         log.info("첨부파일 삭제 요청 - 첨부파일 ID: {}", binaryContentId);
-        BinaryContent foundContent =
-                binaryContentRepository
-                        .findById(binaryContentId)
-                        .orElseThrow(
-                                () -> {
-                                    log.warn("존재하지 않는 첨부파일로 삭제 실패 - 첨부파일 ID: {}", binaryContentId);
-                                    return new BinaryContentNotFoundException(binaryContentId);
-                                });
+        BinaryContent foundContent = binaryContentRepository
+                .findById(binaryContentId)
+                .orElseThrow(() -> {
+                    log.warn("존재하지 않는 첨부파일로 삭제 실패 - 첨부파일 ID: {}", binaryContentId);
+                    return new BinaryContentNotFoundException(binaryContentId);
+                });
         binaryContentRepository.delete(foundContent);
         log.info("첨부파일 삭제 성공 - 첨부파일 ID: {}", binaryContentId);
     }

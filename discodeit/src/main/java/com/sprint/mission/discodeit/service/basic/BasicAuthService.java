@@ -27,11 +27,10 @@ public class BasicAuthService implements AuthService {
         String username = loginRequest.username();
         String password = loginRequest.password();
 
-        User user =
-                userRepository
-                        .findByUsername(username)
-                        .filter(u -> u.getPassword().equals(password))
-                        .orElseThrow(() -> new LoginFailedException(username));
+        User user = userRepository
+                .findByUsername(username)
+                .filter(u -> u.getPassword().equals(password))
+                .orElseThrow(() -> new LoginFailedException(username));
         return userMapper.toDto(user);
     }
 

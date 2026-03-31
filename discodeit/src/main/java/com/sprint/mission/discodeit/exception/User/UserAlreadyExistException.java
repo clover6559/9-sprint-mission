@@ -16,8 +16,7 @@ public class UserAlreadyExistException extends UserException {
     }
 
     public static UserAlreadyExistException ofEmail(String email) {
-        UserAlreadyExistException exception =
-                new UserAlreadyExistException(String.format("이미 가입된 이메일입니다: %s", email));
+        UserAlreadyExistException exception = new UserAlreadyExistException(String.format("이미 가입된 이메일입니다: %s", email));
         exception.addDetails("email", email);
         exception.addDetails("duplicateType", "email");
         return exception;

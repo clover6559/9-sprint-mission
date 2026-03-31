@@ -26,19 +26,29 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class BasicUserServiceTest {
 
-    @Mock private UserRepository userRepository;
-    @Mock private BinaryContentRepository binaryContentRepository;
-    @Mock private UserMapper userMapper;
-    @Mock private BinaryContentStorage binaryContentStorage;
-    @Mock private UserStatusRepository userStatusRepository;
-    @InjectMocks private BasicUserService userService;
+    @Mock
+    private UserRepository userRepository;
+
+    @Mock
+    private BinaryContentRepository binaryContentRepository;
+
+    @Mock
+    private UserMapper userMapper;
+
+    @Mock
+    private BinaryContentStorage binaryContentStorage;
+
+    @Mock
+    private UserStatusRepository userStatusRepository;
+
+    @InjectMocks
+    private BasicUserService userService;
 
     // create
     @Test
     @DisplayName("유저 생성 성공")
     void create_success() {
-        UserCreateRequest request =
-                new UserCreateRequest("testUser", "test@test.com", "password123");
+        UserCreateRequest request = new UserCreateRequest("testUser", "test@test.com", "password123");
         given(userRepository.existsByEmail(anyString())).willReturn(false);
         given(userRepository.existsByUsername(anyString())).willReturn(false);
         given(userRepository.save(any())).willAnswer(invocation -> invocation.getArgument(0));
@@ -50,12 +60,9 @@ class BasicUserServiceTest {
     @Test
     @DisplayName("이미 존재하는 이메일로 유저 생성 시 예외 발생")
     void create_fail_duplicateEmail() {
-        UserCreateRequest request =
-                new UserCreateRequest("testUser", "duplicate@test.com", "password123");
+        UserCreateRequest request = new UserCreateRequest("testUser", "duplicate@test.com", "password123");
         given(userRepository.existsByEmail(anyString())).willReturn(true);
-        assertThrows(
-                UserAlreadyExistException.class,
-                () -> userService.create(request, Optional.empty()));
+        assertThrows(UserAlreadyExistException.class, () -> userService.create(request, Optional.empty()));
     }
 
     @Test
@@ -85,8 +92,7 @@ class BasicUserServiceTest {
         given(userRepository.existsByEmail(anyString())).willReturn(true);
 
         assertThrows(
-                UserAlreadyExistException.class,
-                () -> userService.update(userId, updateRequest, Optional.empty()));
+                UserAlreadyExistException.class, () -> userService.update(userId, updateRequest, Optional.empty()));
         assertEquals("old@test.com", user.getEmail());
     }
 

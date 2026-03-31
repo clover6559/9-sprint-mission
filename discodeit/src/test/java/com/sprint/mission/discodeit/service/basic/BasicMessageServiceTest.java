@@ -34,13 +34,26 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class BasicMessageServiceTest {
 
-    @Mock private MessageRepository messageRepository;
-    @Mock private ChannelRepository channelRepository;
-    @Mock private UserRepository userRepository;
-    @Mock private BinaryContentRepository binaryContentRepository;
-    @Mock private BinaryContentStorage binaryContentStorage;
-    @Mock private MessageMapper messageMapper;
-    @InjectMocks private BasicMessageService messageService;
+    @Mock
+    private MessageRepository messageRepository;
+
+    @Mock
+    private ChannelRepository channelRepository;
+
+    @Mock
+    private UserRepository userRepository;
+
+    @Mock
+    private BinaryContentRepository binaryContentRepository;
+
+    @Mock
+    private BinaryContentStorage binaryContentStorage;
+
+    @Mock
+    private MessageMapper messageMapper;
+
+    @InjectMocks
+    private BasicMessageService messageService;
 
     @Test
     @DisplayName("메세지 생성 성공")
@@ -69,9 +82,7 @@ class BasicMessageServiceTest {
 
         MessageCreateRequest request = new MessageCreateRequest("안녕하세요", channelId, userId);
         List<BinaryContentCreateRequest> binaryContentCreateRequests = new ArrayList<>();
-        assertThrows(
-                UserNotFoundException.class,
-                () -> messageService.create(request, binaryContentCreateRequests));
+        assertThrows(UserNotFoundException.class, () -> messageService.create(request, binaryContentCreateRequests));
     }
 
     @Test
@@ -96,8 +107,7 @@ class BasicMessageServiceTest {
         Channel channel = new Channel(ChannelType.PUBLIC, "공지", "공지합니다.");
         Message message = new Message("안녕하세요", channel, user, null);
         given(messageRepository.findById(messageId)).willReturn(Optional.empty());
-        assertThrows(
-                MessageNotFoundException.class, () -> messageService.update(messageId, request));
+        assertThrows(MessageNotFoundException.class, () -> messageService.update(messageId, request));
         assertEquals("안녕하세요", message.getContent());
     }
 
@@ -138,8 +148,7 @@ class BasicMessageServiceTest {
     void findByChannel_fail() {
         UUID channelId = UUID.randomUUID();
         given(channelRepository.existsById(channelId)).willReturn(false);
-        assertThrows(
-                ChannelNotFoundException.class, () -> messageService.findByChannelId(channelId));
+        assertThrows(ChannelNotFoundException.class, () -> messageService.findByChannelId(channelId));
         then(messageRepository).should(never()).findAllByChannelId(any());
     }
 }

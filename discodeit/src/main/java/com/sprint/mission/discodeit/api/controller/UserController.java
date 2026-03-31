@@ -107,16 +107,12 @@ public class UserController implements UserApi {
                         profileFile.getContentType(),
                         profileFile.getSize());
 
-                BinaryContentCreateRequest binaryContentCreateRequest =
-                        new BinaryContentCreateRequest(
-                                profileFile.getOriginalFilename(),
-                                profileFile.getContentType(),
-                                profileFile.getBytes());
+                BinaryContentCreateRequest binaryContentCreateRequest = new BinaryContentCreateRequest(
+                        profileFile.getOriginalFilename(), profileFile.getContentType(), profileFile.getBytes());
                 log.debug("프로필 파일 변환 완료");
                 return Optional.of(binaryContentCreateRequest);
             } catch (IOException e) {
-                log.error(
-                        "프로필 파일 데이터 읽기 중 오류 발생 - 파일 이름: {}", profileFile.getOriginalFilename(), e);
+                log.error("프로필 파일 데이터 읽기 중 오류 발생 - 파일 이름: {}", profileFile.getOriginalFilename(), e);
                 throw new RuntimeException(e);
             }
         }

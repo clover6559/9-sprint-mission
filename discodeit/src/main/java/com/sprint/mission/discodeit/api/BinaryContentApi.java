@@ -31,14 +31,7 @@ public interface BinaryContentApi {
                         responseCode = SUCCESS_200,
                         description = "여러 첨부파일 조회 성공",
                         content =
-                                @Content(
-                                        array =
-                                                @ArraySchema(
-                                                        schema =
-                                                                @Schema(
-                                                                        implementation =
-                                                                                BinaryContent
-                                                                                        .class)))),
+                                @Content(array = @ArraySchema(schema = @Schema(implementation = BinaryContent.class)))),
                 @ApiResponse(
                         responseCode = NOT_FOUND_404,
                         description = "첨부 파일을 찾을 수 없음",
@@ -46,8 +39,7 @@ public interface BinaryContentApi {
                                 @Content(
                                         examples =
                                                 @ExampleObject(
-                                                        value =
-                                                                "BinaryContent with id {binaryContentId} not found")))
+                                                        value = "BinaryContent with id {binaryContentId} not found")))
             })
     ResponseEntity<List<BinaryContentDto>> findAllByIdIn(
             @Parameter(description = "조회할 BinaryContent Ids") List<UUID> binaryContentIds);
@@ -62,8 +54,7 @@ public interface BinaryContentApi {
                         content = @Content(schema = @Schema(implementation = BinaryContent.class))),
                 @ApiResponse(responseCode = NOT_FOUND_404, description = "파일을 찾을 수 없음")
             })
-    ResponseEntity<BinaryContentDto> find(
-            @Parameter(description = "조회할 BinaryContent ID") UUID binaryContentId);
+    ResponseEntity<BinaryContentDto> find(@Parameter(description = "조회할 BinaryContent ID") UUID binaryContentId);
 
     @Operation(summary = "특정 파일 다운")
     @ApiResponses(
@@ -73,6 +64,5 @@ public interface BinaryContentApi {
                         description = "특정 첨부파일 다운 성공",
                         content = @Content(schema = @Schema(implementation = BinaryContent.class)))
             })
-    ResponseEntity<?> download(
-            @Parameter(description = "다운할 BinaryContent ID") UUID binaryContentId);
+    ResponseEntity<?> download(@Parameter(description = "다운할 BinaryContent ID") UUID binaryContentId);
 }

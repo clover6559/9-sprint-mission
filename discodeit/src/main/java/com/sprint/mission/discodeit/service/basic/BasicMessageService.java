@@ -54,53 +54,32 @@ public class BasicMessageService implements MessageService {
                 messageCreateRequest.channelId(),
                 messageCreateRequest.authorId(),
                 messageCreateRequest.content());
-        Channel channel =
-                channelRepository
-                        .findById(messageCreateRequest.channelId())
-                        .orElseThrow(
-                                () -> {
-                                    log.warn(
-                                            "없는 채널 ID로 메세지 생성 실페 - 채널 ID: {}",
-                                            messageCreateRequest.channelId());
-                                    return new ChannelNotFoundException(
-                                            messageCreateRequest.channelId());
-                                });
-        User user =
-                userRepository
-                        .findById(messageCreateRequest.authorId())
-                        .orElseThrow(
-                                () -> {
-                                    log.warn(
-                                            "없는 유저 ID로 메세지 생성 실페 - 유저 ID: {}",
-                                            messageCreateRequest.authorId());
-                                    return new UserNotFoundException(
-                                            messageCreateRequest.authorId());
-                                });
+        Channel channel = channelRepository
+                .findById(messageCreateRequest.channelId())
+                .orElseThrow(() -> {
+                    log.warn("없는 채널 ID로 메세지 생성 실페 - 채널 ID: {}", messageCreateRequest.channelId());
+                    return new ChannelNotFoundException(messageCreateRequest.channelId());
+                });
+        User user = userRepository.findById(messageCreateRequest.authorId()).orElseThrow(() -> {
+            log.warn("없는 유저 ID로 메세지 생성 실페 - 유저 ID: {}", messageCreateRequest.authorId());
+            return new UserNotFoundException(messageCreateRequest.authorId());
+        });
 
-        List<BinaryContent> attachments =
-                binaryContentCreateRequestRequests.stream()
-                        .map(
-                                req -> {
-                                    BinaryContent binaryContent =
-                                            new BinaryContent(
-                                                    req.fileName(),
-                                                    (long) req.bytes().length,
-                                                    req.contentType());
-                                    log.info(
-                                            "첨부파일 등록 요청 - 파일 이름 : {}. 파일 타입 : {}, 파일 용량: {} bytes",
-                                            req.fileName(),
-                                            req.contentType(),
-                                            req.bytes().length);
-                                    BinaryContent saved =
-                                            binaryContentRepository.save(binaryContent);
-                                    log.info(
-                                            "첨부파일 등록 성공 - 파일 ID: {}, 파일 이름: {}",
-                                            saved.getId(),
-                                            binaryContent.getFileName());
-                                    binaryContentStorage.put(saved.getId(), req.bytes());
-                                    return saved;
-                                })
-                        .toList();
+        List<BinaryContent> attachments = binaryContentCreateRequestRequests.stream()
+                .map(req -> {
+                    BinaryContent binaryContent =
+                            new BinaryContent(req.fileName(), (long) req.bytes().length, req.contentType());
+                    log.info(
+                            "첨부파일 등록 요청 - 파일 이름 : {}. 파일 타입 : {}, 파일 용량: {} bytes",
+                            req.fileName(),
+                            req.contentType(),
+                            req.bytes().length);
+                    BinaryContent saved = binaryContentRepository.save(binaryContent);
+                    log.info("첨부파일 등록 성공 - 파일 ID: {}, 파일 이름: {}", saved.getId(), binaryContent.getFileName());
+                    binaryContentStorage.put(saved.getId(), req.bytes());
+                    return saved;
+                })
+                .toList();
         Message message = new Message(messageCreateRequest.content(), channel, user, attachments);
         Message savedMessage = messageRepository.save(message);
         log.info("메세지 생성 성공 - 메세지 ID: {}", message.getId());
@@ -130,14 +109,10 @@ public class BasicMessageService implements MessageService {
     public MessageDto update(UUID messageId, MessageUpdateRequest request) {
         String newContent = request.newContent();
         log.info("메세지 업데이트 요청 - 메세지 ID: {}, 변경할 내용: {}", messageId, request.newContent());
-        Message message =
-                messageRepository
-                        .findById(messageId)
-                        .orElseThrow(
-                                () -> {
-                                    log.warn("없는 메세지 ID로 업데이트 실패 - 메세지 ID: {}", messageId);
-                                    return new MessageNotFoundException(messageId);
-                                });
+        Message message = messageRepository.findById(messageId).orElseThrow(() -> {
+            log.warn("없는 메세지 ID로 업데이트 실패 - 메세지 ID: {}", messageId);
+            return new MessageNotFoundException(messageId);
+        });
         message.update(newContent);
         log.info("메세지 업데이트 성공 - 메세지 ID: {}", messageId);
         return messageMapper.toDto(message);
@@ -156,15 +131,11 @@ public class BasicMessageService implements MessageService {
 
     @Transactional(readOnly = true)
     @Override
-    public PageResponse<MessageDto> findAllByChannelId(
-            UUID channelId, Instant createAt, Pageable pageable) {
-        Slice<MessageDto> slice =
-                messageRepository
-                        .findAllByChannelIdWithAuthor(
-                                channelId,
-                                Optional.ofNullable(createAt).orElse(Instant.now()),
-                                pageable)
-                        .map(messageMapper::toDto);
+    public PageResponse<MessageDto> findAllByChannelId(UUID channelId, Instant createAt, Pageable pageable) {
+        Slice<MessageDto> slice = messageRepository
+                .findAllByChannelIdWithAuthor(
+                        channelId, Optional.ofNullable(createAt).orElse(Instant.now()), pageable)
+                .map(messageMapper::toDto);
 
         Instant nextCursor = null;
         if (!slice.getContent().isEmpty()) {

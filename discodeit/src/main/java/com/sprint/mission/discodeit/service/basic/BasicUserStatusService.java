@@ -31,10 +31,9 @@ public class BasicUserStatusService implements UserStatusService {
     @Transactional
     @Override
     public UserStatusDto create(UserStatusCreateRequest request) {
-        User user =
-                userRepository
-                        .findById(request.userId())
-                        .orElseThrow(() -> new UserNotFoundException(request.userId()));
+        User user = userRepository
+                .findById(request.userId())
+                .orElseThrow(() -> new UserNotFoundException(request.userId()));
         Instant lastActiveAt = request.lastActiveAt();
         UserStatus userStatus = new UserStatus(user, lastActiveAt);
         UserStatus savedUserStatus = userStatusRepository.save(userStatus);
@@ -51,7 +50,9 @@ public class BasicUserStatusService implements UserStatusService {
 
     @Override
     public List<UserStatusDto> findAll() {
-        return userStatusRepository.findAll().stream().map(userStatusMapper::toDto).toList();
+        return userStatusRepository.findAll().stream()
+                .map(userStatusMapper::toDto)
+                .toList();
     }
 
     @Transactional
@@ -59,9 +60,7 @@ public class BasicUserStatusService implements UserStatusService {
     public UserStatusDto updateByUserId(UUID userId, UserStatusUpdateRequest update) {
         Instant newLastActiveAt = update.newLastActiveAt();
         UserStatus userStatus =
-                userStatusRepository
-                        .findByUserId(userId)
-                        .orElseThrow(() -> new UserStatusNotFoundException(userId));
+                userStatusRepository.findByUserId(userId).orElseThrow(() -> new UserStatusNotFoundException(userId));
         userStatus.update(newLastActiveAt);
         return userStatusMapper.toDto(userStatus);
     }
@@ -70,10 +69,9 @@ public class BasicUserStatusService implements UserStatusService {
     @Override
     public UserStatusDto update(UUID userStatusId, UserStatusUpdateRequest update) {
         Instant newLastActiveAt = update.newLastActiveAt();
-        UserStatus userStatus =
-                userStatusRepository
-                        .findById(userStatusId)
-                        .orElseThrow(() -> new UserStatusNotFoundException(userStatusId));
+        UserStatus userStatus = userStatusRepository
+                .findById(userStatusId)
+                .orElseThrow(() -> new UserStatusNotFoundException(userStatusId));
         userStatus.update(newLastActiveAt);
         return userStatusMapper.toDto(userStatus);
     }
@@ -81,9 +79,7 @@ public class BasicUserStatusService implements UserStatusService {
     @Transactional
     @Override
     public void delete(UUID userStatusId) {
-        userStatusRepository
-                .findById(userStatusId)
-                .orElseThrow(() -> new UserStatusNotFoundException(userStatusId));
+        userStatusRepository.findById(userStatusId).orElseThrow(() -> new UserStatusNotFoundException(userStatusId));
         userStatusRepository.deleteById(userStatusId);
     }
 }

@@ -45,16 +45,10 @@ public interface UserApi {
                         responseCode = BAD_REQUEST_400,
                         description = "같은 email 또는 username를 사용하는 User가 이미 존재함",
                         content =
-                                @Content(
-                                        examples =
-                                                @ExampleObject(
-                                                        value =
-                                                                "User with email {email} already exists"))),
+                                @Content(examples = @ExampleObject(value = "User with email {email} already exists"))),
             })
     ResponseEntity<UserDto> create(
-            @Parameter(
-                            description = "User 생성 정보",
-                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE))
+            @Parameter(description = "User 생성 정보", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE))
                     UserCreateRequest userCreateRequest,
             @Parameter(
                             description = "User 프로필 이미지",
@@ -72,18 +66,11 @@ public interface UserApi {
                 @ApiResponse(
                         responseCode = NOT_FOUND_404,
                         description = "User를 찾을 수 없음",
-                        content =
-                                @Content(
-                                        examples =
-                                                @ExampleObject("User with id {userId} not found"))),
+                        content = @Content(examples = @ExampleObject("User with id {userId} not found"))),
                 @ApiResponse(
                         responseCode = BAD_REQUEST_400,
                         description = "같은 email 또는 username를 사용하는 User가 이미 존재함",
-                        content =
-                                @Content(
-                                        examples =
-                                                @ExampleObject(
-                                                        "user with email {newEmail} already exists")))
+                        content = @Content(examples = @ExampleObject("user with email {newEmail} already exists")))
             })
     ResponseEntity<UserDto> update(
             @Parameter(description = "수정할 User ID") UUID userId,
@@ -98,11 +85,7 @@ public interface UserApi {
                 @ApiResponse(
                         responseCode = NOT_FOUND_404,
                         description = "User를 찾을 수 없음",
-                        content =
-                                @Content(
-                                        examples =
-                                                @ExampleObject(
-                                                        value = "User with id {id} not found")))
+                        content = @Content(examples = @ExampleObject(value = "User with id {id} not found")))
             })
     ResponseEntity<Void> delete(@Parameter(description = "삭제할 User ID") UUID userId);
 
@@ -113,14 +96,7 @@ public interface UserApi {
                 @ApiResponse(
                         responseCode = SUCCESS_200,
                         description = "User 목록 조회 성공",
-                        content =
-                                @Content(
-                                        array =
-                                                @ArraySchema(
-                                                        schema =
-                                                                @Schema(
-                                                                        implementation =
-                                                                                UserDto.class))))
+                        content = @Content(array = @ArraySchema(schema = @Schema(implementation = UserDto.class))))
             })
     ResponseEntity<List<UserDto>> findAll();
 
@@ -137,10 +113,7 @@ public interface UserApi {
                         description = "해당 User의 UserStatus를 찾을 수 없음",
                         content =
                                 @Content(
-                                        examples =
-                                                @ExampleObject(
-                                                        value =
-                                                                "UserStatus with userId {userId} not found")))
+                                        examples = @ExampleObject(value = "UserStatus with userId {userId} not found")))
             })
     ResponseEntity<UserStatusDto> statusUpdate(
             @Parameter(description = "상태를 변경할 User ID") UUID userId,

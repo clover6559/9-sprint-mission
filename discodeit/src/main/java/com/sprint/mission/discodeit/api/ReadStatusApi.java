@@ -38,15 +38,10 @@ public interface ReadStatusApi {
                 @ApiResponse(
                         responseCode = BAD_REQUEST_400,
                         description = "ReadStatus가 이미 존재함",
-                        content =
-                                @Content(
-                                        examples =
-                                                @ExampleObject(
-                                                        value = "ReadStatus already exists"))),
+                        content = @Content(examples = @ExampleObject(value = "ReadStatus already exists"))),
             })
     ResponseEntity<ReadStatusDto> create(
-            @Parameter(description = "ReadStatus 생성 정보")
-                    ReadStatusCreateRequest readStatusCreateRequest);
+            @Parameter(description = "ReadStatus 생성 정보") ReadStatusCreateRequest readStatusCreateRequest);
 
     @Operation(summary = "읽음 상태 수정")
     @ResponseStatus(HttpStatus.OK)
@@ -59,16 +54,11 @@ public interface ReadStatusApi {
                 @ApiResponse(
                         responseCode = NOT_FOUND_404,
                         description = "ReadStatus를 찾을 수 없음",
-                        content =
-                                @Content(
-                                        examples =
-                                                @ExampleObject(
-                                                        "ReadStatus with id {readStatusId} not found")))
+                        content = @Content(examples = @ExampleObject("ReadStatus with id {readStatusId} not found")))
             })
     ResponseEntity<ReadStatusDto> update(
             @Parameter(description = "수정할 ReadStatus ID") UUID readStatusId,
-            @Parameter(description = "수정할 ReadStatus 정보")
-                    ReadStatusUpdateRequest readStatusUpdateRequest);
+            @Parameter(description = "수정할 ReadStatus 정보") ReadStatusUpdateRequest readStatusUpdateRequest);
 
     @Operation(summary = "사용자의 메세지 읽음 상태 조회")
     @ResponseStatus(HttpStatus.OK)
@@ -77,15 +67,7 @@ public interface ReadStatusApi {
                 @ApiResponse(
                         responseCode = SUCCESS_200,
                         description = "사용자의 메세지 읽음 상태 조회 성공",
-                        content =
-                                @Content(
-                                        array =
-                                                @ArraySchema(
-                                                        schema =
-                                                                @Schema(
-                                                                        implementation =
-                                                                                ReadStatus.class))))
+                        content = @Content(array = @ArraySchema(schema = @Schema(implementation = ReadStatus.class))))
             })
-    ResponseEntity<List<ReadStatusDto>> findByUserId(
-            @Parameter(description = "조회할 ReadStatus ID") UUID readStatusId);
+    ResponseEntity<List<ReadStatusDto>> findByUserId(@Parameter(description = "조회할 ReadStatus ID") UUID readStatusId);
 }

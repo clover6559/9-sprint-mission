@@ -13,8 +13,7 @@ public class MDCLoggingInterceptor implements HandlerInterceptor {
     private static final String REQUEST_ID_HEADER = "Discodeit-Request-ID";
 
     @Override
-    public boolean preHandle(
-            HttpServletRequest request, HttpServletResponse response, Object handler) {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         // 1. 랜덤한 요청 ID 생성 (UUID)
         String requestId = UUID.randomUUID().toString().substring(0, 8); // 8자리만 써도 충분해!
 
@@ -31,10 +30,7 @@ public class MDCLoggingInterceptor implements HandlerInterceptor {
 
     @Override
     public void afterCompletion(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            Object handler,
-            Exception ex) {
+            HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
         MDC.clear();
     }
 }

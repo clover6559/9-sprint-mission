@@ -17,9 +17,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Mapper(componentModel = "spring")
 public abstract class ChannelMapper {
 
-    @Autowired protected MessageRepository messageRepository;
-    @Autowired protected ReadStatusRepository readStatusRepository;
-    @Autowired private UserMapper userMapper;
+    @Autowired
+    protected MessageRepository messageRepository;
+
+    @Autowired
+    protected ReadStatusRepository readStatusRepository;
+
+    @Autowired
+    private UserMapper userMapper;
 
     @Mapping(target = "participants", expression = "java(resolveParticipants(channel))")
     @Mapping(target = "lastMessageAt", expression = "java(resolveLastMessageAt(channel))")
