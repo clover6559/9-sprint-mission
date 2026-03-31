@@ -85,7 +85,6 @@ class BasicChannelServiceTest {
     then(channelRepository).should().save(any(Channel.class));
   }
 
-  // TODO 비공개 채널 생성 시 유저 없으면 생성 불가 예외 만들어서 수정
   @Test
   @DisplayName("유저가 없어서 비공개 채널 생성 실패")
   void create_private_fail() {
