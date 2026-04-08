@@ -28,7 +28,9 @@ jobs:
           POSTGRES_DB: discodeit
           POSTGRES_USER:  ${{ secrets.POSTGRES_USER }}
           POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-          SPRING_PROFILE: test
+          SPRING_PROFILES_ACTIVE: test
+          STORAGE_TYPE: s3
+
         run: ../gradlew clean build
 
       - name: 테스트 결과 업로드

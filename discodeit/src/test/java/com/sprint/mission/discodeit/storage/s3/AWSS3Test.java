@@ -29,7 +29,7 @@ public class AWSS3Test {
         this.bucketName = System.getenv("AWS_S3_BUCKET");
         String accessKey = System.getenv("AWS_S3_ACCESS_KEY");
         String secretKey = System.getenv("AWS_S3_SECRET_KEY");
-        String regionName = System.getenv("AWS_REGION");
+        String regionName = System.getenv("AWS_S3_REGION");
 
         if (bucketName == null || accessKey == null || secretKey == null || regionName == null) {
             throw new IllegalStateException("필수 환경 변수가 설정되지 않았습니다!");
