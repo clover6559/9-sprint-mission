@@ -1,9 +1,7 @@
 package com.sprint.mission.discodeit.storage.s3;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.time.Duration;
-import java.util.Properties;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -28,16 +26,16 @@ public class AWSS3Test {
     private final S3Presigner s3Presigner;
 
     public AWSS3Test() throws IOException {
-        Properties props = new Properties();
-        try (FileInputStream fis = new FileInputStream(".env")) {
-            props.load(fis);
+        this.bucketName = System.getenv("AWS_S3_BUCKET");
+        String accessKey = System.getenv("AWS_S3_ACCESS_KEY");
+        String secretKey = System.getenv("AWS_S3_SECRET_KEY");
+        String regionName = System.getenv("AWS_S3_REGION");
+
+        if (bucketName == null || accessKey == null || secretKey == null || regionName == null) {
+            throw new IllegalStateException("필수 환경 변수가 설정되지 않았습니다!");
         }
 
-        this.bucketName = props.getProperty("AWS_S3_BUCKET");
-        String accessKey = props.getProperty("AWS_ACCESS_KEY");
-        String secretKey = props.getProperty("AWS_SECRET_KEY");
-        Region region = Region.of(props.getProperty("AWS_REGION"));
-
+        Region region = Region.of(regionName);
         AwsBasicCredentials credentials = AwsBasicCredentials.create(accessKey, secretKey);
         StaticCredentialsProvider credentialsProvider = StaticCredentialsProvider.create(credentials);
 
