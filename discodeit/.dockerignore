@@ -1,0 +1,22 @@
+# .dockerignore 파일
+.git
+.gitignore
+README.md
+Dockerfile
+.dockerignore
+
+# Gradle 빌드 디렉토리
+build/
+.gradle/
+
+# IDE 설정
+.idea/
+*.iml
+.vscode/
+
+# 로그 파일
+*.log
+
+# 임시 파일
+*.tmp
+*.swp

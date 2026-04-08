@@ -23,47 +23,46 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @Tag(name = "BinaryContent", description = "BinaryContent API")
 public interface BinaryContentApi {
 
-  @Operation(summary = "여러 첨부 파일 조회")
-  @ResponseStatus(HttpStatus.OK)
-  @ApiResponses(
-      value = {
-          @ApiResponse(
-              responseCode = SUCCESS_200,
-              description = "여러 첨부파일 조회 성공",
-              content =
-              @Content(array = @ArraySchema(schema = @Schema(implementation = BinaryContent.class)))),
-          @ApiResponse(
-              responseCode = NOT_FOUND_404,
-              description = "첨부 파일을 찾을 수 없음",
-              content =
-              @Content(
-                  examples =
-                  @ExampleObject(
-                      value = "BinaryContent with id {binaryContentId} not found")))
-      })
-  ResponseEntity<List<BinaryContentDto>> findAllByIdIn(
-      @Parameter(description = "조회할 BinaryContent Ids") List<UUID> binaryContentIds);
+    @Operation(summary = "여러 첨부 파일 조회")
+    @ResponseStatus(HttpStatus.OK)
+    @ApiResponses(
+            value = {
+                @ApiResponse(
+                        responseCode = SUCCESS_200,
+                        description = "여러 첨부파일 조회 성공",
+                        content =
+                                @Content(array = @ArraySchema(schema = @Schema(implementation = BinaryContent.class)))),
+                @ApiResponse(
+                        responseCode = NOT_FOUND_404,
+                        description = "첨부 파일을 찾을 수 없음",
+                        content =
+                                @Content(
+                                        examples =
+                                                @ExampleObject(
+                                                        value = "BinaryContent with id {binaryContentId} not found")))
+            })
+    ResponseEntity<List<BinaryContentDto>> findAllByIdIn(
+            @Parameter(description = "조회할 BinaryContent Ids") List<UUID> binaryContentIds);
 
-  @Operation(summary = "특정 첨부 파일 조회")
-  @ResponseStatus(HttpStatus.OK)
-  @ApiResponses(
-      value = {
-          @ApiResponse(
-              responseCode = SUCCESS_200,
-              description = "특정 첨부파일 조회 성공",
-              content = @Content(schema = @Schema(implementation = BinaryContent.class))),
-          @ApiResponse(responseCode = NOT_FOUND_404, description = "파일을 찾을 수 없음")
-      })
-  ResponseEntity<BinaryContentDto> find(
-      @Parameter(description = "조회할 BinaryContent ID") UUID binaryContentId);
+    @Operation(summary = "특정 첨부 파일 조회")
+    @ResponseStatus(HttpStatus.OK)
+    @ApiResponses(
+            value = {
+                @ApiResponse(
+                        responseCode = SUCCESS_200,
+                        description = "특정 첨부파일 조회 성공",
+                        content = @Content(schema = @Schema(implementation = BinaryContent.class))),
+                @ApiResponse(responseCode = NOT_FOUND_404, description = "파일을 찾을 수 없음")
+            })
+    ResponseEntity<BinaryContentDto> find(@Parameter(description = "조회할 BinaryContent ID") UUID binaryContentId);
 
-  @Operation(summary = "특정 파일 다운")
-  @ApiResponses(
-      value = {
-          @ApiResponse(
-              responseCode = SUCCESS_200,
-              description = "특정 첨부파일 다운 성공",
-              content = @Content(schema = @Schema(implementation = BinaryContent.class)))
-      })
-  ResponseEntity<?> download(@Parameter(description = "다운할 BinaryContent ID") UUID binaryContentId);
+    @Operation(summary = "특정 파일 다운")
+    @ApiResponses(
+            value = {
+                @ApiResponse(
+                        responseCode = SUCCESS_200,
+                        description = "특정 첨부파일 다운 성공",
+                        content = @Content(schema = @Schema(implementation = BinaryContent.class)))
+            })
+    ResponseEntity<?> download(@Parameter(description = "다운할 BinaryContent ID") UUID binaryContentId);
 }

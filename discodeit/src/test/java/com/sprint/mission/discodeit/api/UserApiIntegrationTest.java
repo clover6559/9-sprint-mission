@@ -31,87 +31,82 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class UserApiIntegrationTest {
 
-  @Autowired
-  protected MockMvc mockMvc;
+    @Autowired
+    protected MockMvc mockMvc;
 
-  @Autowired
-  protected ObjectMapper objectMapper;
+    @Autowired
+    protected ObjectMapper objectMapper;
 
-  @Autowired
-  private UserService userService;
+    @Autowired
+    private UserService userService;
 
-  @Test
-  @DisplayName("새로운 사용자를 생성한다.")
-  void createUser() throws Exception {
-    UserCreateRequest request = new UserCreateRequest("루다", "luda@example.com", "password123");
-    String requestJson = objectMapper.writeValueAsString(request);
+    @Test
+    @DisplayName("새로운 사용자를 생성한다.")
+    void createUser() throws Exception {
+        UserCreateRequest request = new UserCreateRequest("루다", "luda@example.com", "password123");
+        String requestJson = objectMapper.writeValueAsString(request);
 
-    MockMultipartFile userPart = new MockMultipartFile(
-        "userCreateRequest",
-        "",
-        MediaType.APPLICATION_JSON_VALUE,
-        requestJson.getBytes(StandardCharsets.UTF_8));
-    MockMultipartFile filePart =
-        new MockMultipartFile("profile", "profile.png", MediaType.IMAGE_PNG_VALUE,
-            "test-image".getBytes());
+        MockMultipartFile userPart = new MockMultipartFile(
+                "userCreateRequest",
+                "",
+                MediaType.APPLICATION_JSON_VALUE,
+                requestJson.getBytes(StandardCharsets.UTF_8));
+        MockMultipartFile filePart =
+                new MockMultipartFile("profile", "profile.png", MediaType.IMAGE_PNG_VALUE, "test-image".getBytes());
 
-    mockMvc.perform(multipart("/api/users")
-            .file(userPart)
-            .file(filePart)
-            .contentType(MediaType.MULTIPART_FORM_DATA))
-        .andExpect(status().isCreated())
-        .andExpect(jsonPath("$.email").value("luda@example.com"))
-        .andExpect(jsonPath("$.username").value("루다"));
-  }
+        mockMvc.perform(multipart("/api/users")
+                        .file(userPart)
+                        .file(filePart)
+                        .contentType(MediaType.MULTIPART_FORM_DATA))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.email").value("luda@example.com"))
+                .andExpect(jsonPath("$.username").value("루다"));
+    }
 
-  @Test
-  @DisplayName("사용자 정보를 수정한다.")
-  void updateUser() throws Exception {
-    UserDto created = userService.create(
-        new UserCreateRequest("updateUser", "update-test@example.com", "password123"),
-        Optional.empty() // profile 없음
-    );
-    UUID userId = created.id();
+    @Test
+    @DisplayName("사용자 정보를 수정한다.")
+    void updateUser() throws Exception {
+        UserDto created = userService.create(
+                new UserCreateRequest("updateUser", "update-test@example.com", "password123"),
+                Optional.empty() // profile 없음
+                );
+        UUID userId = created.id();
 
-    UserUpdateRequest request = new UserUpdateRequest("fixedLuda", "fixed@example.com",
-        "newpassword123");
-    MockMultipartFile updatePart = new MockMultipartFile(
-        "userUpdateRequest",
-        "",
-        MediaType.APPLICATION_JSON_VALUE,
-        objectMapper.writeValueAsString(request).getBytes(StandardCharsets.UTF_8));
+        UserUpdateRequest request = new UserUpdateRequest("fixedLuda", "fixed@example.com", "newpassword123");
+        MockMultipartFile updatePart = new MockMultipartFile(
+                "userUpdateRequest",
+                "",
+                MediaType.APPLICATION_JSON_VALUE,
+                objectMapper.writeValueAsString(request).getBytes(StandardCharsets.UTF_8));
 
-    mockMvc.perform(multipart("/api/users/{userId}", userId)
-            .file(updatePart)
-            .with(processor -> {
-              processor.setMethod("PATCH");
-              return processor;
-            }))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.username").value("fixedLuda"));
-  }
+        mockMvc.perform(multipart("/api/users/{userId}", userId)
+                        .file(updatePart)
+                        .with(processor -> {
+                            processor.setMethod("PATCH");
+                            return processor;
+                        }))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.username").value("fixedLuda"));
+    }
 
-  @Test
-  @DisplayName("사용자 목록을 조회한다.")
-  void findAllUsers() throws Exception {
-    userService.create(new UserCreateRequest("listUser1", "list1@example.com", "password123"),
-        Optional.empty());
-    userService.create(new UserCreateRequest("listUser2", "list2@example.com", "password123"),
-        Optional.empty());
+    @Test
+    @DisplayName("사용자 목록을 조회한다.")
+    void findAllUsers() throws Exception {
+        userService.create(new UserCreateRequest("listUser1", "list1@example.com", "password123"), Optional.empty());
+        userService.create(new UserCreateRequest("listUser2", "list2@example.com", "password123"), Optional.empty());
 
-    mockMvc.perform(get("/api/users"))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.length()").value(2));
-  }
+        mockMvc.perform(get("/api/users"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2));
+    }
 
-  @Test
-  @DisplayName("사용자를 삭제한다.")
-  void deleteUser() throws Exception {
-    UserDto created = userService.create(
-        new UserCreateRequest("deleteUser", "delete-target@example.com", "password123"),
-        Optional.empty());
-    UUID userId = created.id();
+    @Test
+    @DisplayName("사용자를 삭제한다.")
+    void deleteUser() throws Exception {
+        UserDto created = userService.create(
+                new UserCreateRequest("deleteUser", "delete-target@example.com", "password123"), Optional.empty());
+        UUID userId = created.id();
 
-    mockMvc.perform(delete("/api/users/{userId}", userId)).andExpect(status().isNoContent());
-  }
+        mockMvc.perform(delete("/api/users/{userId}", userId)).andExpect(status().isNoContent());
+    }
 }
