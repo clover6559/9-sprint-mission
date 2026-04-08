@@ -14,7 +14,7 @@ out/
 # --- 데이터 및 로그 ---
 *.log
 .ser
-data/
+/data/
 file-data-map/
 
 # --- 보안 및 환경 설정 (가장 중요! ⭐) ---
