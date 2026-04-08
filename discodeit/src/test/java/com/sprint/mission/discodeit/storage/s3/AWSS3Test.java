@@ -1,9 +1,7 @@
 package com.sprint.mission.discodeit.storage.s3;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.time.Duration;
-import java.util.Properties;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
