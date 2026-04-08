@@ -19,7 +19,7 @@ jobs:
 
       - name: 빌드 및 테스트
         working-directory: ./discodeit
-        run: ./gradlew clean build
+        run: ../gradlew clean build
 
       - name: 테스트 결과 업로드
         uses: codecov/codecov-action@v3
