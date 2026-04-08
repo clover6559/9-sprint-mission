@@ -40,5 +40,5 @@ discodeit/discodeit.env
 
 # --- CI/CD를 위해 살려야 할 것 (Ignore하지 않음) ---
 !gradle-wrapper.jar
-!gradle/wrapper/gradle-wrapper.jar
+!../gradle/wrapper/gradle-wrapper.jar
 # gradlew는 서버 빌드에 필요하니까 지우지 마!
