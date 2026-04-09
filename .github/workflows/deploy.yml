@@ -6,11 +6,11 @@ on:
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+    outputs:
+      image_tag: ${{ steps.prep.outputs.tag }}
     defaults:
       run:
         working-directory: ./discodeit
-      outputs:
-        image_tag: ${{ steps.prep.outputs.tag }}
 
     steps:
       - name: Checkout
