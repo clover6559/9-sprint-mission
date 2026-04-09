@@ -25,8 +25,8 @@
       ],
       "environmentFiles": [
         {
-          "value": "arn:aws:s3:::discodeit-binary-content-storage-pje/discodeit.env",
-          "type": "s3"
+          "name": "JAVA_TOOL_OPTIONS",
+          "value": "-Xmx384m -Xms256m -XX:MaxMetaspaceSize=64m -XX:+UseSerialGC"
         }
       ],
       "logConfiguration": {
