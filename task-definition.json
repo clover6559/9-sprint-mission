@@ -16,6 +16,7 @@
           "appProtocol": "http"
         }
       ],
+
       "essential": true,
       "environment": [
         {
