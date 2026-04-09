@@ -3,6 +3,7 @@ name: discodeit deploy Workflow
 on:
   push:
     branches: [ "release" ]
+
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
@@ -34,7 +35,7 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
-          aws-access-key-id:     ${{ secrets.AWS_ACCESS_KEY }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
           aws-region: us-east-1
 
@@ -72,20 +73,21 @@ jobs:
           container-name: discodeit-app
           image: ${{ vars.ECR_REPOSITORY_URI }}:${{ needs.build-and-push.outputs.image_tag }}
 
-      - name: 작업 정의 생성
+      - name: 새 작업 정의 등록
         id: register-task-def
-        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-        with:
-          task-definition: ${{ steps.render-task-def.outputs.task-definition }}
-          cluster: ${{ vars.ECS_CLUSTER }}
-          service: ${{ vars.ECS_SERVICE }}
+        run: |
+          TASK_DEF_ARN=$(aws ecs register-task-definition \
+            --cli-input-json file://${{ steps.render-task-def.outputs.task-definition }} \
+            --query 'taskDefinition.taskDefinitionArn' \
+            --output text)
+          echo "task_def_arn=$TASK_DEF_ARN" >> $GITHUB_OUTPUT
 
       - name: 기존 서비스 중단
         run: |
           aws ecs update-service \
-          --cluster ${{ vars.ECS_CLUSTER }} \
-          --service ${{ vars.ECS_SERVICE }} \
-          --desired-count 0
+            --cluster ${{ vars.ECS_CLUSTER }} \
+            --service ${{ vars.ECS_SERVICE }} \
+            --desired-count 0
           
           sleep 30
 
@@ -94,7 +96,7 @@ jobs:
           aws ecs update-service \
             --cluster ${{ vars.ECS_CLUSTER }} \
             --service ${{ vars.ECS_SERVICE }} \
-            --task-definition ${{ steps.register-task-def.outputs.task-definition-arn }} \
+            --task-definition ${{ steps.register-task-def.outputs.task_def_arn }} \
             --desired-count 1 \
             --force-new-deployment
 
@@ -103,10 +105,3 @@ jobs:
           aws ecs wait services-stable \
             --cluster ${{ vars.ECS_CLUSTER }} \
             --services ${{ vars.ECS_SERVICE }}
-
-      - name: ECS 배포 상태 확인
-        run: |
-          aws ecs describe-services \
-            --cluster ${{ vars.ECS_CLUSTER }} \
-            --services ${{ vars.ECS_SERVICE }} \
-            --query "services[0].deployments"
