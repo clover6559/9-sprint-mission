@@ -72,7 +72,6 @@ jobs:
           task-definition: ${{ steps.render-task-def.outputs.task-definition }}
           cluster: ${{ vars.ECS_CLUSTER }}
           service: ${{ vars.ECS_SERVICE }}
-          wait-for-service-stability: false
 
       - name: 기존 서비스 중단
         run: |
