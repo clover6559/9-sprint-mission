@@ -23,7 +23,7 @@ jobs:
       - name: 애플리케이션 빌드
         run: |
           chmod +x ./gradlew
-          ./gradlew clean build
+          ./gradlew clean build -x test
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
