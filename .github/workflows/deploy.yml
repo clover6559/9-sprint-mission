@@ -63,7 +63,7 @@ jobs:
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: task-definition.json
-          container-name: discodeit-container
+          container-name: discodeit-app
           image: ${{ vars.ECR_REPOSITORY_URI }}:latest
 
       - name: 작업 정의 생성
