@@ -17,7 +17,12 @@
         }
       ],
       "essential": true,
-      "environment": [],
+      "environment": [
+        {
+          "name": "JAVA_TOOL_OPTIONS",
+          "value": "-Xmx512m -Xms256m -XX:MaxMetaspaceSize=64m -XX:+UseSerialGC"
+        }
+      ],
       "environmentFiles": [
         {
           "value": "arn:aws:s3:::discodeit-binary-content-storage-pje/discodeit.env",
