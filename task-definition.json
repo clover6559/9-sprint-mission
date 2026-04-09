@@ -84,6 +84,5 @@
     "operatingSystemFamily": "LINUX"
   },
   "registeredAt": "2026-04-09T02:49:43.508Z",
-  "registeredBy": "arn:aws:iam::334935450617:user/discodeit",
-  "tags": []
+  "registeredBy": "arn:aws:iam::334935450617:user/discodeit"
 }
