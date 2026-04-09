@@ -58,13 +58,20 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
           aws-region: ${{ vars.AWS_REGION }}
 
-      - name: 작업 정의 등록
-        id: register-task
+      - name: 작업 정의 가져오기
+        id: render-task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: task-definition.json
+          container-name: discodeit-container
+          image: ${{ vars.ECR_REPOSITORY_URI }}:latest
+
+      - name: 작업 정의 생성
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
           task-definition: ${{ steps.render-task-def.outputs.task-definition }}
-          service: ${{ vars.ECS_SERVICE }}
           cluster: ${{ vars.ECS_CLUSTER }}
+          service: ${{ vars.ECS_SERVICE }}
           wait-for-service-stability: false
 
       - name: 기존 서비스 중단
