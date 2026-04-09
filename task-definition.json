@@ -1,5 +1,5 @@
 {
-  "family": "discodeit-task",
+  "taskDefinitionArn": "arn:aws:ecs:ap-northeast-2:334935450617:task-definition/discodeit-task:4",
   "containerDefinitions": [
     {
       "name": "discodeit-app",
@@ -25,10 +25,12 @@
       ],
       "environmentFiles": [
         {
-          "type": "s3",
-          "value": "-Xmx384m -Xms256m -XX:MaxMetaspaceSize=64m -XX:+UseSerialGC"
+          "value": "arn:aws:s3:::discodeit-binary-content-storage-pje/discodeit.env",
+          "type": "s3"
         }
       ],
+      "mountPoints": [],
+      "volumesFrom": [],
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
@@ -37,11 +39,40 @@
           "awslogs-region": "ap-northeast-2",
           "awslogs-stream-prefix": "ecs"
         }
-      }
+      },
+      "systemControls": []
     }
   ],
+  "family": "discodeit-task",
   "executionRoleArn": "arn:aws:iam::334935450617:role/ecsTaskExecutionRole",
   "networkMode": "bridge",
+  "revision": 4,
+  "volumes": [],
+  "status": "ACTIVE",
+  "requiresAttributes": [
+    {
+      "name": "com.amazonaws.ecs.capability.logging-driver.awslogs"
+    },
+    {
+      "name": "ecs.capability.execution-role-awslogs"
+    },
+    {
+      "name": "com.amazonaws.ecs.capability.docker-remote-api.1.19"
+    },
+    {
+      "name": "ecs.capability.env-files.s3"
+    },
+    {
+      "name": "com.amazonaws.ecs.capability.docker-remote-api.1.21"
+    },
+    {
+      "name": "com.amazonaws.ecs.capability.docker-remote-api.1.29"
+    }
+  ],
+  "placementConstraints": [],
+  "compatibilities": [
+    "EC2"
+  ],
   "requiresCompatibilities": [
     "EC2"
   ],
@@ -50,5 +81,8 @@
   "runtimePlatform": {
     "cpuArchitecture": "X86_64",
     "operatingSystemFamily": "LINUX"
-  }
+  },
+  "registeredAt": "2026-04-09T02:49:43.508Z",
+  "registeredBy": "arn:aws:iam::334935450617:user/discodeit",
+  "tags": []
 }
