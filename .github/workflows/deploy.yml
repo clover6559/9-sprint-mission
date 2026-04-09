@@ -9,10 +9,16 @@ jobs:
     defaults:
       run:
         working-directory: ./discodeit
+      outputs:
+        image_tag: ${{ steps.prep.outputs.tag }}
 
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+
+      - name: 준비
+        id: prep
+        run: echo "tag=${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
 
       - name: JDK 17 설정
         uses: actions/setup-java@v3
@@ -38,8 +44,8 @@ jobs:
 
       - name: Docker Build & Push
         run: |
-          IMAGE_TAG=${GITHUB_SHA::7}
           REPO_URI=${{ vars.ECR_REPOSITORY_URI }}
+          IMAGE_TAG=${{ steps.prep.outputs.tag }}
           docker build -t $REPO_URI:latest -t $REPO_URI:$IMAGE_TAG .   
           docker push $REPO_URI:latest
           docker push $REPO_URI:$IMAGE_TAG
@@ -64,9 +70,10 @@ jobs:
         with:
           task-definition: task-definition.json
           container-name: discodeit-app
-          image: ${{ vars.ECR_REPOSITORY_URI }}:latest
+          image: ${{ vars.ECR_REPOSITORY_URI }}:${{ needs.build-and-push.outputs.image_tag }}
 
       - name: 작업 정의 생성
+        id: register-task-def
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
           task-definition: ${{ steps.render-task-def.outputs.task-definition }}
@@ -85,7 +92,7 @@ jobs:
           aws ecs update-service \
             --cluster ${{ vars.ECS_CLUSTER }} \
             --service ${{ vars.ECS_SERVICE }} \
-            --task-definition ${{ vars.ECS_TASK_DEFINITION }} \
+            --task-definition ${{ steps.register-task-def.outputs.task-definition-arn }} \
             --desired-count 1 \
             --force-new-deployment
 
