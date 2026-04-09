@@ -25,7 +25,7 @@
       ],
       "environmentFiles": [
         {
-          "name": "JAVA_TOOL_OPTIONS",
+          "type": "s3",
           "value": "-Xmx384m -Xms256m -XX:MaxMetaspaceSize=64m -XX:+UseSerialGC"
         }
       ],
