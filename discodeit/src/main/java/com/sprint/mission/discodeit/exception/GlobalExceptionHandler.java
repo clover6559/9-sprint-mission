@@ -17,7 +17,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DiscodeitException.class)
     public ResponseEntity<ErrorResponse> handleDiscodeitException(DiscodeitException e) {
         log.warn("비즈니스 예외 발생 - 코드: {}, 메시지: {}", e.getErrorCode(), e.getMessage());
-        HttpStatus status = determineStatus(e.getErrorCode());
+        HttpStatus status = e.getErrorCode().getHttpStatus();
         ErrorResponse response = new ErrorResponse(
                 e.getTimestamp(),
                 e.getErrorCode().name(),
@@ -52,7 +52,7 @@ public class GlobalExceptionHandler {
 
         ErrorResponse response = new ErrorResponse(
                 Instant.now(),
-                "INVALID_INPUT",
+                "VALIDATION_FAILED",
                 "입력값 검증에 실패했습니다.",
                 errors,
                 e.getClass().getSimpleName(),
@@ -61,13 +61,4 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(response);
     }
 
-    private HttpStatus determineStatus(ErrorCode errorCode) {
-        return switch (errorCode) {
-            case USER_NOT_FOUND, CHANNEL_NOT_FOUND, MESSAGE_NOT_FOUND -> HttpStatus.NOT_FOUND;
-            case DUPLICATE_USER, PRIVATE_CHANNEL_UPDATE -> HttpStatus.BAD_REQUEST;
-            case UNAUTHORIZED -> HttpStatus.UNAUTHORIZED;
-            case FILE_UPLOAD_ERROR -> HttpStatus.INTERNAL_SERVER_ERROR;
-            default -> HttpStatus.INTERNAL_SERVER_ERROR;
-        };
-    }
 }
