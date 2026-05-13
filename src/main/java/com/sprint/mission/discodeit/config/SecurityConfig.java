@@ -1,5 +1,6 @@
 package com.sprint.mission.discodeit.config;
 
+import com.sprint.mission.discodeit.auth.CsrfCookieFilter;
 import com.sprint.mission.discodeit.handler.*;
 import com.sprint.mission.discodeit.handler.SpaCsrfTokenRequestHandler;
 import lombok.RequiredArgsConstructor;
@@ -8,11 +9,16 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -27,11 +33,13 @@ public class SecurityConfig {
         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
         .csrfTokenRequestHandler(new SpaCsrfTokenRequestHandler())
         )
+        .addFilterAfter(new CsrfCookieFilter(), CsrfFilter.class)
         .formLogin(login -> login.loginProcessingUrl("/api/auth/login")
             .successHandler(loginSuccessHandler)
             .failureHandler(loginFailureHandler))
         .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/api/auth/me").authenticated())
+            .requestMatchers("/api/auth/me").authenticated()
+        .anyRequest().authenticated())
         .logout(logout -> logout.logoutUrl("/api/auth/logout")
             .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(HttpStatus.NO_CONTENT))
         );
@@ -43,6 +51,20 @@ public class SecurityConfig {
   @Bean
   public PasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder();
+  }
+  @Bean
+  public UserDetailsService userDetailsService(
+      PasswordEncoder passwordEncoder
+  ) {
+
+    return new InMemoryUserDetailsManager(
+
+        User.builder()
+            .username("user")
+            .password(passwordEncoder.encode("1234"))
+            .roles("USER")
+            .build()
+    );
   }
 
 }
