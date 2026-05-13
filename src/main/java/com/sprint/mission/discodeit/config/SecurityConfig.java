@@ -24,7 +24,9 @@ public class SecurityConfig {
         .formLogin(login -> login.loginProcessingUrl("/api/auth/login")
             .successHandler(loginSuccessHandler)
             .failureHandler(loginFailureHandler))
-    ;
+        .authorizeHttpRequests(auth -> auth
+            .requestMatchers("api/auth/me").authenticated());
+
     return http.build();
   }
 
