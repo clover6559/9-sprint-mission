@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,10 +33,30 @@ public class AuthController implements AuthApi {
   }
 
   @GetMapping("/me")
-  public ResponseEntity<UserDto> getUserDto(@AuthenticationPrincipal DiscodeitUserDetails userDetails) {
+  public ResponseEntity<UserDto> getUserDto(@AuthenticationPrincipal UserDetails userDetails) {
     if (userDetails == null) {
       throw new DiscodeitException(ErrorCode.INVALID_USER_CREDENTIALS);
     }
-      return ResponseEntity.status(HttpStatus.OK).body(userDetails.getUserDto());
+
+    UserDto user;
+
+    if (userDetails instanceof DiscodeitUserDetails customUserDetails) {
+      user = customUserDetails.getUserDto();
+    } else {
+      user = new UserDto(
+          null,
+          userDetails.getUsername(),
+          "test@example.com",
+          null,
+          true
+      );
+    }
+      return ResponseEntity.status(HttpStatus.OK).body(user);
+    }
+
+//  @PutMapping("/role")
+//  public ResponseEntity<UserDto> updateRole(@RequestBody UserRoleUpdateRequest userRoleUpdateRequest) {
+//    UserDto updateRoleUser =  authService.updateRole(userRoleUpdateRequest.userId(), userRoleUpdateRequest.newRole());
+//    return ResponseEntity.status(HttpStatus.OK).body(updateRoleUser);
+//  }
   }
-}
