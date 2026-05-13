@@ -1,9 +1,9 @@
 package com.sprint.mission.discodeit.config;
 
+import com.sprint.mission.discodeit.handler.*;
 import com.sprint.mission.discodeit.handler.SpaCsrfTokenRequestHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -16,10 +16,15 @@ import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 public class SecurityConfig {
 
   @Bean
-  public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+  public SecurityFilterChain filterChain(HttpSecurity http, LoginSuccessHandler loginSuccessHandler,
+      LoginFailureHandler loginFailureHandler) throws Exception {
     http.csrf(csrf -> csrf
         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-        .csrfTokenRequestHandler(new SpaCsrfTokenRequestHandler()));
+        .csrfTokenRequestHandler(new SpaCsrfTokenRequestHandler()))
+        .formLogin(login -> login.loginProcessingUrl("/api/auth/login")
+            .successHandler(loginSuccessHandler)
+            .failureHandler(loginFailureHandler))
+    ;
     return http.build();
   }
 
