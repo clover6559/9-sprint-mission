@@ -1,5 +1,6 @@
 package com.sprint.mission.discodeit.exception;
 
+import java.nio.file.AccessDeniedException;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
@@ -59,6 +60,22 @@ public class GlobalExceptionHandler {
     return ResponseEntity
         .status(HttpStatus.BAD_REQUEST)
         .body(response);
+  }
+
+  @ExceptionHandler(AccessDeniedException.class)
+  public ResponseEntity<ErrorResponse> handleAccessDeniedException(AccessDeniedException ex) {
+    log.error("권한 거부: {}", ex.getMessage());
+
+    ErrorResponse response = new ErrorResponse(
+        Instant.now(),
+        "FORBIDDEN",
+        "해당 요청에 대한 권한이 없습니다.",
+        null,
+        ex.getClass().getSimpleName(),
+        HttpStatus.FORBIDDEN.value()
+    );
+
+    return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
   }
 
   private HttpStatus determineHttpStatus(DiscodeitException exception) {
