@@ -25,10 +25,4 @@ public class DiscodeitUserDetailsService implements UserDetailsService {
     return new DiscodeitUserDetails(userDto, user.getPassword());
   }
 
-//  private Collection<GrantedAuthority> buildAuthorities(User user) {
-//    Set<GrantedAuthority> authorities = new HashSet<>();
-//    user.getrole().forEach(role -> authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getName())));
-//    user.getPermissions().forEach(permission -> authorities.add(new SimpleGrantedAuthority(permission.getName())));
-//    return authorities;
-//  }
 }
