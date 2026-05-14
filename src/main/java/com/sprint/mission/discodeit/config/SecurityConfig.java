@@ -1,16 +1,18 @@
 package com.sprint.mission.discodeit.config;
 
 import com.sprint.mission.discodeit.auth.CsrfCookieFilter;
+import com.sprint.mission.discodeit.entity.Role;
 import com.sprint.mission.discodeit.handler.*;
 import com.sprint.mission.discodeit.handler.SpaCsrfTokenRequestHandler;
+import com.sprint.mission.discodeit.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.User;
+import com.sprint.mission.discodeit.entity.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -24,14 +26,15 @@ import org.springframework.security.web.csrf.CsrfFilter;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
+
   private final LoginSuccessHandler loginSuccessHandler;
   private final LoginFailureHandler loginFailureHandler;
 
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     http.csrf(csrf -> csrf
-        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-        .csrfTokenRequestHandler(new SpaCsrfTokenRequestHandler())
+            .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+            .csrfTokenRequestHandler(new SpaCsrfTokenRequestHandler())
         )
         .addFilterAfter(new CsrfCookieFilter(), CsrfFilter.class)
         .formLogin(login -> login.loginProcessingUrl("/api/auth/login")
@@ -39,11 +42,11 @@ public class SecurityConfig {
             .failureHandler(loginFailureHandler))
         .authorizeHttpRequests(auth -> auth
             .requestMatchers("/api/auth/me").authenticated()
-        .anyRequest().authenticated())
+            .anyRequest().authenticated())
         .logout(logout -> logout.logoutUrl("/api/auth/logout")
-            .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(HttpStatus.NO_CONTENT))
+            .logoutSuccessHandler(
+                new HttpStatusReturningLogoutSuccessHandler(HttpStatus.NO_CONTENT))
         );
-
 
     return http.build();
   }
@@ -52,14 +55,14 @@ public class SecurityConfig {
   public PasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder();
   }
+
   @Bean
   public UserDetailsService userDetailsService(
       PasswordEncoder passwordEncoder
   ) {
 
     return new InMemoryUserDetailsManager(
-
-        User.builder()
+        org.springframework.security.core.userdetails.User.builder()
             .username("user")
             .password(passwordEncoder.encode("1234"))
             .roles("USER")
@@ -67,4 +70,21 @@ public class SecurityConfig {
     );
   }
 
+  @Bean
+  public CommandLineRunner initAdminAccount(
+      UserRepository userRepository,
+      PasswordEncoder passwordEncoder
+  ) {
+    return args -> {
+      if (!userRepository.existsByRole(Role.ADMIN)) {
+        User admin = User.builder()
+            .username("admin")
+            .email("admin@discodeit.com")
+            .password(passwordEncoder.encode("admin1234"))
+            .build();
+        admin.updateRole(Role.ADMIN);
+        userRepository.save(admin);
+      }
+    };
+  }
 }
