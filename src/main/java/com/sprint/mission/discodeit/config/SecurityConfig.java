@@ -10,6 +10,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import com.sprint.mission.discodeit.entity.User;
@@ -24,6 +25,7 @@ import org.springframework.security.web.csrf.CsrfFilter;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
@@ -42,6 +44,8 @@ public class SecurityConfig {
             .failureHandler(loginFailureHandler))
         .authorizeHttpRequests(auth -> auth
             .requestMatchers("/api/auth/me").authenticated()
+            .requestMatchers("/api/auth/csrf-token", "/api/auth/login", "/api/auth/logout", "/api/auth/").permitAll()
+            .requestMatchers("/swagger-ui/**","/v3/api-docs/**", "/actuator/**").permitAll()
             .anyRequest().authenticated())
         .logout(logout -> logout.logoutUrl("/api/auth/logout")
             .logoutSuccessHandler(
