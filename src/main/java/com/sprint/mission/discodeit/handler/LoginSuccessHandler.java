@@ -1,10 +1,10 @@
 package com.sprint.mission.discodeit.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sprint.mission.discodeit.auth.DiscodeitUserDetails;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,11 +21,14 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
   @Override
   public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
       Authentication authentication) throws IOException, ServletException {
+    DiscodeitUserDetails userDetails = (DiscodeitUserDetails) authentication.getPrincipal();
 
-    HttpSession session = request.getSession();
-    log.info("로그인 성공 - 사용자: {}, 세션: {}", authentication, session.getId());
+    log.info("로그인 성공 - 사용자: {}", userDetails.getUsername());
 
-    response.sendRedirect("/");
+    response.setStatus(HttpServletResponse.SC_OK);
+    response.setContentType("application/json;charset=UTF-8");
 
+    String result = objectMapper.writeValueAsString(userDetails.getUserDto());
+    response.getWriter().write(result);
   }
 }
