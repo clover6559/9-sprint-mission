@@ -60,7 +60,6 @@ public class AuthController implements AuthApi {
     }
 
   @PutMapping("/role")
-  @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<UserDto> updateRole(@RequestBody UserRoleUpdateRequest userRoleUpdateRequest) {
     UserDto updateRoleUser =  authService.updateRole(userRoleUpdateRequest.userId(), userRoleUpdateRequest.newRole());
     return ResponseEntity.status(HttpStatus.OK).body(updateRoleUser);

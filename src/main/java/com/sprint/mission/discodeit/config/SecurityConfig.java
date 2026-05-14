@@ -1,10 +1,15 @@
 package com.sprint.mission.discodeit.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sprint.mission.discodeit.auth.CsrfCookieFilter;
 import com.sprint.mission.discodeit.entity.Role;
+import com.sprint.mission.discodeit.exception.ErrorResponse;
+import com.sprint.mission.discodeit.exception.GlobalExceptionHandler;
 import com.sprint.mission.discodeit.handler.*;
 import com.sprint.mission.discodeit.handler.SpaCsrfTokenRequestHandler;
 import com.sprint.mission.discodeit.repository.UserRepository;
+import jakarta.servlet.http.HttpServletResponse;
+import java.time.Instant;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
@@ -31,6 +36,7 @@ public class SecurityConfig {
 
   private final LoginSuccessHandler loginSuccessHandler;
   private final LoginFailureHandler loginFailureHandler;
+  private final ObjectMapper objectMapper;
 
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -47,6 +53,42 @@ public class SecurityConfig {
             .requestMatchers("/api/auth/csrf-token", "/api/auth/login", "/api/auth/logout", "/api/auth/").permitAll()
             .requestMatchers("/swagger-ui/**","/v3/api-docs/**", "/actuator/**").permitAll()
             .anyRequest().authenticated())
+        .exceptionHandling(ex -> ex
+            .authenticationEntryPoint((request, response, authException) -> {
+              response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401
+              response.setContentType("application/json;charset=UTF-8");
+
+              ErrorResponse errorResponse = new ErrorResponse(
+                  Instant.now(),
+                  "UNAUTHORIZED",
+                  "로그인이 필요한 서비스입니다.",
+                  null,
+                  authException.getClass().getSimpleName(),
+                  HttpServletResponse.SC_UNAUTHORIZED
+              );
+
+              String result = objectMapper.writeValueAsString(errorResponse);
+              response.getWriter().write(result);
+            })
+
+            // 2. 403 Forbidden: 로그인은 했지만 해당 API를 쓸 권한이 없는 경우
+            .accessDeniedHandler((request, response, accessDeniedException) -> {
+              response.setStatus(HttpServletResponse.SC_FORBIDDEN); // 403
+              response.setContentType("application/json;charset=UTF-8");
+
+              ErrorResponse errorResponse = new ErrorResponse(
+                  Instant.now(),
+                  "FORBIDDEN",
+                  "해당 리소스에 접근할 권한이 없습니다.",
+                  null,
+                  accessDeniedException.getClass().getSimpleName(),
+                  HttpServletResponse.SC_FORBIDDEN
+              );
+
+              String result = objectMapper.writeValueAsString(errorResponse);
+              response.getWriter().write(result);
+            })
+        )
         .logout(logout -> logout.logoutUrl("/api/auth/logout")
             .logoutSuccessHandler(
                 new HttpStatusReturningLogoutSuccessHandler(HttpStatus.NO_CONTENT))
