@@ -1,9 +1,8 @@
 package com.sprint.mission.discodeit.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sprint.mission.discodeit.auth.CsrfCookieFilter;
+import com.sprint.mission.discodeit.auth.DiscodeitUserDetails;
 import com.sprint.mission.discodeit.entity.Role;
-import com.sprint.mission.discodeit.exception.ErrorResponse;
 import com.sprint.mission.discodeit.handler.*;
 import com.sprint.mission.discodeit.handler.SpaCsrfTokenRequestHandler;
 import com.sprint.mission.discodeit.repository.UserRepository;
@@ -16,6 +15,8 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import com.sprint.mission.discodeit.entity.User;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -34,6 +35,7 @@ public class SecurityConfig {
     private final LoginFailureHandler loginFailureHandler;
     private final CustomAuthenticationEntryPoint authenticationEntryPoint;
     private final CustomAccessDeniedHandler accessDeniedHandler;
+//    private final DiscodeitUserDetails discodeitUserDetails;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -55,6 +57,19 @@ public class SecurityConfig {
                         .authenticationEntryPoint(authenticationEntryPoint)
                         .accessDeniedHandler(accessDeniedHandler)
                 )
+//                .rememberMe(remember -> remember
+//                        .key("myAppSecretKey")
+//                        .tokenValiditySeconds(1209600)
+//                        .userDetailsService(discodeitUserDetails)
+//                        .rememberMeCookieName("remember-me")
+//                        .rememberMeParameter("remember-me")
+//                        .useSecureCookie(true)
+//                        .alwaysRemember(false)
+//                )
+                .sessionManagement(management -> management
+                        .sessionConcurrency(concurrency -> concurrency.maximumSessions(1)
+                                .maxSessionsPreventsLogin(false)
+                                .sessionRegistry(sessionRegistry())))
                 .logout(logout -> logout.logoutUrl("/api/auth/logout")
                         .logoutSuccessHandler(
                                 new HttpStatusReturningLogoutSuccessHandler(HttpStatus.NO_CONTENT))
@@ -84,5 +99,10 @@ public class SecurityConfig {
             admin.updateRole(Role.ADMIN);
             userRepository.save(admin);
         };
+    }
+
+    @Bean
+    public SessionRegistry sessionRegistry() {
+        return new SessionRegistryImpl();
     }
 }
