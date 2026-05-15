@@ -3,6 +3,7 @@ package com.sprint.mission.discodeit.integration;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -29,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,6 +54,7 @@ class ChannelApiIntegrationTest {
   private UserService userService;
 
   @Test
+  @WithMockUser(roles = "ADMIN")
   @DisplayName("공개 채널 생성 API 통합 테스트")
   void createPublicChannel_Success() throws Exception {
     // Given
@@ -65,7 +68,7 @@ class ChannelApiIntegrationTest {
     // When & Then
     mockMvc.perform(post("/api/channels/public")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(requestBody))
+            .content(requestBody).with(csrf()))
         .andExpect(status().isCreated())
         .andExpect(jsonPath("$.id", notNullValue()))
         .andExpect(jsonPath("$.type", is(ChannelType.PUBLIC.name())))
@@ -74,6 +77,7 @@ class ChannelApiIntegrationTest {
   }
 
   @Test
+  @WithMockUser(roles = "ADMIN")
   @DisplayName("공개 채널 생성 실패 API 통합 테스트 - 유효하지 않은 요청")
   void createPublicChannel_Failure_InvalidRequest() throws Exception {
     // Given
@@ -87,11 +91,12 @@ class ChannelApiIntegrationTest {
     // When & Then
     mockMvc.perform(post("/api/channels/public")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(requestBody))
+            .content(requestBody).with(csrf()))
         .andExpect(status().isBadRequest());
   }
 
   @Test
+  @WithMockUser
   @DisplayName("비공개 채널 생성 API 통합 테스트")
   void createPrivateChannel_Success() throws Exception {
     // Given
@@ -119,7 +124,7 @@ class ChannelApiIntegrationTest {
     // When & Then
     mockMvc.perform(post("/api/channels/private")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(requestBody))
+            .content(requestBody).with(csrf()))
         .andExpect(status().isCreated())
         .andExpect(jsonPath("$.id", notNullValue()))
         .andExpect(jsonPath("$.type", is(ChannelType.PRIVATE.name())))
@@ -127,6 +132,7 @@ class ChannelApiIntegrationTest {
   }
 
   @Test
+  @WithMockUser(roles = "ADMIN")
   @DisplayName("사용자별 채널 목록 조회 API 통합 테스트")
   void findAllChannelsByUserId_Success() throws Exception {
     // Given
@@ -166,7 +172,7 @@ class ChannelApiIntegrationTest {
     // When & Then
     mockMvc.perform(get("/api/channels")
             .param("userId", userId.toString())
-            .contentType(MediaType.APPLICATION_JSON))
+            .contentType(MediaType.APPLICATION_JSON).with(csrf()))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$", hasSize(2)))
         .andExpect(jsonPath("$[0].type", is(ChannelType.PUBLIC.name())))
@@ -174,6 +180,7 @@ class ChannelApiIntegrationTest {
   }
 
   @Test
+  @WithMockUser(roles = "ADMIN")
   @DisplayName("채널 업데이트 API 통합 테스트")
   void updateChannel_Success() throws Exception {
     // Given
@@ -196,7 +203,7 @@ class ChannelApiIntegrationTest {
     // When & Then
     mockMvc.perform(patch("/api/channels/{channelId}", channelId)
             .contentType(MediaType.APPLICATION_JSON)
-            .content(requestBody))
+            .content(requestBody).with(csrf()))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.id", is(channelId.toString())))
         .andExpect(jsonPath("$.name", is("수정된 채널")))
@@ -204,6 +211,7 @@ class ChannelApiIntegrationTest {
   }
 
   @Test
+  @WithMockUser(roles = "ADMIN")
   @DisplayName("채널 업데이트 실패 API 통합 테스트 - 존재하지 않는 채널")
   void updateChannel_Failure_ChannelNotFound() throws Exception {
     // Given
@@ -219,11 +227,12 @@ class ChannelApiIntegrationTest {
     // When & Then
     mockMvc.perform(patch("/api/channels/{channelId}", nonExistentChannelId)
             .contentType(MediaType.APPLICATION_JSON)
-            .content(requestBody))
+            .content(requestBody).with(csrf()))
         .andExpect(status().isNotFound());
   }
 
   @Test
+  @WithMockUser(roles = "ADMIN")
   @DisplayName("채널 삭제 API 통합 테스트")
   void deleteChannel_Success() throws Exception {
     // Given
@@ -237,7 +246,7 @@ class ChannelApiIntegrationTest {
     UUID channelId = createdChannel.id();
 
     // When & Then
-    mockMvc.perform(delete("/api/channels/{channelId}", channelId))
+    mockMvc.perform(delete("/api/channels/{channelId}", channelId).with(csrf()))
         .andExpect(status().isNoContent());
 
     // 삭제 확인 - 사용자로 채널 조회 시 삭제된 채널은 조회되지 않아야 함
@@ -251,19 +260,20 @@ class ChannelApiIntegrationTest {
 
     mockMvc.perform(get("/api/channels")
             .param("userId", user.id().toString())
-            .contentType(MediaType.APPLICATION_JSON))
+            .contentType(MediaType.APPLICATION_JSON).with(csrf()))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$[?(@.id == '" + channelId + "')]").doesNotExist());
   }
 
   @Test
+  @WithMockUser(roles = "ADMIN")
   @DisplayName("채널 삭제 실패 API 통합 테스트 - 존재하지 않는 채널")
   void deleteChannel_Failure_ChannelNotFound() throws Exception {
     // Given
     UUID nonExistentChannelId = UUID.randomUUID();
 
     // When & Then
-    mockMvc.perform(delete("/api/channels/{channelId}", nonExistentChannelId))
+    mockMvc.perform(delete("/api/channels/{channelId}", nonExistentChannelId).with(csrf()))
         .andExpect(status().isNotFound());
   }
 } 

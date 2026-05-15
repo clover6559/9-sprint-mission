@@ -3,6 +3,7 @@ package com.sprint.mission.discodeit.integration;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -30,6 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,6 +61,7 @@ class BinaryContentApiIntegrationTest {
   private MessageService messageService;
 
   @Test
+  @WithMockUser(roles = "ADMIN")
   @DisplayName("바이너리 컨텐츠 조회 API 통합 테스트")
   void findBinaryContent_Success() throws Exception {
     // Given
@@ -96,7 +99,7 @@ class BinaryContentApiIntegrationTest {
     UUID binaryContentId = message.attachments().get(0).id();
 
     // When & Then
-    mockMvc.perform(get("/api/binaryContents/{binaryContentId}", binaryContentId))
+    mockMvc.perform(get("/api/binaryContents/{binaryContentId}", binaryContentId).with(csrf()))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.id", is(binaryContentId.toString())))
         .andExpect(jsonPath("$.fileName", is("test.txt")))
@@ -105,17 +108,19 @@ class BinaryContentApiIntegrationTest {
   }
 
   @Test
+  @WithMockUser
   @DisplayName("존재하지 않는 바이너리 컨텐츠 조회 API 통합 테스트")
   void findBinaryContent_Failure_NotFound() throws Exception {
     // Given
     UUID nonExistentBinaryContentId = UUID.randomUUID();
 
     // When & Then
-    mockMvc.perform(get("/api/binaryContents/{binaryContentId}", nonExistentBinaryContentId))
+    mockMvc.perform(get("/api/binaryContents/{binaryContentId}", nonExistentBinaryContentId).with(csrf()))
         .andExpect(status().isNotFound());
   }
 
   @Test
+  @WithMockUser(roles = "ADMIN")
   @DisplayName("여러 바이너리 컨텐츠 조회 API 통합 테스트")
   void findAllBinaryContentsByIds_Success() throws Exception {
     // Given
@@ -166,13 +171,14 @@ class BinaryContentApiIntegrationTest {
     // When & Then
     mockMvc.perform(get("/api/binaryContents")
             .param("binaryContentIds", binaryContentIds.get(0).toString())
-            .param("binaryContentIds", binaryContentIds.get(1).toString()))
+            .param("binaryContentIds", binaryContentIds.get(1).toString()).with(csrf()))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$", hasSize(2)))
         .andExpect(jsonPath("$[*].fileName", hasItems("test1.txt", "test2.txt")));
   }
 
   @Test
+  @WithMockUser
   @DisplayName("바이너리 컨텐츠 다운로드 API 통합 테스트")
   void downloadBinaryContent_Success() throws Exception {
     // Given
@@ -187,7 +193,7 @@ class BinaryContentApiIntegrationTest {
     UUID binaryContentId = binaryContent.id();
 
     // When & Then
-    mockMvc.perform(get("/api/binaryContents/{binaryContentId}/download", binaryContentId))
+    mockMvc.perform(get("/api/binaryContents/{binaryContentId}/download", binaryContentId).with(csrf()))
         .andExpect(status().isOk())
         .andExpect(header().string("Content-Disposition",
             "attachment; filename=\"download-test.txt\""))
@@ -196,6 +202,7 @@ class BinaryContentApiIntegrationTest {
   }
 
   @Test
+  @WithMockUser
   @DisplayName("존재하지 않는 바이너리 컨텐츠 다운로드 API 통합 테스트")
   void downloadBinaryContent_Failure_NotFound() throws Exception {
     // Given

@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.BDDMockito.willThrow;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
@@ -20,6 +21,7 @@ import com.sprint.mission.discodeit.dto.request.BinaryContentCreateRequest;
 import com.sprint.mission.discodeit.dto.request.MessageCreateRequest;
 import com.sprint.mission.discodeit.dto.request.MessageUpdateRequest;
 import com.sprint.mission.discodeit.dto.response.PageResponse;
+import com.sprint.mission.discodeit.entity.Role;
 import com.sprint.mission.discodeit.exception.message.MessageNotFoundException;
 import com.sprint.mission.discodeit.service.MessageService;
 import java.time.Instant;
@@ -35,6 +37,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -51,6 +54,7 @@ class MessageControllerTest {
   private MessageService messageService;
 
   @Test
+  @WithMockUser
   @DisplayName("메시지 생성 성공 테스트")
   void createMessage_Success() throws Exception {
     // Given
@@ -84,7 +88,7 @@ class MessageControllerTest {
         "testuser",
         "test@example.com",
         null,
-        true
+        true, Role.USER
     );
     
     BinaryContentDto attachmentDto = new BinaryContentDto(
@@ -111,7 +115,8 @@ class MessageControllerTest {
     mockMvc.perform(multipart("/api/messages")
             .file(messageCreateRequestPart)
             .file(attachment)
-            .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
+            .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
+                    .with(csrf()))
         .andExpect(status().isCreated())
         .andExpect(jsonPath("$.id").value(messageId.toString()))
         .andExpect(jsonPath("$.content").value("안녕하세요, 테스트 메시지입니다."))
@@ -121,6 +126,7 @@ class MessageControllerTest {
   }
 
   @Test
+  @WithMockUser
   @DisplayName("메시지 생성 실패 테스트 - 유효하지 않은 요청")
   void createMessage_Failure_InvalidRequest() throws Exception {
     // Given
@@ -140,11 +146,12 @@ class MessageControllerTest {
     // When & Then
     mockMvc.perform(multipart("/api/messages")
             .file(messageCreateRequestPart)
-            .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
+            .contentType(MediaType.MULTIPART_FORM_DATA_VALUE).with(csrf()))
         .andExpect(status().isBadRequest());
   }
 
   @Test
+  @WithMockUser
   @DisplayName("메시지 업데이트 성공 테스트")
   void updateMessage_Success() throws Exception {
     // Given
@@ -163,7 +170,7 @@ class MessageControllerTest {
         "testuser",
         "test@example.com",
         null,
-        true
+        true,Role.USER
     );
 
     MessageDto updatedMessage = new MessageDto(
@@ -182,7 +189,7 @@ class MessageControllerTest {
     // When & Then
     mockMvc.perform(patch("/api/messages/{messageId}", messageId)
             .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(updateRequest)))
+            .content(objectMapper.writeValueAsString(updateRequest)).with(csrf()))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.id").value(messageId.toString()))
         .andExpect(jsonPath("$.content").value("수정된 메시지 내용입니다."))
@@ -191,6 +198,7 @@ class MessageControllerTest {
   }
 
   @Test
+  @WithMockUser
   @DisplayName("메시지 업데이트 실패 테스트 - 존재하지 않는 메시지")
   void updateMessage_Failure_MessageNotFound() throws Exception {
     // Given
@@ -206,11 +214,12 @@ class MessageControllerTest {
     // When & Then
     mockMvc.perform(patch("/api/messages/{messageId}", nonExistentMessageId)
             .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(updateRequest)))
+            .content(objectMapper.writeValueAsString(updateRequest)).with(csrf()))
         .andExpect(status().isNotFound());
   }
 
   @Test
+  @WithMockUser
   @DisplayName("메시지 삭제 성공 테스트")
   void deleteMessage_Success() throws Exception {
     // Given
@@ -219,11 +228,12 @@ class MessageControllerTest {
 
     // When & Then
     mockMvc.perform(delete("/api/messages/{messageId}", messageId)
-            .contentType(MediaType.APPLICATION_JSON))
+            .contentType(MediaType.APPLICATION_JSON).with(csrf()))
         .andExpect(status().isNoContent());
   }
 
   @Test
+  @WithMockUser
   @DisplayName("메시지 삭제 실패 테스트 - 존재하지 않는 메시지")
   void deleteMessage_Failure_MessageNotFound() throws Exception {
     // Given
@@ -233,11 +243,12 @@ class MessageControllerTest {
 
     // When & Then
     mockMvc.perform(delete("/api/messages/{messageId}", nonExistentMessageId)
-            .contentType(MediaType.APPLICATION_JSON))
+            .contentType(MediaType.APPLICATION_JSON).with(csrf()))
         .andExpect(status().isNotFound());
   }
 
   @Test
+  @WithMockUser
   @DisplayName("채널별 메시지 목록 조회 성공 테스트")
   void findAllByChannelId_Success() throws Exception {
     // Given
@@ -251,7 +262,7 @@ class MessageControllerTest {
         "testuser",
         "test@example.com",
         null,
-        true
+        true, Role.USER
     );
     
     List<MessageDto> messages = List.of(
@@ -290,7 +301,7 @@ class MessageControllerTest {
     mockMvc.perform(get("/api/messages")
             .param("channelId", channelId.toString())
             .param("cursor", cursor.toString())
-            .contentType(MediaType.APPLICATION_JSON))
+            .contentType(MediaType.APPLICATION_JSON).with(csrf()))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.content").isArray())
         .andExpect(jsonPath("$.content.length()").value(2))

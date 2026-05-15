@@ -22,6 +22,7 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -41,6 +42,7 @@ class BinaryContentControllerTest {
   private BinaryContentStorage binaryContentStorage;
 
   @Test
+  @WithMockUser
   @DisplayName("바이너리 컨텐츠 조회 성공 테스트")
   void find_Success() throws Exception {
     // Given
@@ -65,6 +67,7 @@ class BinaryContentControllerTest {
   }
 
   @Test
+  @WithMockUser
   @DisplayName("바이너리 컨텐츠 조회 실패 테스트 - 존재하지 않는 컨텐츠")
   void find_Failure_BinaryContentNotFound() throws Exception {
     // Given
@@ -80,6 +83,7 @@ class BinaryContentControllerTest {
   }
 
   @Test
+  @WithMockUser
   @DisplayName("ID 목록으로 바이너리 컨텐츠 조회 성공 테스트")
   void findAllByIdIn_Success() throws Exception {
     // Given
@@ -107,6 +111,7 @@ class BinaryContentControllerTest {
   }
 
   @Test
+  @WithMockUser
   @DisplayName("바이너리 컨텐츠 다운로드 성공 테스트")
   void download_Success() throws Exception {
     // Given
@@ -134,6 +139,7 @@ class BinaryContentControllerTest {
   }
 
   @Test
+  @WithMockUser
   @DisplayName("바이너리 컨텐츠 다운로드 실패 테스트 - 존재하지 않는 컨텐츠")
   void download_Failure_BinaryContentNotFound() throws Exception {
     // Given

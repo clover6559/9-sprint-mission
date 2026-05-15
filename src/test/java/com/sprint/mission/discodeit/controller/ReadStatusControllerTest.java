@@ -4,6 +4,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willThrow;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -24,6 +25,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -40,6 +42,7 @@ class ReadStatusControllerTest {
   private ReadStatusService readStatusService;
 
   @Test
+  @WithMockUser
   @DisplayName("읽음 상태 생성 성공 테스트")
   void create_Success() throws Exception {
     // Given
@@ -67,7 +70,7 @@ class ReadStatusControllerTest {
     // When & Then
     mockMvc.perform(post("/api/readStatuses")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(createRequest)))
+            .content(objectMapper.writeValueAsString(createRequest)).with(csrf()))
         .andExpect(status().isCreated())
         .andExpect(jsonPath("$.id").value(readStatusId.toString()))
         .andExpect(jsonPath("$.userId").value(userId.toString()))
@@ -76,6 +79,7 @@ class ReadStatusControllerTest {
   }
 
   @Test
+  @WithMockUser
   @DisplayName("읽음 상태 생성 실패 테스트 - 유효하지 않은 요청")
   void create_Failure_InvalidRequest() throws Exception {
     // Given
@@ -88,11 +92,12 @@ class ReadStatusControllerTest {
     // When & Then
     mockMvc.perform(post("/api/readStatuses")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(invalidRequest)))
+            .content(objectMapper.writeValueAsString(invalidRequest)).with(csrf()))
         .andExpect(status().isBadRequest());
   }
 
   @Test
+  @WithMockUser
   @DisplayName("읽음 상태 업데이트 성공 테스트")
   void update_Success() throws Exception {
     // Given
@@ -116,7 +121,7 @@ class ReadStatusControllerTest {
     // When & Then
     mockMvc.perform(patch("/api/readStatuses/{readStatusId}", readStatusId)
             .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(updateRequest)))
+            .content(objectMapper.writeValueAsString(updateRequest)).with(csrf()))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.id").value(readStatusId.toString()))
         .andExpect(jsonPath("$.userId").value(userId.toString()))
@@ -125,6 +130,7 @@ class ReadStatusControllerTest {
   }
 
   @Test
+  @WithMockUser
   @DisplayName("읽음 상태 업데이트 실패 테스트 - 존재하지 않는 읽음 상태")
   void update_Failure_ReadStatusNotFound() throws Exception {
     // Given
@@ -139,11 +145,12 @@ class ReadStatusControllerTest {
     // When & Then
     mockMvc.perform(patch("/api/readStatuses/{readStatusId}", nonExistentId)
             .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(updateRequest)))
+            .content(objectMapper.writeValueAsString(updateRequest)).with(csrf()))
         .andExpect(status().isNotFound());
   }
 
   @Test
+  @WithMockUser
   @DisplayName("사용자별 읽음 상태 목록 조회 성공 테스트")
   void findAllByUserId_Success() throws Exception {
     // Given
@@ -162,7 +169,7 @@ class ReadStatusControllerTest {
     // When & Then
     mockMvc.perform(get("/api/readStatuses")
             .param("userId", userId.toString())
-            .contentType(MediaType.APPLICATION_JSON))
+            .contentType(MediaType.APPLICATION_JSON).with(csrf()))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$[0].userId").value(userId.toString()))
         .andExpect(jsonPath("$[0].channelId").value(channelId1.toString()))

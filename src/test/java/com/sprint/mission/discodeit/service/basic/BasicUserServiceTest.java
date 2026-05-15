@@ -10,13 +10,17 @@ import static org.mockito.Mockito.verify;
 import com.sprint.mission.discodeit.dto.data.UserDto;
 import com.sprint.mission.discodeit.dto.request.UserCreateRequest;
 import com.sprint.mission.discodeit.dto.request.UserUpdateRequest;
+import com.sprint.mission.discodeit.entity.Role;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.exception.user.UserAlreadyExistsException;
 import com.sprint.mission.discodeit.exception.user.UserNotFoundException;
 import com.sprint.mission.discodeit.mapper.UserMapper;
+import com.sprint.mission.discodeit.repository.BinaryContentRepository;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import java.util.Optional;
 import java.util.UUID;
+
+import com.sprint.mission.discodeit.storage.BinaryContentStorage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,6 +28,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(MockitoExtension.class)
@@ -37,6 +43,14 @@ class BasicUserServiceTest {
 
   @InjectMocks
   private BasicUserService userService;
+
+  @Mock
+  private SessionRegistry sessionRegistry;
+  @Mock
+  private  BinaryContentRepository binaryContentRepository;
+  @Mock
+  private  BinaryContentStorage binaryContentStorage;
+  @Mock private PasswordEncoder passwordEncoder;
 
   private UUID userId;
   private String username;
@@ -54,7 +68,8 @@ class BasicUserServiceTest {
 
     user = new User(username, email, password, null);
     ReflectionTestUtils.setField(user, "id", userId);
-    userDto = new UserDto(userId, username, email, null, true);
+    userService = new BasicUserService(userRepository, userMapper,binaryContentRepository, binaryContentStorage, passwordEncoder, sessionRegistry);
+    userDto = new UserDto(userId, username, email, null, true, Role.USER);
   }
 
   @Test
