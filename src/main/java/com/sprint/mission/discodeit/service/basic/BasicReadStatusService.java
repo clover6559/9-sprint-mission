@@ -6,6 +6,8 @@ import com.sprint.mission.discodeit.dto.request.ReadStatusUpdateRequest;
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.ReadStatus;
 import com.sprint.mission.discodeit.entity.User;
+import com.sprint.mission.discodeit.exception.DiscodeitException;
+import com.sprint.mission.discodeit.exception.ErrorCode;
 import com.sprint.mission.discodeit.exception.channel.ChannelNotFoundException;
 import com.sprint.mission.discodeit.exception.readstatus.DuplicateReadStatusException;
 import com.sprint.mission.discodeit.exception.readstatus.ReadStatusNotFoundException;
@@ -40,7 +42,9 @@ public class BasicReadStatusService implements ReadStatusService {
 
     UUID userId = request.userId();
     UUID channelId = request.channelId();
-
+    if (readStatusRepository.existsByUserIdAndChannelId(userId, channelId)) {
+      throw new DiscodeitException(ErrorCode.DUPLICATE_READ_STATUS);
+    }
     User user = userRepository.findById(userId)
         .orElseThrow(() -> UserNotFoundException.withId(userId));
     Channel channel = channelRepository.findById(channelId)
