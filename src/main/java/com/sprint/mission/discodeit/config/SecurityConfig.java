@@ -16,7 +16,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import com.sprint.mission.discodeit.entity.User;
 import org.springframework.security.core.session.SessionRegistry;
-import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -37,6 +36,7 @@ public class SecurityConfig {
     private final CustomAuthenticationEntryPoint authenticationEntryPoint;
     private final CustomAccessDeniedHandler accessDeniedHandler;
     private final DiscodeitUserDetailsService discodeitUserDetailsService;
+    private final SessionRegistry sessionRegistry;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -50,8 +50,9 @@ public class SecurityConfig {
                         .failureHandler(loginFailureHandler))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/me").authenticated()
-                        .requestMatchers("/", "/index.html", "/static/**", "/assets/**", "*.js", "*.css", "*.ico").permitAll()
-                        .requestMatchers("/api/auth/csrf-token", "/api/auth/login", "/api/auth/logout", "/api/auth").permitAll()
+                        .requestMatchers("/", "/index.html", "/static/**", "/assets/**", "*.js", "*.css", "*.ico", "/").permitAll()
+                        .requestMatchers("/api/auth/csrf-token", "/api/auth/login", "/api/auth/logout", "/api/auth/**").permitAll()
+                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/users").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/actuator/**").permitAll()
                         .anyRequest().authenticated())
                 .exceptionHandling(ex -> ex
@@ -70,7 +71,7 @@ public class SecurityConfig {
                 .sessionManagement(management -> management
                         .sessionConcurrency(concurrency -> concurrency.maximumSessions(1)
                                 .maxSessionsPreventsLogin(false)
-                                .sessionRegistry(sessionRegistry())))
+                                .sessionRegistry(sessionRegistry)))
                 .logout(logout -> logout.logoutUrl("/api/auth/logout")
                         .logoutSuccessHandler(
                                 new HttpStatusReturningLogoutSuccessHandler(HttpStatus.NO_CONTENT))
@@ -100,11 +101,6 @@ public class SecurityConfig {
             admin.updateRole(Role.ADMIN);
             userRepository.save(admin);
         };
-    }
-
-    @Bean
-    public SessionRegistry sessionRegistry() {
-        return new SessionRegistryImpl();
     }
 
     @Bean
