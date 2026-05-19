@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -96,7 +97,7 @@ public class BasicUserService implements UserService {
     log.info("모든 사용자 조회 완료: 총 {}명", userDtos.size());
     return userDtos;
   }
-
+  @PreAuthorize("hasRole('ADMIN') or #userId == authentication.principal.id")
   @Transactional
   @Override
   public UserDto update(UUID userId, UserUpdateRequest userUpdateRequest,
@@ -140,7 +141,7 @@ public class BasicUserService implements UserService {
     log.info("사용자 수정 완료: id={}", userId);
     return userMapper.toDto(user);
   }
-
+  @PreAuthorize("#userId == authentication.principal.id or hasRole('ADMIN')")
   @Transactional
   @Override
   public void delete(UUID userId) {
