@@ -1,11 +1,11 @@
 package com.sprint.mission.discodeit.config;
 
 import com.sprint.mission.discodeit.auth.CsrfCookieFilter;
-import com.sprint.mission.discodeit.auth.DiscodeitUserDetails;
 import com.sprint.mission.discodeit.entity.Role;
 import com.sprint.mission.discodeit.handler.*;
 import com.sprint.mission.discodeit.handler.SpaCsrfTokenRequestHandler;
 import com.sprint.mission.discodeit.repository.UserRepository;
+import com.sprint.mission.discodeit.service.DiscodeitUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
@@ -36,7 +36,7 @@ public class SecurityConfig {
     private final LoginFailureHandler loginFailureHandler;
     private final CustomAuthenticationEntryPoint authenticationEntryPoint;
     private final CustomAccessDeniedHandler accessDeniedHandler;
-//    private final DiscodeitUserDetails discodeitUserDetails;
+    private final DiscodeitUserDetailsService discodeitUserDetailsService;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -58,15 +58,15 @@ public class SecurityConfig {
                         .authenticationEntryPoint(authenticationEntryPoint)
                         .accessDeniedHandler(accessDeniedHandler)
                 )
-//                .rememberMe(remember -> remember
-//                        .key("myAppSecretKey")
-//                        .tokenValiditySeconds(1209600)
-//                        .userDetailsService(discodeitUserDetails)
-//                        .rememberMeCookieName("remember-me")
-//                        .rememberMeParameter("remember-me")
-//                        .useSecureCookie(true)
-//                        .alwaysRemember(false)
-//                )
+                .rememberMe(remember -> remember
+                        .key("myAppSecretKey")
+                        .tokenValiditySeconds(1209600)
+                        .userDetailsService(discodeitUserDetailsService)
+                        .rememberMeCookieName("remember-me")
+                        .rememberMeParameter("remember-me")
+                        .useSecureCookie(false)
+                        .alwaysRemember(false)
+                )
                 .sessionManagement(management -> management
                         .sessionConcurrency(concurrency -> concurrency.maximumSessions(1)
                                 .maxSessionsPreventsLogin(false)
