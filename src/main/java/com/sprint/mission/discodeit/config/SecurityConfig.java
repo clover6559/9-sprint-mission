@@ -15,6 +15,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import com.sprint.mission.discodeit.entity.User;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -31,7 +32,7 @@ import org.springframework.security.web.session.HttpSessionEventPublisher;
 
 public class SecurityConfig {
 
-    private final LoginSuccessHandler loginSuccessHandler;
+    private final JwtLoginSuccessHandler jwtLoginSuccessHandler;
     private final LoginFailureHandler loginFailureHandler;
     private final CustomAuthenticationEntryPoint authenticationEntryPoint;
     private final CustomAccessDeniedHandler accessDeniedHandler;
@@ -46,7 +47,7 @@ public class SecurityConfig {
                 )
                 .addFilterAfter(new CsrfCookieFilter(), CsrfFilter.class)
                 .formLogin(login -> login.loginProcessingUrl("/api/auth/login")
-                        .successHandler(loginSuccessHandler)
+                        .successHandler(jwtLoginSuccessHandler)
                         .failureHandler(loginFailureHandler))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/me").authenticated()
@@ -68,10 +69,10 @@ public class SecurityConfig {
                         .useSecureCookie(false)
                         .alwaysRemember(false)
                 )
-                .sessionManagement(management -> management
-                        .sessionConcurrency(concurrency -> concurrency.maximumSessions(1)
-                                .maxSessionsPreventsLogin(false)
-                                .sessionRegistry(sessionRegistry)))
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(
+                                SessionCreationPolicy.STATELESS
+                        ))
                 .logout(logout -> logout.logoutUrl("/api/auth/logout")
                         .logoutSuccessHandler(
                                 new HttpStatusReturningLogoutSuccessHandler(HttpStatus.NO_CONTENT))
