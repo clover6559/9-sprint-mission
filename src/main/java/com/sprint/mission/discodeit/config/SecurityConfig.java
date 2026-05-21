@@ -34,6 +34,7 @@ import org.springframework.security.web.session.HttpSessionEventPublisher;
 public class SecurityConfig {
 
     private final JwtLoginSuccessHandler jwtLoginSuccessHandler;
+    private final JwtLogoutHandler jwtLogoutHandler;
     private final LoginFailureHandler loginFailureHandler;
     private final CustomAuthenticationEntryPoint authenticationEntryPoint;
     private final CustomAccessDeniedHandler accessDeniedHandler;
@@ -66,6 +67,7 @@ public class SecurityConfig {
                         ))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .logout(logout -> logout.logoutUrl("/api/auth/logout")
+                        .addLogoutHandler(jwtLogoutHandler)
                         .logoutSuccessHandler(
                                 new HttpStatusReturningLogoutSuccessHandler(HttpStatus.NO_CONTENT))
                 );
