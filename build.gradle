@@ -6,7 +6,12 @@ plugins {
 }
 
 group = 'com.sprint.mission'
+<<<<<<<< HEAD:build.gradle
 version = '2.0-M9'
+========
+version = 'v1.2-M8'
+description = 'Demo project for Spring Boot'
+>>>>>>>> 2f943d59b13f307415aef6949a63f064ecf9d7cb:discodeit/build.gradle
 
 java {
     toolchain {
@@ -65,4 +70,47 @@ jacocoTestReport {
         xml.required = true
         html.required = true
     }
+<<<<<<<< HEAD:build.gradle
+========
+}
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    compileOnly 'org.projectlombok:lombok'
+    implementation 'org.mapstruct:mapstruct:1.5.5.Final'
+    annotationProcessor 'org.projectlombok:lombok'
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.5'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    runtimeOnly 'org.postgresql:postgresql'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    runtimeOnly 'com.h2database:h2'
+    implementation 'software.amazon.awssdk:s3:2.31.7'
+    testCompileOnly 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
+
+
+}
+spotless {
+    java {
+        target 'src/*/java/**/*.java'
+
+        palantirJavaFormat('2.39.0')
+
+        removeUnusedImports()
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+}
+tasks.named('test') {
+    useJUnitPlatform()
+    finalizedBy jacocoTestReport
+}
+jacocoTestReport {
+    reports {
+        xml.required = true // xml 리포트 생성을 켜줘야 CodeCov가 읽어
+    }
+>>>>>>>> 2f943d59b13f307415aef6949a63f064ecf9d7cb:discodeit/build.gradle
 }
