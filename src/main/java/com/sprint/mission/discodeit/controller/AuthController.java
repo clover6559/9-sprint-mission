@@ -5,9 +5,11 @@ import com.sprint.mission.discodeit.controller.api.AuthApi;
 import com.sprint.mission.discodeit.dto.data.JwtDto;
 import com.sprint.mission.discodeit.dto.data.UserDto;
 import com.sprint.mission.discodeit.dto.request.UserRoleUpdateRequest;
+import com.sprint.mission.discodeit.entity.JwtInformation;
 import com.sprint.mission.discodeit.exception.DiscodeitException;
 import com.sprint.mission.discodeit.exception.ErrorCode;
 import com.sprint.mission.discodeit.exception.ErrorResponse;
+import com.sprint.mission.discodeit.repository.JwtRegistry;
 import com.sprint.mission.discodeit.security.JwtTokenProvider;
 import com.sprint.mission.discodeit.security.RefreshTokenStore;
 import com.sprint.mission.discodeit.service.AuthService;
@@ -35,6 +37,7 @@ public class AuthController implements AuthApi {
   private final RefreshTokenStore refreshTokenStore;
   private final JwtTokenProvider jwtTokenProvider;
   private final UserDetailsService userDetailsService;
+  private final JwtRegistry jwtRegistry;
 
   @GetMapping("/csrf-token")
   public ResponseEntity<Void> getCsrfToken(CsrfToken csrfToken) {
@@ -56,6 +59,9 @@ public class AuthController implements AuthApi {
     if (refreshToken == null) {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse(new DiscodeitException(ErrorCode.INVALID_REQUEST), 401));
     }
+    if (!jwtRegistry.hasActiveJwtInformationByRefreshToken(refreshToken)) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse(new DiscodeitException(ErrorCode.INVALID_REQUEST), 401));
+    }
 
     String username = refreshTokenStore.findUsername(refreshToken).orElse(null);
     if (username == null) {
@@ -68,15 +74,18 @@ public class AuthController implements AuthApi {
     String newRefreshToken = jwtTokenProvider.generateRefreshToken();
     refreshTokenStore.save(newRefreshToken, username);
 
+    DiscodeitUserDetails discodeitUserDetails = (DiscodeitUserDetails) userDetails;
+    UserDto user = discodeitUserDetails.getUserDto();
+
+    JwtInformation newJwtInformation = new JwtInformation(user, newAccessToken, newRefreshToken);
+    jwtRegistry.rotateJwtInformation(refreshToken, newJwtInformation);
+
     Cookie refreshCookie = new Cookie("REFRESH_TOKEN", newRefreshToken);
     refreshCookie.setHttpOnly(true);
     refreshCookie.setSecure(false);
     refreshCookie.setPath("/api/auth");
     refreshCookie.setMaxAge(7*24*60*60);
     response.addCookie(refreshCookie);
-
-    DiscodeitUserDetails discodeitUserDetails = (DiscodeitUserDetails) userDetails;
-    UserDto user = discodeitUserDetails.getUserDto();
 
     JwtDto responseBody = JwtDto.builder()
             .accessToken(newAccessToken)

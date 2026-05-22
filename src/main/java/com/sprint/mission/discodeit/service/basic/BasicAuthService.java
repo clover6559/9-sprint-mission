@@ -6,6 +6,7 @@ import com.sprint.mission.discodeit.entity.Role;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.exception.user.UserNotFoundException;
 import com.sprint.mission.discodeit.mapper.UserMapper;
+import com.sprint.mission.discodeit.repository.JwtRegistry;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.service.AuthService;
 
@@ -27,6 +28,7 @@ public class BasicAuthService implements AuthService {
   private final UserRepository userRepository;
   private final UserMapper userMapper;
   private final SessionRegistry sessionRegistry;
+  private JwtRegistry jwtRegistry;
 
   @Transactional
   @Override
@@ -36,6 +38,8 @@ public class BasicAuthService implements AuthService {
             .orElseThrow(() -> UserNotFoundException.withId(userId));
 
     user.updateRole(newRole);
+    jwtRegistry.invalidateJwtInformationByUserId(userId);
+    log.info("사용자 권한 변경으로 인한 토큰 강제 만료 처리 - userId: {}", userId);
 
     List<Object> allPrincipals = sessionRegistry.getAllPrincipals();
     for (Object principal : allPrincipals) {
