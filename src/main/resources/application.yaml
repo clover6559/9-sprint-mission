@@ -65,3 +65,4 @@ logging:
 jwt:
   secret: bXktand0LXNlY3JldC1rZXktZm9yLXNwcmluZy1zZWN1cml0eQ==
   access-token-validity-seconds: 3600
+  refresh-token-validity-seconds: 604800
