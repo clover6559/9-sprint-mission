@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sprint.mission.discodeit.auth.DiscodeitUserDetails;
 import com.sprint.mission.discodeit.dto.data.JwtDto;
 import com.sprint.mission.discodeit.dto.data.UserDto;
+import com.sprint.mission.discodeit.entity.JwtInformation;
+import com.sprint.mission.discodeit.repository.JwtRegistry;
 import com.sprint.mission.discodeit.security.JwtTokenProvider;
 import com.sprint.mission.discodeit.security.RefreshTokenStore;
 import jakarta.servlet.ServletException;
@@ -27,6 +29,7 @@ public class JwtLoginSuccessHandler implements AuthenticationSuccessHandler {
     private final JwtTokenProvider jwtTokenProvider;
     private final ObjectMapper objectMapper;
     private final RefreshTokenStore refreshTokenStore;
+    private final JwtRegistry jwtRegistry;
 
 
     @Override
@@ -36,6 +39,9 @@ public class JwtLoginSuccessHandler implements AuthenticationSuccessHandler {
         String accessToken = jwtTokenProvider.generateAccessToken(userDetails);
 
         String refreshToken = jwtTokenProvider.generateRefreshToken();
+
+        JwtInformation jwtInformation = new JwtInformation(userDto, accessToken, refreshToken);
+        jwtRegistry.registerJwtInformation(jwtInformation);
 
         refreshTokenStore.save(refreshToken, userDetails.getUsername());
         Cookie refreshCookie = new Cookie("REFRESH_TOKEN", refreshToken);
