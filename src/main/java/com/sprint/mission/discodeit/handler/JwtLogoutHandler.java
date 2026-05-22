@@ -1,10 +1,13 @@
 package com.sprint.mission.discodeit.handler;
 
+import com.sprint.mission.discodeit.repository.InMemoryJwtRegistry;
+import com.sprint.mission.discodeit.repository.JwtRegistry;
 import com.sprint.mission.discodeit.security.RefreshTokenStore;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.stereotype.Component;
@@ -13,15 +16,21 @@ import java.util.Arrays;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class JwtLogoutHandler implements LogoutHandler {
 
     private final RefreshTokenStore refreshTokenStore;
+    private final JwtRegistry jwtRegistry;
 
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
         String refreshToken = getRefreshTokenFromCookie(request);
         if (refreshToken != null) {
             refreshTokenStore.remove(refreshToken);
+            if (jwtRegistry instanceof InMemoryJwtRegistry inMemoryRegistry) {
+                inMemoryRegistry.invalidateJwtInformationByRefreshToken(refreshToken);
+                log.info("JwtRegistry에서 리프레시 토큰 무효화 완료: {}", refreshToken);
+            }
         }
 
         Cookie refreshCookie = new Cookie("REFRESH_TOKEN", null);
