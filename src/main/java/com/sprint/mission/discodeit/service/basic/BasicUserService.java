@@ -10,6 +10,7 @@ import com.sprint.mission.discodeit.exception.user.UserAlreadyExistsException;
 import com.sprint.mission.discodeit.exception.user.UserNotFoundException;
 import com.sprint.mission.discodeit.mapper.UserMapper;
 import com.sprint.mission.discodeit.repository.BinaryContentRepository;
+import com.sprint.mission.discodeit.repository.JwtRegistry;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.service.UserService;
 import com.sprint.mission.discodeit.storage.BinaryContentStorage;
@@ -19,7 +20,6 @@ import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,7 +35,7 @@ public class BasicUserService implements UserService {
   private final BinaryContentRepository binaryContentRepository;
   private final BinaryContentStorage binaryContentStorage;
   private final PasswordEncoder passwordEncoder;
-  private final SessionRegistry sessionRegistry;
+  private final JwtRegistry jwtRegistry;
 
   @Transactional
   @Override
@@ -90,12 +90,24 @@ public class BasicUserService implements UserService {
   @Override
   public List<UserDto> findAll() {
     log.debug("모든 사용자 조회 시작");
-    List<UserDto> userDtos = userRepository.findAllWithProfileAndStatus()
-        .stream()
-        .map(userMapper::toDto)
-        .toList();
-    log.info("모든 사용자 조회 완료: 총 {}명", userDtos.size());
-    return userDtos;
+      List<UserDto> userDtos = userRepository.findAllWithProfileAndStatus()
+              .stream()
+              .map(user -> {
+                  UserDto dto = userMapper.toDto(user);
+
+                  boolean isOnline = jwtRegistry.hasActiveJwtInformationByUserId(user.getId());
+
+                  return new UserDto(
+                          dto.id(),
+                          dto.username(),
+                          dto.email(),
+                          dto.profile(),
+                          isOnline,
+                          dto.role()
+                  );
+              })
+              .toList();
+      return userDtos;
   }
   @PreAuthorize("hasRole('ADMIN') or #userId == authentication.principal.id")
   @Transactional
