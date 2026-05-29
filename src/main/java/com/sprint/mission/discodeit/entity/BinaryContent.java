@@ -20,10 +20,16 @@ public class BinaryContent extends BaseEntity {
   private Long size;
   @Column(length = 100, nullable = false)
   private String contentType;
+  @Column(nullable = false)
+  private BinaryContentStatus status;
 
   public BinaryContent(String fileName, Long size, String contentType) {
     this.fileName = fileName;
     this.size = size;
     this.contentType = contentType;
+  }
+
+  public void updateStatus(BinaryContentStatus status) {
+    this.status = status;
   }
 }
