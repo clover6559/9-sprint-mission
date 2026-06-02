@@ -29,7 +29,11 @@ public enum ErrorCode {
     
     // Server 에러 코드
     INTERNAL_SERVER_ERROR("서버 내부 오류가 발생했습니다."),
-    INVALID_REQUEST("잘못된 요청입니다.");
+    INVALID_REQUEST("잘못된 요청입니다."),
+
+    //Notification 에러 코드
+    NOTIFICATION_NOT_FOUND("해당 알림을 찾을 수 없습니다."),
+    NOTIFICATION_ACCESS_DENIED("본인의 알림만 확인할 수 있습니다.");
 
     private final String message;
 
