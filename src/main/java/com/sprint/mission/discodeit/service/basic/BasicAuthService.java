@@ -4,6 +4,7 @@ import com.sprint.mission.discodeit.auth.DiscodeitUserDetails;
 import com.sprint.mission.discodeit.dto.data.UserDto;
 import com.sprint.mission.discodeit.entity.Role;
 import com.sprint.mission.discodeit.entity.User;
+import com.sprint.mission.discodeit.event.RoleUpdatedEvent;
 import com.sprint.mission.discodeit.exception.user.UserNotFoundException;
 import com.sprint.mission.discodeit.mapper.UserMapper;
 import com.sprint.mission.discodeit.repository.JwtRegistry;
@@ -13,6 +14,7 @@ import com.sprint.mission.discodeit.service.AuthService;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.session.SessionInformation;
 import org.springframework.security.core.session.SessionRegistry;
@@ -29,6 +31,7 @@ public class BasicAuthService implements AuthService {
   private final UserMapper userMapper;
   private final SessionRegistry sessionRegistry;
   private JwtRegistry jwtRegistry;
+  private final ApplicationEventPublisher eventPublisher;
 
   @Transactional
   @Override
@@ -38,6 +41,8 @@ public class BasicAuthService implements AuthService {
             .orElseThrow(() -> UserNotFoundException.withId(userId));
 
     user.updateRole(newRole);
+    eventPublisher.publishEvent(new RoleUpdatedEvent(userId, newRole));
+
     jwtRegistry.invalidateJwtInformationByUserId(userId);
     log.info("사용자 권한 변경으로 인한 토큰 강제 만료 처리 - userId: {}", userId);
 
