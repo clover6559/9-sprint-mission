@@ -39,6 +39,12 @@ public class ReadStatus extends BaseUpdatableEntity {
     this.user = user;
     this.channel = channel;
     this.lastReadAt = lastReadAt;
+
+    if (channel.getType() == ChannelType.PUBLIC) {
+      this.notificationEnabled = true;
+    } else {
+      this.notificationEnabled = false;
+    }
   }
 
   public void update(Instant newLastReadAt) {
