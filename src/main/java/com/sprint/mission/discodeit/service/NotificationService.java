@@ -6,6 +6,8 @@ import com.sprint.mission.discodeit.exception.DiscodeitException;
 import com.sprint.mission.discodeit.exception.ErrorCode;
 import com.sprint.mission.discodeit.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +21,7 @@ import java.util.stream.Collectors;
 public class NotificationService {
     private final NotificationRepository notificationRepository;
 
+    @Cacheable(value = "userNotifications", key = "#receiverId")
     public List<NotificationDto> getNotifications(UUID receiverId) {
         List<Notification> notifications = notificationRepository.findByReceiverIdOrderByCreatedAtDesc(receiverId);
         return notifications.stream()
@@ -26,6 +29,7 @@ public class NotificationService {
                 .collect(Collectors.toList());
     }
     @Transactional
+    @CacheEvict(value = "userNotifications", key = "#receiverId")
     public void deleteNotification(UUID id, UUID receiverId) {
         Notification notification = notificationRepository.findById(id)
                 .orElseThrow(() -> new DiscodeitException(ErrorCode.NOTIFICATION_NOT_FOUND));

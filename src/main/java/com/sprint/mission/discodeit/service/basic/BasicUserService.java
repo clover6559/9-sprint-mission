@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -42,9 +44,9 @@ public class BasicUserService implements UserService {
   private final JwtRegistry jwtRegistry;
   private final ApplicationEventPublisher eventPublisher;
 
-
-    @Transactional
+  @Transactional
   @Override
+  @CacheEvict(value = "users", allEntries = true)
   public UserDto create(UserCreateRequest userCreateRequest,
       Optional<BinaryContentCreateRequest> optionalProfileCreateRequest) {
     log.debug("사용자 생성 시작: {}", userCreateRequest);
@@ -92,7 +94,7 @@ public class BasicUserService implements UserService {
     log.info("사용자 조회 완료: id={}", userId);
     return userDto;
   }
-
+  @Cacheable(value = "users")
   @Transactional(readOnly = true)
   @Override
   public List<UserDto> findAll() {
@@ -119,6 +121,7 @@ public class BasicUserService implements UserService {
   @PreAuthorize("hasRole('ADMIN') or #userId == authentication.principal.id")
   @Transactional
   @Override
+  @CacheEvict(value = "users", allEntries = true)
   public UserDto update(UUID userId, UserUpdateRequest userUpdateRequest,
       Optional<BinaryContentCreateRequest> optionalProfileCreateRequest) {
     log.debug("사용자 수정 시작: id={}, request={}", userId, userUpdateRequest);
@@ -164,6 +167,7 @@ public class BasicUserService implements UserService {
   @PreAuthorize("#userId == authentication.principal.id or hasRole('ADMIN')")
   @Transactional
   @Override
+  @CacheEvict(value = "users", allEntries = true)
   public void delete(UUID userId) {
     log.debug("사용자 삭제 시작: id={}", userId);
 

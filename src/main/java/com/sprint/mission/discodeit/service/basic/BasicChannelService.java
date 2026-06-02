@@ -18,6 +18,10 @@ import com.sprint.mission.discodeit.service.ChannelService;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,10 +37,12 @@ public class BasicChannelService implements ChannelService {
   private final MessageRepository messageRepository;
   private final UserRepository userRepository;
   private final ChannelMapper channelMapper;
+  private final CacheManager cacheManager;
 
   @Transactional
   @Override
   @PreAuthorize("hasRole('CHANNEL_MANAGER')")
+  @CacheEvict(value = "userChannels", allEntries = true)
   public ChannelDto create(PublicChannelCreateRequest request) {
     log.debug("채널 생성 시작: {}", request);
     String name = request.name();
@@ -60,6 +66,12 @@ public class BasicChannelService implements ChannelService {
         .map(user -> new ReadStatus(user, channel, channel.getCreatedAt()))
         .toList();
     readStatusRepository.saveAll(readStatuses);
+    Cache cache = cacheManager.getCache("userChannels");
+    if (cache != null){
+      for (UUID participantId : request.participantIds()) {
+        cache.evict(participantId);
+      }
+    }
     log.info("채널 생성 완료: id={}, name={}", channel.getId(), channel.getName());
     return channelMapper.toDto(channel);
   }
@@ -71,7 +83,7 @@ public class BasicChannelService implements ChannelService {
         .map(channelMapper::toDto)
         .orElseThrow(() -> ChannelNotFoundException.withId(channelId));
   }
-
+  @Cacheable(value = "userChannels", key = "#userId")
   @Transactional(readOnly = true)
   @Override
   public List<ChannelDto> findAllByUserId(UUID userId) {
@@ -89,6 +101,7 @@ public class BasicChannelService implements ChannelService {
   @Transactional
   @Override
   @PreAuthorize("hasRole('CHANNEL_MANAGER')")
+  @CacheEvict(value = "userChannels", allEntries = true)
   public ChannelDto update(UUID channelId, PublicChannelUpdateRequest request) {
     log.debug("채널 수정 시작: id={}, request={}", channelId, request);
     String newName = request.newName();
@@ -106,6 +119,7 @@ public class BasicChannelService implements ChannelService {
   @Transactional
   @Override
   @PreAuthorize("hasRole('CHANNEL_MANAGER')")
+  @CacheEvict(value = "userChannels", allEntries = true)
   public void delete(UUID channelId) {
     log.debug("채널 삭제 시작: id={}", channelId);
     if (!channelRepository.existsById(channelId)) {
