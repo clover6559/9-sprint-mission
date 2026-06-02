@@ -1,6 +1,8 @@
 package com.sprint.mission.discodeit.storage.local;
 
 import com.sprint.mission.discodeit.dto.data.BinaryContentDto;
+import com.sprint.mission.discodeit.exception.DiscodeitException;
+import com.sprint.mission.discodeit.exception.ErrorCode;
 import com.sprint.mission.discodeit.storage.BinaryContentStorage;
 import jakarta.annotation.PostConstruct;
 import java.io.IOException;
@@ -10,6 +12,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.NoSuchElementException;
 import java.util.UUID;
+
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.core.io.InputStreamResource;
@@ -17,10 +22,15 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Recover;
+import org.springframework.retry.annotation.Retryable;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 @ConditionalOnProperty(name = "discodeit.storage.type", havingValue = "local")
 @Component
+@Slf4j
 public class LocalBinaryContentStorage implements BinaryContentStorage {
 
   private final Path root;
@@ -43,6 +53,9 @@ public class LocalBinaryContentStorage implements BinaryContentStorage {
     }
   }
 
+  @Async
+  @Retryable(retryFor = RuntimeException.class,
+  maxAttempts = 3, backoff = @Backoff(delay = 1000))
   public UUID put(UUID binaryContentId, byte[] bytes) {
     try {
       Thread.sleep(3000);
@@ -92,5 +105,20 @@ public class LocalBinaryContentStorage implements BinaryContentStorage {
         .header(HttpHeaders.CONTENT_TYPE, metaData.contentType())
         .header(HttpHeaders.CONTENT_LENGTH, String.valueOf(metaData.size()))
         .body(resource);
+  }
+  @Recover
+  public UUID recover(Exception e, UUID binaryContentId, byte[] bytes) {
+    String requestId = MDC.get("requestId");
+    if (requestId == null) {
+      requestId = "Unknown";
+    }
+    String taskName = "S3 바이너리 데이터 업로드";
+
+    String errorMessage = String.format("[실패 작업: %s]\nRequestId: %s\nBinaryContentId: %s\nError: %s",
+            taskName,  requestId, binaryContentId, e.getMessage());
+
+    log.error("[실패 작업명: {}] 관리자 통지 내용:\n{}", taskName, errorMessage, e);
+    throw new DiscodeitException(ErrorCode.INTERNAL_SERVER_ERROR, e);
+
   }
 }
