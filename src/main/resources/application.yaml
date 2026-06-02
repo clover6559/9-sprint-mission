@@ -1,6 +1,10 @@
 spring:
   application:
     name: discodeit
+  cache:
+    type: caffeine
+    caffeine:
+      spec: maximumSize=100,expireAfterAccess=600s,recordStats
   servlet:
     multipart:
       maxFileSize: 10MB # 파일 하나의 최대 크기
@@ -8,6 +12,7 @@ spring:
   datasource:
     driver-class-name: org.postgresql.Driver
   jpa:
+    show-sql: true
     hibernate:
       ddl-auto: update
     open-in-view: false
@@ -20,8 +25,9 @@ spring:
 management:
   endpoints:
     web:
+      base-path: /actuator
       exposure:
-        include: health,info,metrics,loggers
+        include: health,info,metrics,loggers,caches
   endpoint:
     health:
       show-details: always
