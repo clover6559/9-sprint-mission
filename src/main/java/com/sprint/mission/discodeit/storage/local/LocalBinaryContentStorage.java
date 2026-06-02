@@ -53,16 +53,9 @@ public class LocalBinaryContentStorage implements BinaryContentStorage {
     }
   }
 
-  @Async
   @Retryable(retryFor = RuntimeException.class,
   maxAttempts = 3, backoff = @Backoff(delay = 1000))
   public UUID put(UUID binaryContentId, byte[] bytes) {
-    try {
-      Thread.sleep(3000);
-    } catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new RuntimeException("Thread interrupted while simulating delay", e);
-    }
 
     Path filePath = resolvePath(binaryContentId);
     if (Files.exists(filePath)) {

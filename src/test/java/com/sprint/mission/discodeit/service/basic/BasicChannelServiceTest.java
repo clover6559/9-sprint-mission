@@ -34,8 +34,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.util.ReflectionTestUtils;
-
+@SpringBootTest(properties = {
+        "spring.jpa.show-sql=true",
+        "spring.jpa.properties.hibernate.format_sql=true",
+        "logging.level.org.hibernate.SQL=DEBUG"
+})
 @ExtendWith(MockitoExtension.class)
 class BasicChannelServiceTest {
 
@@ -224,5 +229,25 @@ class BasicChannelServiceTest {
     // when & then
     assertThatThrownBy(() -> channelService.delete(channelId))
         .isInstanceOf(ChannelNotFoundException.class);
+  }
+  @Test
+  @DisplayName("캐시 적용 테스트: 두 번째 호출부터는 쿼리가 안 나가야 한다")
+  void cacheTest() {
+    // ⚠️ DB에 실제로 존재하는 유저의 UUID를 하나 넣어주세요!
+    UUID testUserId = UUID.fromString("b2b40ffa-4630-491e-bf3a-1a489f06900a");
+
+    System.out.println("========================================");
+    System.out.println("🚀 [1차 호출] DB에서 데이터를 가져옵니다. (SELECT 쿼리 발생 O)");
+    long start1 = System.currentTimeMillis();
+    channelService.findAllByUserId(testUserId);
+    long end1 = System.currentTimeMillis();
+    System.out.println("⏱️ 1차 소요 시간: " + (end1 - start1) + "ms");
+
+    System.out.println("\n🚀 [2차 호출] 캐시에서 데이터를 가져옵니다. (SELECT 쿼리 발생 X)");
+    long start2 = System.currentTimeMillis();
+    channelService.findAllByUserId(testUserId);
+    long end2 = System.currentTimeMillis();
+    System.out.println("⏱️ 2차 소요 시간: " + (end2 - start2) + "ms");
+    System.out.println("========================================");
   }
 } 
