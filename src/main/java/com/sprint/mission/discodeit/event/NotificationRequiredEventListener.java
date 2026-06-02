@@ -5,6 +5,8 @@ import com.sprint.mission.discodeit.entity.ReadStatus;
 import com.sprint.mission.discodeit.repository.NotificationRepository;
 import com.sprint.mission.discodeit.repository.ReadStatusRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionalEventListener;
@@ -17,6 +19,7 @@ import java.util.stream.Collectors;
 public class NotificationRequiredEventListener {
     private final ReadStatusRepository readStatusRepository;
     private final NotificationRepository notificationRepository;
+    private final CacheManager cacheManager;
 
     @Async
     @TransactionalEventListener
@@ -29,6 +32,13 @@ public class NotificationRequiredEventListener {
                 .map(readStatus -> new Notification(readStatus.getId(), title, content))
                 .collect(Collectors.toList());
         notificationRepository.saveAll(notifications);
+
+        Cache cache = cacheManager.getCache("userNotifications");
+        if (cache != null) {
+            for (ReadStatus readStatus : readStatuses) {
+                cache.evict(readStatus.getUser().getId());
+            }
+        }
     }
 
     @Async
@@ -38,5 +48,10 @@ public class NotificationRequiredEventListener {
         String content = String.format("%s -> %s", event.oldRole(), event.newRole());
         Notification notification = new Notification(event.userId(), title, content);
         notificationRepository.save(notification);
+
+        Cache cache = cacheManager.getCache("userNotifications");
+        if (cache != null) {
+            cache.evict(event.userId());
+        }
     }
 }

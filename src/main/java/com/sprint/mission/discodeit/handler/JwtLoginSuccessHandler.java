@@ -14,6 +14,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -30,6 +32,7 @@ public class JwtLoginSuccessHandler implements AuthenticationSuccessHandler {
     private final ObjectMapper objectMapper;
     private final RefreshTokenStore refreshTokenStore;
     private final JwtRegistry jwtRegistry;
+    private final CacheManager cacheManager;
 
 
     @Override
@@ -60,5 +63,11 @@ public class JwtLoginSuccessHandler implements AuthenticationSuccessHandler {
         response.setCharacterEncoding("UTF-8");
         objectMapper.writeValue(response.getWriter(), responseBody);
         log.info("JWT login success: {}",userDetails.getUsername());
+
+        Cache userCache = cacheManager.getCache("users");
+        if (userCache != null) {
+            userCache.clear();
+            log.debug("로그인 성공: 'users' 캐시 초기화 완료");
+        }
     }
 }
