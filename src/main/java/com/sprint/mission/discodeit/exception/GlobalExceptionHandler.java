@@ -5,6 +5,9 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.sprint.mission.discodeit.event.AdminErrorAlertEvent;
+import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -16,11 +19,15 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestControllerAdvice
+@RequiredArgsConstructor
 public class GlobalExceptionHandler {
+  private final ApplicationEventPublisher eventPublisher;
 
   @ExceptionHandler(Exception.class)
   public ResponseEntity<ErrorResponse> handleException(Exception e) {
     log.error("예상치 못한 오류 발생: {}", e.getMessage(), e);
+    eventPublisher.publishEvent(new AdminErrorAlertEvent(e.getClass().getSimpleName(), e.getMessage()));
+
     ErrorResponse errorResponse = new ErrorResponse(e, HttpStatus.INTERNAL_SERVER_ERROR.value());
     return ResponseEntity
         .status(HttpStatus.INTERNAL_SERVER_ERROR)
