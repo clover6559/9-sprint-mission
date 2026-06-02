@@ -5,6 +5,7 @@ import com.sprint.mission.discodeit.entity.ReadStatus;
 import com.sprint.mission.discodeit.repository.NotificationRepository;
 import com.sprint.mission.discodeit.repository.ReadStatusRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionalEventListener;
 
@@ -17,6 +18,7 @@ public class NotificationRequiredEventListener {
     private final ReadStatusRepository readStatusRepository;
     private final NotificationRepository notificationRepository;
 
+    @Async
     @TransactionalEventListener
     public void on(MessageCreatedEvent event) {
         List<ReadStatus> readStatuses = readStatusRepository.findByChannelIdAndNotificationEnabledTrueAndUserIdNot(event.channelId(), event.userId());
@@ -29,6 +31,7 @@ public class NotificationRequiredEventListener {
         notificationRepository.saveAll(notifications);
     }
 
+    @Async
     @TransactionalEventListener
     public void on(RoleUpdatedEvent event) {
         String title = "권한이 변경되었습니다.";
