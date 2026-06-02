@@ -39,9 +39,9 @@ public class BasicAuthService implements AuthService {
   public UserDto updateRole(UUID userId, Role newRole) {
     User user = userRepository.findById(userId)
             .orElseThrow(() -> UserNotFoundException.withId(userId));
-
+    Role oldRole = user.getRole();
     user.updateRole(newRole);
-    eventPublisher.publishEvent(new RoleUpdatedEvent(userId, newRole));
+    eventPublisher.publishEvent(new RoleUpdatedEvent(userId, oldRole, newRole));
 
     jwtRegistry.invalidateJwtInformationByUserId(userId);
     log.info("사용자 권한 변경으로 인한 토큰 강제 만료 처리 - userId: {}", userId);
