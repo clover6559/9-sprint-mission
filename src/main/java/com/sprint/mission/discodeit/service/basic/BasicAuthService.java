@@ -14,6 +14,7 @@ import com.sprint.mission.discodeit.service.AuthService;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.session.SessionInformation;
@@ -30,12 +31,13 @@ public class BasicAuthService implements AuthService {
   private final UserRepository userRepository;
   private final UserMapper userMapper;
   private final SessionRegistry sessionRegistry;
-  private JwtRegistry jwtRegistry;
+  private final JwtRegistry jwtRegistry;
   private final ApplicationEventPublisher eventPublisher;
 
   @Transactional
   @Override
   @PreAuthorize("hasRole('ADMIN')")
+  @CacheEvict(value = "users", allEntries = true)
   public UserDto updateRole(UUID userId, Role newRole) {
     User user = userRepository.findById(userId)
             .orElseThrow(() -> UserNotFoundException.withId(userId));
