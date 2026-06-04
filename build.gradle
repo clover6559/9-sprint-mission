@@ -7,7 +7,7 @@ plugins {
 }
 
 group = 'com.sprint.mission'
-version = '2.0-M9'
+version = '2.2-M11'
 description = 'Demo project for Spring Boot'
 
 java {
@@ -67,6 +67,10 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    //Spring Kafka
+    implementation 'org.springframework.kafka:spring-kafka'
+
 }
 
 spotless {
