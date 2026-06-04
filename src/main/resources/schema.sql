@@ -67,7 +67,13 @@ CREATE TABLE read_statuses
     notification_enabled boolean NOT NULL ,
     UNIQUE (user_id, channel_id)
 );
-
+CREATE TABLE notification (
+                              id uuid PRIMARY KEY,
+                              receiver_id uuid NOT NULL,
+                              title varchar(255) NOT NULL,
+                              content text NOT NULL,
+                              created_at timestamp with time zone NOT NULL
+);
 
 -- 제약 조건
 -- User (1) -> BinaryContent (1)

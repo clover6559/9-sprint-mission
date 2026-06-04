@@ -52,7 +52,7 @@ public class SecurityConfig {
                         .failureHandler(loginFailureHandler))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/me").authenticated()
-                        .requestMatchers("/", "/index.html", "/static/**", "/assets/**", "*.js", "*.css", "*.ico", "/").permitAll()
+                        .requestMatchers("/", "/index.html", "/static/**", "/assets/**", "*.js", "*.css", "*.ico").permitAll()
                         .requestMatchers("/api/auth/csrf-token", "/api/auth/login", "/api/auth/logout", "/api/auth/**", "/api/auth/refresh").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/users").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/users").permitAll()
