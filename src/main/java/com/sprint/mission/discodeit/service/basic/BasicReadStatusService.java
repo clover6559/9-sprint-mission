@@ -4,6 +4,7 @@ import com.sprint.mission.discodeit.dto.data.ReadStatusDto;
 import com.sprint.mission.discodeit.dto.request.ReadStatusCreateRequest;
 import com.sprint.mission.discodeit.dto.request.ReadStatusUpdateRequest;
 import com.sprint.mission.discodeit.entity.Channel;
+import com.sprint.mission.discodeit.entity.ChannelType;
 import com.sprint.mission.discodeit.entity.ReadStatus;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.exception.DiscodeitException;
@@ -21,6 +22,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -34,31 +36,27 @@ public class BasicReadStatusService implements ReadStatusService {
   private final UserRepository userRepository;
   private final ChannelRepository channelRepository;
   private final ReadStatusMapper readStatusMapper;
+  private final CacheManager cacheManager;
 
   @Transactional
   @Override
   public ReadStatusDto create(ReadStatusCreateRequest request) {
     log.debug("읽음 상태 생성 시작: userId={}, channelId={}", request.userId(), request.channelId());
-
     UUID userId = request.userId();
     UUID channelId = request.channelId();
-    if (readStatusRepository.existsByUserIdAndChannelId(userId, channelId)) {
-      throw new DiscodeitException(ErrorCode.DUPLICATE_READ_STATUS);
-    }
-    User user = userRepository.findById(userId)
-        .orElseThrow(() -> UserNotFoundException.withId(userId));
-    Channel channel = channelRepository.findById(channelId)
-        .orElseThrow(() -> ChannelNotFoundException.withId(channelId));
 
-    ReadStatus readStatus = readStatusRepository.findByUserIdAndChannelId(user.getId(), channel.getId())
-        .orElseGet(() -> {
-          Instant lastReadAt = request.lastReadAt();
-          return readStatusRepository.save(new ReadStatus(user, channel, lastReadAt));
-        });
+    return readStatusRepository.findByUserIdAndChannelId(userId, channelId)
+            .map(readStatusMapper::toDto)
+            .orElseGet(() -> {
+              User user = userRepository.findById(userId)
+                      .orElseThrow(() -> UserNotFoundException.withId(userId));
+              Channel channel = channelRepository.findById(channelId)
+                      .orElseThrow(() -> ChannelNotFoundException.withId(channelId));
 
-    log.info("읽음 상태 생성 완료: id={}, userId={}, channelId={}",
-        readStatus.getId(), userId, channelId);
-    return readStatusMapper.toDto(readStatus);
+              boolean notificationEnabled = channel.getType() == ChannelType.PRIVATE;
+              ReadStatus readStatus = new ReadStatus(user, channel, request.lastReadAt(), notificationEnabled);
+              return readStatusMapper.toDto(readStatusRepository.save(readStatus));
+            });
   }
 
   @Transactional(readOnly = true)
@@ -89,8 +87,9 @@ public class BasicReadStatusService implements ReadStatusService {
     log.debug("읽음 상태 수정 시작: id={}, newLastReadAt={}", readStatusId, request.newLastReadAt());
 
     ReadStatus readStatus = readStatusRepository.findById(readStatusId)
-        .orElseThrow(() -> ReadStatusNotFoundException.withId(readStatusId));
-    readStatus.update(request.newLastReadAt());
+            .orElseThrow(() -> ReadStatusNotFoundException.withId(readStatusId));
+    readStatus.update(request.newLastReadAt(), request.newNotificationEnabled());
+
 
     log.info("읽음 상태 수정 완료: id={}", readStatusId);
     return readStatusMapper.toDto(readStatus);
