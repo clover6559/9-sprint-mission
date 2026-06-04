@@ -50,6 +50,10 @@ public class BasicChannelService implements ChannelService {
     Channel channel = new Channel(ChannelType.PUBLIC, name, description);
 
     channelRepository.save(channel);
+    List<ReadStatus> publicReadStatuses = userRepository.findAll().stream()
+            .map(user -> new ReadStatus(user, channel, channel.getCreatedAt(), true))
+            .toList();
+    readStatusRepository.saveAll(publicReadStatuses);
 
     log.info("채널 생성 완료: id={}, name={}", channel.getId(), channel.getName());
     return channelMapper.toDto(channel);
@@ -63,7 +67,7 @@ public class BasicChannelService implements ChannelService {
     channelRepository.save(channel);
 
     List<ReadStatus> readStatuses = userRepository.findAllById(request.participantIds()).stream()
-        .map(user -> new ReadStatus(user, channel, channel.getCreatedAt()))
+        .map(user -> new ReadStatus(user, channel, channel.getCreatedAt(), true))
         .toList();
     readStatusRepository.saveAll(readStatuses);
     Cache cache = cacheManager.getCache("userChannels");
