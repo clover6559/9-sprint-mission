@@ -15,8 +15,10 @@ import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -29,6 +31,7 @@ public class NotificationRequiredTopicListener {
     private final NotificationRepository notificationRepository;
     private final CacheManager cacheManager;
 
+    @Transactional
     @KafkaListener(topics = "discodeit.MessageCreatedEvent")
     public void onMessageCreatedEvent(String kafkaEvent) {
         try {
@@ -40,16 +43,26 @@ public class NotificationRequiredTopicListener {
             String content = event.content();
 
             List<Notification> notifications = readStatuses.stream()
-                    .map(readStatus -> new Notification(readStatus.getId(), title, content))
+                    .map(readStatus -> new Notification(
+                            readStatus.getUser().getId(),
+                            title,
+                            content
+                    ))
                     .collect(Collectors.toList());
             notificationRepository.saveAll(notifications);
+            Cache cache = cacheManager.getCache("userNotifications");
+            if (cache != null) {
+                for (ReadStatus readStatus : readStatuses) {
+                    cache.evict(readStatus.getUser().getId());
+                }
+            }
 
         } catch (JsonProcessingException e) {
             log.error("Failed to parse MessageCreatedEvent", e);
             throw new RuntimeException(e);
         }
     }
-
+    @Transactional
     @KafkaListener(topics = "discodeit.RoleUpdatedEvent")
     public void onRoleUpdatedEvent(String kafkaEvent) {
         try {
@@ -71,7 +84,7 @@ public class NotificationRequiredTopicListener {
         }
 
     }
-
+    @Transactional
     @KafkaListener(topics = "discodeit.S3UploadFailedEvent")
     public void onS3UploadFailedEvent(String kafkaEvent) {
         try {

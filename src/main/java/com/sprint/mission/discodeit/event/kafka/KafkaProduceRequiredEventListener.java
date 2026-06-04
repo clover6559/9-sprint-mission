@@ -25,6 +25,7 @@ public class KafkaProduceRequiredEventListener {
     @Async("eventTaskExecutor")
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void on(MessageCreatedEvent event) {
+        log.info("MessageCreatedEvent 수신: {}", event);
         publishToKafka("discodeit.MessageCreatedEvent", event);
     }
 
