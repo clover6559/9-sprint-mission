@@ -29,7 +29,7 @@ public class JwtTokenProvider {
     private final long accessTokenValiditySeconds;
 
     public JwtTokenProvider(@Value( "${jwt.secret}") String secret,
-                            @Value("${jwt.access-token-validity-seconds}")
+                            @Value("${jwt.access-token-validity-seconds:3600}")
                             long accessTokenValiditySeconds) throws JOSEException {
 
         byte[] secretKey = Base64.getDecoder().decode(secret);
