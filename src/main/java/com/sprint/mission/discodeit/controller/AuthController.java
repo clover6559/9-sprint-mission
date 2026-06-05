@@ -23,9 +23,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.web.bind.annotation.*;
+import com.sprint.mission.discodeit.utils.CookieUtils;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Arrays;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -54,12 +54,9 @@ public class AuthController implements AuthApi {
 
   @PostMapping("/refresh")
   public ResponseEntity<?> refresh(HttpServletRequest request, HttpServletResponse response) {
-    String refreshToken = getRefreshTokenFromCookie(request);
+    String refreshToken = CookieUtils.getCookieValue(request, "REFRESH_TOKEN");
 
-    if (refreshToken == null) {
-      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse(new DiscodeitException(ErrorCode.INVALID_REQUEST), 401));
-    }
-    if (!jwtRegistry.hasActiveJwtInformationByRefreshToken(refreshToken)) {
+    if (refreshToken == null || !jwtRegistry.hasActiveJwtInformationByRefreshToken(refreshToken)) {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse(new DiscodeitException(ErrorCode.INVALID_REQUEST), 401));
     }
 
@@ -80,11 +77,8 @@ public class AuthController implements AuthApi {
     JwtInformation newJwtInformation = new JwtInformation(user, newAccessToken, newRefreshToken);
     jwtRegistry.rotateJwtInformation(refreshToken, newJwtInformation);
 
-    Cookie refreshCookie = new Cookie("REFRESH_TOKEN", newRefreshToken);
-    refreshCookie.setHttpOnly(true);
-    refreshCookie.setSecure(false);
+    Cookie refreshCookie = CookieUtils.createCookie("REFRESH_TOKEN", newRefreshToken, 7 * 24 * 60 * 60);
     refreshCookie.setPath("/api/auth");
-    refreshCookie.setMaxAge(7*24*60*60);
     response.addCookie(refreshCookie);
 
     JwtDto responseBody = JwtDto.builder()
@@ -95,14 +89,4 @@ public class AuthController implements AuthApi {
     return ResponseEntity.ok().body(responseBody);
   }
 
-  private String getRefreshTokenFromCookie(HttpServletRequest request) {
-    if (request.getCookies() == null) {
-      return null;
-    }
-    return Arrays.stream(request.getCookies())
-            .filter(cookie -> "REFRESH_TOKEN".equals(cookie.getName()))
-            .map(Cookie::getValue)
-            .findFirst()
-            .orElse(null);
-  }
   }
