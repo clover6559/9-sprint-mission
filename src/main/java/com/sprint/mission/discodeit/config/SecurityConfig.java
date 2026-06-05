@@ -94,22 +94,6 @@ public class SecurityConfig {
     }
 
     @Bean
-    public CommandLineRunner initAdminAccount(
-            UserRepository userRepository,
-            PasswordEncoder passwordEncoder
-    ) {
-        return args -> {
-            User admin = userRepository.findByUsername("admin").orElseGet(() -> User.builder()
-                    .username("admin")
-                    .email("admin@discodeit.com")
-                    .password(passwordEncoder.encode("admin1234!"))
-                    .build());
-            admin.updateRole(Role.ADMIN);
-            userRepository.save(admin);
-        };
-    }
-
-    @Bean
     public HttpSessionEventPublisher httpSessionEventPublisher() {
         return new HttpSessionEventPublisher();
     }
