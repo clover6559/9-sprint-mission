@@ -40,6 +40,18 @@ public class SecurityConfig {
     private final CustomAccessDeniedHandler accessDeniedHandler;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
+    private static final String[] STATIC_RESOURCES = {
+            "/", "/index.html", "/static/**", "/assets/**", "*.js", "*.css", "*.ico"
+    };
+
+    private static final String[] SWAGGER_RESOURCES = {
+            "/swagger-ui/**", "/v3/api-docs/**", "/actuator/**"
+    };
+
+    private static final String[] AUTH_API_RESOURCES = {
+            "/api/auth/csrf-token", "/api/auth/login", "/api/auth/logout", "/api/auth/**", "/api/auth/refresh"
+    };
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf
@@ -52,11 +64,11 @@ public class SecurityConfig {
                         .failureHandler(loginFailureHandler))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/me").authenticated()
-                        .requestMatchers("/", "/index.html", "/static/**", "/assets/**", "*.js", "*.css", "*.ico").permitAll()
-                        .requestMatchers("/api/auth/csrf-token", "/api/auth/login", "/api/auth/logout", "/api/auth/**", "/api/auth/refresh").permitAll()
+                        .requestMatchers(STATIC_RESOURCES).permitAll()
+                        .requestMatchers(AUTH_API_RESOURCES).permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/users").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/users").permitAll()
-                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/actuator/**").permitAll()
+                        .requestMatchers(SWAGGER_RESOURCES).permitAll()
                         .anyRequest().authenticated())
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint(authenticationEntryPoint)
