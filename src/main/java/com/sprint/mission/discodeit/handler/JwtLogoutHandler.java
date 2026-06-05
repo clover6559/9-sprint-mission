@@ -28,12 +28,10 @@ public class JwtLogoutHandler implements LogoutHandler {
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
         String refreshToken = getRefreshTokenFromCookie(request);
-        if (refreshToken != null) {
             refreshTokenStore.remove(refreshToken);
             if (jwtRegistry instanceof InMemoryJwtRegistry inMemoryRegistry) {
                 inMemoryRegistry.invalidateJwtInformationByRefreshToken(refreshToken);
                 log.info("JwtRegistry에서 리프레시 토큰 무효화 완료: {}", refreshToken);
-            }
         }
 
         Cookie refreshCookie = new Cookie("REFRESH_TOKEN", null);
