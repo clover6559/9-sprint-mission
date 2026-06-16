@@ -1,6 +1,5 @@
 package com.sprint.mission.discodeit.event;
 
-import com.sprint.mission.discodeit.dto.data.MessageDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
